@@ -26,11 +26,15 @@
       # Standalone daemon package, in case you want to run it without NixOS.
       packages = forAllSystems (system: {
         nostr-chatd = nixpkgs.legacyPackages.${system}.callPackage ./nostr-chat/daemon { };
+        # SSH_ASKPASS stub that proxies prompts to the running noctalia shell.
+        # Point your agent's SSH_ASKPASS at lib.getExe of this.
+        noctalia-ssh-askpass = nixpkgs.legacyPackages.${system}.callPackage ./ssh-askpass/stub { };
         default = self.packages.${system}.nostr-chatd;
       });
 
       checks = forAllSystems (system: {
         nostr-chatd = self.packages.${system}.nostr-chatd;
+        noctalia-ssh-askpass = self.packages.${system}.noctalia-ssh-askpass;
       });
     };
 }

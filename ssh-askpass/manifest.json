@@ -1,0 +1,21 @@
+{
+  "id": "ssh-askpass",
+  "name": "SSH Askpass",
+  "version": "1.0.0",
+  "author": "Jörg Thalheim",
+  "official": false,
+  "license": "MIT",
+  "description": "SSH_ASKPASS provider with native noctalia dialogs. Handles both passphrase prompts and SSH_ASKPASS_PROMPT=confirm.",
+  "tags": ["System", "Security"],
+  "entryPoints": {
+    "main": "Main.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "confirmTimeoutSec": 30
+    }
+  }
+}
