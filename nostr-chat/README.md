@@ -39,11 +39,14 @@ ln -s /path/to/this/dir ~/.config/noctalia/plugins/nostr-chat
 
 ### 2. Run the daemon
 
-**NixOS** — import the co-located module and set your peer:
+**NixOS** — add this repo as a flake input and import the module:
 
 ```nix
+# flake.nix
+inputs.noctalia-plugins.url = "github:Mic92/noctalia-plugins";
+
 # configuration.nix
-imports = [ .../nostr-chat/module.nix ];
+imports = [ inputs.noctalia-plugins.nixosModules.nostr-chat ];
 services.nostr-chat = {
   peerPubkey  = "96dc8a8c…bf7e37";
   relays      = [ "wss://nostr.thalheim.io" "wss://nos.lol" ];
