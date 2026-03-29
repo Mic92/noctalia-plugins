@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "加入",
+    "refresh": "刷新",
+    "settings": "设置"
+  },
+  "panel": {
+    "header": "即将到来",
+    "header-empty": "暂无即将到来的事件",
+    "header-error": "日历错误",
+    "today": "今天",
+    "tomorrow": "明天",
+    "all-day": "全天",
+    "refresh": "刷新",
+    "nothing-scheduled": "暂无安排"
+  },
+  "settings": {
+    "title": "下一事件设置",
+    "lookahead-label": "预览天数",
+    "poll-interval-label": "轮询间隔（秒）",
+    "imminent-label": "临近阈值（分钟）",
+    "imminent-description": "当下一事件将在此分钟数内开始时，展开胶囊并显示为红色。",
+    "hide-when-empty-label": "无事件时隐藏",
+    "khal-args-label": "额外的 khal 参数",
+    "khal-args-description": "原样传递给 khal list（例如 -a work 仅包含某个日历，-d holidays 排除某个日历）。",
+    "icon-color-label": "图标颜色"
+  },
+  "pill": {
+    "now": "现在",
+    "today": "今天"
+  }
+}

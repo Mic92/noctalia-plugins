@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "Beitreten",
+    "refresh": "Aktualisieren",
+    "settings": "Einstellungen"
+  },
+  "panel": {
+    "header": "Anstehend",
+    "header-empty": "Keine anstehenden Termine",
+    "header-error": "Kalenderfehler",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "all-day": "ganztägig",
+    "refresh": "Aktualisieren",
+    "nothing-scheduled": "Keine Termine"
+  },
+  "settings": {
+    "title": "Nächster-Termin-Einstellungen",
+    "lookahead-label": "Vorschau (Tage)",
+    "poll-interval-label": "Abfrageintervall (Sekunden)",
+    "imminent-label": "Bevorstehend-Schwelle (Minuten)",
+    "imminent-description": "Pille ausklappen und rot färben, wenn der nächste Termin in weniger als so vielen Minuten beginnt.",
+    "hide-when-empty-label": "Ausblenden wenn keine Termine anstehen",
+    "khal-args-label": "Zusätzliche khal-Argumente",
+    "khal-args-description": "Wird unverändert an khal list übergeben (z.B. -a arbeit um nur einen Kalender einzuschließen, -d feiertage um einen auszuschließen).",
+    "icon-color-label": "Symbolfarbe"
+  },
+  "pill": {
+    "now": "jetzt",
+    "today": "heute"
+  }
+}

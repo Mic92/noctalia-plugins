@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "参加",
+    "refresh": "更新",
+    "settings": "設定"
+  },
+  "panel": {
+    "header": "今後の予定",
+    "header-empty": "今後の予定はありません",
+    "header-error": "カレンダーエラー",
+    "today": "今日",
+    "tomorrow": "明日",
+    "all-day": "終日",
+    "refresh": "更新",
+    "nothing-scheduled": "予定なし"
+  },
+  "settings": {
+    "title": "次の予定の設定",
+    "lookahead-label": "先読み（日数）",
+    "poll-interval-label": "ポーリング間隔（秒）",
+    "imminent-label": "間近しきい値（分）",
+    "imminent-description": "次の予定がこの分数以内に始まる場合、ピルを展開して赤く表示します。",
+    "hide-when-empty-label": "予定がないときは非表示",
+    "khal-args-label": "追加のkhal引数",
+    "khal-args-description": "khal listにそのまま渡されます（例: -a work で特定のカレンダーのみ、-d holidays で除外）。",
+    "icon-color-label": "アイコンの色"
+  },
+  "pill": {
+    "now": "今",
+    "today": "今日"
+  }
+}

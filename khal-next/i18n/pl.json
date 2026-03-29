@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "Dołącz",
+    "refresh": "Odśwież",
+    "settings": "Ustawienia"
+  },
+  "panel": {
+    "header": "Nadchodzące",
+    "header-empty": "Brak nadchodzących wydarzeń",
+    "header-error": "Błąd kalendarza",
+    "today": "Dzisiaj",
+    "tomorrow": "Jutro",
+    "all-day": "cały dzień",
+    "refresh": "Odśwież",
+    "nothing-scheduled": "Brak zaplanowanych wydarzeń"
+  },
+  "settings": {
+    "title": "Ustawienia Następnego wydarzenia",
+    "lookahead-label": "Wyprzedzenie (dni)",
+    "poll-interval-label": "Interwał odpytywania (sekundy)",
+    "imminent-label": "Próg zbliżania (minuty)",
+    "imminent-description": "Rozwiń pigułkę i zabarw na czerwono, gdy następne wydarzenie zaczyna się za mniej niż tyle minut.",
+    "hide-when-empty-label": "Ukryj, gdy brak wydarzeń",
+    "khal-args-label": "Dodatkowe argumenty khal",
+    "khal-args-description": "Przekazywane dosłownie do khal list (np. -a praca aby uwzględnić tylko jeden kalendarz, -d swieta aby wykluczyć).",
+    "icon-color-label": "Kolor ikony"
+  },
+  "pill": {
+    "now": "teraz",
+    "today": "dziś"
+  }
+}

@@ -63,8 +63,8 @@ Item {
   // shove the rest of the bar around. Title lives in the tooltip.
   readonly property string pillText: {
     if (!nextEvent) return "";
-    if (nextEvent.allDay) return "today";
-    if (inProgress) return "now";
+    if (nextEvent.allDay) return pluginApi?.tr("pill.today") ?? "today";
+    if (inProgress) return pluginApi?.tr("pill.now") ?? "now";
     return fmtCountdown(minutesUntil);
   }
 

@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "Rejoindre",
+    "refresh": "Actualiser",
+    "settings": "Paramètres"
+  },
+  "panel": {
+    "header": "À venir",
+    "header-empty": "Aucun événement à venir",
+    "header-error": "Erreur de calendrier",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "all-day": "journée",
+    "refresh": "Actualiser",
+    "nothing-scheduled": "Rien de prévu"
+  },
+  "settings": {
+    "title": "Paramètres Prochain événement",
+    "lookahead-label": "Anticipation (jours)",
+    "poll-interval-label": "Intervalle d'interrogation (secondes)",
+    "imminent-label": "Seuil d'imminence (minutes)",
+    "imminent-description": "Déployer la pilule et la colorer en rouge lorsque le prochain événement commence dans moins de ce nombre de minutes.",
+    "hide-when-empty-label": "Masquer si aucun événement à venir",
+    "khal-args-label": "Arguments khal supplémentaires",
+    "khal-args-description": "Transmis tels quels à khal list (p.ex. -a travail pour n'inclure qu'un calendrier, -d vacances pour en exclure un).",
+    "icon-color-label": "Couleur de l'icône"
+  },
+  "pill": {
+    "now": "mtn",
+    "today": "auj."
+  }
+}

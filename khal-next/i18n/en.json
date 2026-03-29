@@ -24,5 +24,9 @@
     "khal-args-label": "Extra khal arguments",
     "khal-args-description": "Passed verbatim to khal list (e.g. -a work to include only a calendar, -d holidays to exclude one).",
     "icon-color-label": "Icon color"
+  },
+  "pill": {
+    "now": "now",
+    "today": "today"
   }
 }

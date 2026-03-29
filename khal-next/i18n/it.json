@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "Partecipa",
+    "refresh": "Aggiorna",
+    "settings": "Impostazioni"
+  },
+  "panel": {
+    "header": "Prossimi",
+    "header-empty": "Nessun evento in programma",
+    "header-error": "Errore calendario",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "all-day": "tutto il giorno",
+    "refresh": "Aggiorna",
+    "nothing-scheduled": "Nulla in programma"
+  },
+  "settings": {
+    "title": "Impostazioni Prossimo evento",
+    "lookahead-label": "Anteprima (giorni)",
+    "poll-interval-label": "Intervallo di polling (secondi)",
+    "imminent-label": "Soglia di imminenza (minuti)",
+    "imminent-description": "Espandi la pillola e colorala di rosso quando il prossimo evento inizia entro questi minuti.",
+    "hide-when-empty-label": "Nascondi se non ci sono eventi",
+    "khal-args-label": "Argomenti khal aggiuntivi",
+    "khal-args-description": "Passati così come sono a khal list (es. -a lavoro per includere solo un calendario, -d festivi per escluderne uno).",
+    "icon-color-label": "Colore icona"
+  },
+  "pill": {
+    "now": "ora",
+    "today": "oggi"
+  }
+}

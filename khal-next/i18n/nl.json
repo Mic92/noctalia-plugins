@@ -1,0 +1,32 @@
+{
+  "menu": {
+    "join": "Deelnemen",
+    "refresh": "Vernieuwen",
+    "settings": "Instellingen"
+  },
+  "panel": {
+    "header": "Aankomend",
+    "header-empty": "Geen aankomende afspraken",
+    "header-error": "Agendafout",
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "all-day": "hele dag",
+    "refresh": "Vernieuwen",
+    "nothing-scheduled": "Niets gepland"
+  },
+  "settings": {
+    "title": "Instellingen Volgende afspraak",
+    "lookahead-label": "Vooruitkijken (dagen)",
+    "poll-interval-label": "Verversingsinterval (seconden)",
+    "imminent-label": "Drempel voor nabij (minuten)",
+    "imminent-description": "Klap de pil uit en kleur deze rood wanneer de volgende afspraak binnen dit aantal minuten begint.",
+    "hide-when-empty-label": "Verbergen als er geen afspraken zijn",
+    "khal-args-label": "Extra khal-argumenten",
+    "khal-args-description": "Worden ongewijzigd doorgegeven aan khal list (bijv. -a werk om alleen één agenda op te nemen, -d feestdagen om er een uit te sluiten).",
+    "icon-color-label": "Pictogramkleur"
+  },
+  "pill": {
+    "now": "nu",
+    "today": "vandaag"
+  }
+}
