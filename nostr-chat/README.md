@@ -6,7 +6,7 @@ back inline — but point it at any bot or human with a pubkey.
 
 [OpenCrow]: https://github.com/pinpox/opencrow
 
-![chat panel](./screenshot.png)
+![chat panel](https://github.com/Mic92/noctalia-plugins/releases/download/assets/nostr-chat-screenshot.png)
 
 ## What you get
 
