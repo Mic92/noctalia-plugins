@@ -1,0 +1,18 @@
+{
+  "title-confirm": "Confirmation de clé SSH",
+  "title-prompt": "Phrase secrète SSH",
+  "placeholder-passphrase": "Phrase secrète",
+  "button-deny": "Refuser",
+  "button-cancel": "Annuler",
+  "button-allow": "Autoriser",
+  "button-ok": "OK",
+  "settings": {
+    "title": "Paramètres SSH Askpass",
+    "confirm-method-label": "Méthode de confirmation",
+    "confirm-method-description": "Comment approuver les confirmations d'utilisation de clé ssh-agent (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Cliquer sur Autoriser / appuyer sur Entrée",
+    "method-fingerprint": "Empreinte digitale (fprintd)",
+    "timeout-label": "Délai de refus automatique",
+    "timeout-description": "Refuser automatiquement la demande si aucune décision n'est prise dans ce délai."
+  }
+}

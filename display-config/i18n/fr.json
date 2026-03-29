@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Étendre à droite",
+    "extend-left": "Étendre à gauche",
+    "external-only": "Externe uniquement",
+    "laptop-only": "Portable uniquement",
+    "preset": "Préréglage : {name}",
+    "open-wdisplays": "Ouvrir wdisplays",
+    "refresh": "Actualiser",
+    "settings": "Paramètres"
+  },
+  "panel": {
+    "header-error": "Erreur lors de l'interrogation des sorties",
+    "header-enabled": "{enabled}/{total} sortie activée",
+    "header-enabled-plural": "{enabled}/{total} sorties activées",
+    "refresh": "Actualiser",
+    "open-wdisplays": "Ouvrir wdisplays",
+    "reverting-in": "Annulation dans {seconds}s",
+    "revert": "Annuler",
+    "keep": "Conserver",
+    "unknown-error": "Erreur inconnue",
+    "mode": "Mode",
+    "scale": "Échelle",
+    "many-monitors-hint": "{count} écrans — utilisez wdisplays pour les disposer, puis enregistrez comme préréglage",
+    "arrange": "Disposer",
+    "extend-right": "Étendre à droite",
+    "extend-left": "Étendre à gauche",
+    "external-above": "Externe au-dessus",
+    "external-below": "Externe en dessous",
+    "external-only": "Externe uniquement",
+    "laptop-only": "Portable uniquement",
+    "presets": "Préréglages"
+  },
+  "settings": {
+    "title": "Paramètres de configuration d'affichage",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (ébauche)",
+    "poll-interval-label": "Intervalle d'interrogation (secondes)",
+    "icon-color-label": "Couleur de l'icône",
+    "presets-label": "Préréglages ({count})",
+    "preset-name-placeholder": "Nom du préréglage",
+    "save-preset-tooltip": "Enregistrer la disposition actuelle comme préréglage",
+    "apply-preset-tooltip": "Appliquer le préréglage",
+    "delete-preset-tooltip": "Supprimer le préréglage"
+  }
+}

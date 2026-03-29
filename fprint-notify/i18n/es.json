@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Toca el sensor de huellas",
+  "try-again": "Reintentar",
+  "authenticated": "Autenticado",
+  "not-recognized": "Huella no reconocida",
+  "settings": {
+    "title": "Configuración de notificación de huellas",
+    "show-success-label": "Mostrar notificación de éxito",
+    "show-success-description": "Confirmar brevemente cuando una huella coincide. Desactivar para un funcionamiento más silencioso.",
+    "stale-timeout-label": "Tiempo de espera obsoleto",
+    "stale-timeout-description": "Descartar la notificación si fprintd nunca informa un resultado (protege contra un cliente PAM bloqueado)."
+  }
+}

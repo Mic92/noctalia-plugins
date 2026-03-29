@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Rechercher dans Bitwarden (rbw)",
+  "loading": {
+    "name": "Chargement du coffre…",
+    "description": "Exécution de rbw list"
+  },
+  "error": {
+    "name": "Erreur rbw",
+    "description": "{error} — activer pour réessayer / déverrouiller",
+    "unlock-failed": "Échec de rbw unlock : {error}",
+    "command-failed": "Échec de la commande rbw",
+    "list-failed": "Échec de rbw list",
+    "wl-copy-failed": "Échec de wl-copy",
+    "wtype-failed": "Échec de wtype : {error}",
+    "already-running": "Action déjà en cours, ignorée"
+  },
+  "refresh": {
+    "name": "Actualiser le coffre",
+    "description": "Relancer rbw list pour récupérer les nouvelles entrées"
+  },
+  "actions": {
+    "type-password": "Saisir le mot de passe",
+    "type-username": "Saisir le nom d'utilisateur",
+    "type-totp": "Saisir le code TOTP",
+    "copy-password": "Copier le mot de passe",
+    "copy-password-description": "Presse-papiers uniquement (pas de saisie automatique)",
+    "back": "Retour",
+    "back-description": "Revenir à la recherche",
+    "no-username": "(aucun)",
+    "no-username-warning": "Pas de nom d'utilisateur pour {name}"
+  },
+  "labels": {
+    "password": "mot de passe",
+    "username": "nom d'utilisateur",
+    "totp": "code TOTP"
+  },
+  "toast": {
+    "copied": "{label} copié dans le presse-papiers",
+    "typed": "{label} saisi"
+  },
+  "settings": {
+    "title": "Paramètres Bitwarden (rbw)",
+    "clear-after-label": "Vider le presse-papiers après",
+    "clear-after-description": "Les secrets sont copiés avec wl-copy --sensitive et effacés après ce délai en secondes."
+  }
+}

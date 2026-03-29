@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Extender a la derecha",
+    "extend-left": "Extender a la izquierda",
+    "external-only": "Solo externa",
+    "laptop-only": "Solo portátil",
+    "preset": "Preajuste: {name}",
+    "open-wdisplays": "Abrir wdisplays",
+    "refresh": "Actualizar",
+    "settings": "Configuración"
+  },
+  "panel": {
+    "header-error": "Error al consultar las salidas",
+    "header-enabled": "{enabled}/{total} salida habilitada",
+    "header-enabled-plural": "{enabled}/{total} salidas habilitadas",
+    "refresh": "Actualizar",
+    "open-wdisplays": "Abrir wdisplays",
+    "reverting-in": "Revirtiendo en {seconds}s",
+    "revert": "Revertir",
+    "keep": "Mantener",
+    "unknown-error": "Error desconocido",
+    "mode": "Modo",
+    "scale": "Escala",
+    "many-monitors-hint": "{count} monitores — usa wdisplays para organizarlos y luego guárdalo como preajuste",
+    "arrange": "Organizar",
+    "extend-right": "Extender a la derecha",
+    "extend-left": "Extender a la izquierda",
+    "external-above": "Externa arriba",
+    "external-below": "Externa abajo",
+    "external-only": "Solo externa",
+    "laptop-only": "Solo portátil",
+    "presets": "Preajustes"
+  },
+  "settings": {
+    "title": "Configuración de pantallas",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (prototipo)",
+    "poll-interval-label": "Intervalo de sondeo (segundos)",
+    "icon-color-label": "Color del icono",
+    "presets-label": "Preajustes ({count})",
+    "preset-name-placeholder": "Nombre del preajuste",
+    "save-preset-tooltip": "Guardar la disposición actual como preajuste",
+    "apply-preset-tooltip": "Aplicar preajuste",
+    "delete-preset-tooltip": "Eliminar preajuste"
+  }
+}

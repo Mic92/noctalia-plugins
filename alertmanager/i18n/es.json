@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "Actualizar",
+    "open-alertmanager": "Abrir Alertmanager",
+    "settings": "Configuración"
+  },
+  "panel": {
+    "header-error": "Error al obtener alertas",
+    "header-all-clear": "Todo en orden — sin alertas activas",
+    "header-active": "{count} alerta activa",
+    "header-active-plural": "{count} alertas activas",
+    "refresh": "Actualizar",
+    "open-alertmanager": "Abrir Alertmanager",
+    "unknown-error": "Error desconocido",
+    "no-active-alerts": "✅ Sin alertas activas"
+  },
+  "settings": {
+    "title": "Configuración de Alertmanager",
+    "url-label": "URL de Alertmanager",
+    "poll-interval-label": "Intervalo de sondeo (segundos)",
+    "hide-when-zero-label": "Ocultar el widget cuando no hay alertas",
+    "icon-color-label": "Color del icono"
+  }
+}

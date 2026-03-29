@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "Chat",
+    "status-connected": "connecté",
+    "status-offline": "démon hors ligne",
+    "search-tooltip": "Rechercher",
+    "search-placeholder": "Rechercher des messages…",
+    "new-messages": "{count} nouveau(x)",
+    "compose-placeholder": "Message à {name}…",
+    "compose-waiting": "En attente du démon…",
+    "attach-image-tooltip": "Joindre une image",
+    "attach-image-title": "Joindre une image",
+    "time-now": "à l'instant"
+  },
+  "bubble": {
+    "reply-tooltip": "Répondre",
+    "quote-missing": "↳ (message antérieur)"
+  },
+  "settings": {
+    "nixos-hint": "La configuration du pair (pubkey, relais, nom d'affichage) est gérée par le module NixOS — voir services.nostr-chat dans votre configuration.",
+    "history-limit-label": "Limite d'historique",
+    "history-limit-description": "Messages conservés dans le miroir en mémoire du panneau (SQLite conserve tout)."
+  }
+}

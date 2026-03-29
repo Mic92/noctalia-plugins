@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "Abrir correo",
+    "refresh": "Actualizar",
+    "settings": "Configuración"
+  },
+  "settings": {
+    "title": "Configuración del contador de correo",
+    "count-command-label": "Comando de conteo",
+    "count-command-description": "Comando shell que imprime el número de mensajes no leídos en stdout.",
+    "click-command-label": "Comando al hacer clic",
+    "click-command-description": "Comando ejecutado al hacer clic en el widget (p. ej. tu cliente de correo). Dejar vacío para desactivar.",
+    "poll-interval-label": "Intervalo de sondeo (segundos)",
+    "hide-when-zero-label": "Ocultar el widget cuando el contador sea cero",
+    "icon-color-label": "Color del icono"
+  }
+}

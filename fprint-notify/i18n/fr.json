@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Touchez le capteur d'empreinte",
+  "try-again": "Réessayer",
+  "authenticated": "Authentifié",
+  "not-recognized": "Empreinte non reconnue",
+  "settings": {
+    "title": "Paramètres de notification d'empreinte",
+    "show-success-label": "Afficher le toast de succès",
+    "show-success-description": "Confirmer brièvement lorsqu'une empreinte correspond. Désactiver pour un fonctionnement plus discret.",
+    "stale-timeout-label": "Délai d'expiration",
+    "stale-timeout-description": "Fermer le toast si fprintd ne signale jamais de résultat (protection contre un client PAM planté)."
+  }
+}

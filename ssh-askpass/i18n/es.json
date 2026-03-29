@@ -1,0 +1,18 @@
+{
+  "title-confirm": "Confirmación de clave SSH",
+  "title-prompt": "Frase de contraseña SSH",
+  "placeholder-passphrase": "Frase de contraseña",
+  "button-deny": "Denegar",
+  "button-cancel": "Cancelar",
+  "button-allow": "Permitir",
+  "button-ok": "Aceptar",
+  "settings": {
+    "title": "Configuración de SSH Askpass",
+    "confirm-method-label": "Método de confirmación",
+    "confirm-method-description": "Cómo aprobar confirmaciones de uso de clave de ssh-agent (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Hacer clic en Permitir / pulsar Intro",
+    "method-fingerprint": "Huella dactilar (fprintd)",
+    "timeout-label": "Tiempo de denegación automática",
+    "timeout-description": "Denegar automáticamente la solicitud si no se toma una decisión en este tiempo."
+  }
+}

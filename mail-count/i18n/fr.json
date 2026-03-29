@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "Ouvrir le courriel",
+    "refresh": "Actualiser",
+    "settings": "Paramètres"
+  },
+  "settings": {
+    "title": "Paramètres du compteur de courriels",
+    "count-command-label": "Commande de comptage",
+    "count-command-description": "Commande shell qui affiche le nombre de messages non lus sur stdout.",
+    "click-command-label": "Commande au clic",
+    "click-command-description": "Commande exécutée lors d'un clic sur le widget (p. ex. votre client de messagerie). Laisser vide pour désactiver.",
+    "poll-interval-label": "Intervalle d'interrogation (secondes)",
+    "hide-when-zero-label": "Masquer le widget quand le compteur est à zéro",
+    "icon-color-label": "Couleur de l'icône"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Buscar en Bitwarden (rbw)",
+  "loading": {
+    "name": "Cargando la caja fuerte…",
+    "description": "Ejecutando rbw list"
+  },
+  "error": {
+    "name": "Error de rbw",
+    "description": "{error} — activar para reintentar / desbloquear",
+    "unlock-failed": "Falló rbw unlock: {error}",
+    "command-failed": "Falló el comando rbw",
+    "list-failed": "Falló rbw list",
+    "wl-copy-failed": "Falló wl-copy",
+    "wtype-failed": "Falló wtype: {error}",
+    "already-running": "Acción ya en curso, se ignora"
+  },
+  "refresh": {
+    "name": "Actualizar la caja fuerte",
+    "description": "Volver a ejecutar rbw list para recoger entradas nuevas"
+  },
+  "actions": {
+    "type-password": "Escribir contraseña",
+    "type-username": "Escribir nombre de usuario",
+    "type-totp": "Escribir código TOTP",
+    "copy-password": "Copiar contraseña",
+    "copy-password-description": "Solo al portapapeles (sin auto-type)",
+    "back": "Atrás",
+    "back-description": "Volver a la búsqueda",
+    "no-username": "(ninguno)",
+    "no-username-warning": "No hay nombre de usuario para {name}"
+  },
+  "labels": {
+    "password": "contraseña",
+    "username": "nombre de usuario",
+    "totp": "código TOTP"
+  },
+  "toast": {
+    "copied": "{label} copiado al portapapeles",
+    "typed": "{label} escrito"
+  },
+  "settings": {
+    "title": "Configuración de Bitwarden (rbw)",
+    "clear-after-label": "Vaciar portapapeles tras",
+    "clear-after-description": "Los secretos se copian con wl-copy --sensitive y se borran tras este número de segundos."
+  }
+}
