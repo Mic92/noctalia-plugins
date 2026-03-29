@@ -7,6 +7,8 @@ a click-through agenda panel.
 
 ![bar pill showing 7m countdown in red](https://github.com/Mic92/noctalia-plugins/releases/download/assets/khal-next-screenshot.png)
 
+![agenda panel with day-grouped upcoming events](https://github.com/Mic92/noctalia-plugins/releases/download/assets/khal-next-agenda.png)
+
 ## What it does
 
 - **Bar pill**: collapsed calendar icon by default. Hover reveals a compact
