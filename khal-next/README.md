@@ -5,7 +5,7 @@ a click-through agenda panel.
 
 [khal]: https://github.com/pimutils/khal
 
-![screenshot placeholder]()
+![bar pill showing 7m countdown in red](https://github.com/Mic92/noctalia-plugins/releases/download/assets/khal-next-screenshot.png)
 
 ## What it does
 
