@@ -3,6 +3,8 @@
 Bitwarden in the noctalia launcher, via [`rbw`](https://github.com/doy/rbw).
 Type `>rbw github`, hit Enter, password lands in the focused input field.
 
+![rbw-provider in the launcher](https://github.com/Mic92/noctalia-plugins/releases/download/assets/rbw-provider-screenshot.png)
+
 ## Usage
 
 Open the launcher, type `>rbw ` followed by a query. Results match on entry
