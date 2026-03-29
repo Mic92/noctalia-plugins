@@ -96,15 +96,18 @@ Item {
       wrapMode: Text.WordWrap
     }
 
-    NScrollView {
+    Flickable {
+      id: scroll
       Layout.fillWidth: true
       Layout.fillHeight: true
-      Layout.preferredHeight: agendaColumn.implicitHeight
+      Layout.preferredHeight: Math.min(agendaColumn.implicitHeight, 480)
+      contentHeight: agendaColumn.implicitHeight
       clip: true
+      boundsBehavior: Flickable.StopAtBounds
 
       ColumnLayout {
         id: agendaColumn
-        width: parent.width
+        width: scroll.width
         spacing: Style.marginM
 
         Repeater {
@@ -140,14 +143,18 @@ Item {
                   anchors.margins: Style.marginM
                   spacing: Style.marginM
 
+                  // Time gutter. Fixed width keeps titles aligned; wide
+                  // enough for "HH:mm–HH:mm" so nothing ellipsizes.
                   NText {
                     text: modelData.allDay
                           ? root.tr("panel.all-day")
-                          : Qt.formatTime(modelData.start, "HH:mm")
+                          : Qt.formatTime(modelData.start, "HH:mm") + "–" +
+                            Qt.formatTime(modelData.end, "HH:mm")
                     font.pixelSize: Style.fontSizeS
                     font.family: Settings.data.ui.fontFixed
                     color: Color.mOnSurfaceVariant
-                    Layout.preferredWidth: 48
+                    Layout.preferredWidth: 92
+                    Layout.alignment: Qt.AlignTop
                   }
 
                   ColumnLayout {
