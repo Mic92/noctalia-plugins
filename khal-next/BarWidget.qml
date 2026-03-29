@@ -21,7 +21,6 @@ Item {
 
   readonly property string iconColorKey: cfg.iconColor ?? defaults.iconColor
   readonly property bool hideWhenEmpty: cfg.hideWhenEmpty ?? defaults.hideWhenEmpty
-  readonly property int maxTitleWidth: cfg.maxTitleWidth ?? defaults.maxTitleWidth
   readonly property int imminentMinutes: cfg.imminentMinutes ?? defaults.imminentMinutes
 
   readonly property var nextEvent: calService?.nextEvent || null
@@ -70,18 +69,22 @@ Item {
     return Math.floor(h / 24) + "d";
   }
 
-  function truncate(s, n) {
-    return s.length > n ? s.slice(0, n - 1) + "…" : s;
-  }
-
+  // Pill text stays compact (just the countdown) so expanding doesn't
+  // shove the rest of the bar around. Title lives in the tooltip.
   readonly property string pillText: {
     if (!nextEvent) return "";
-    var title = truncate(nextEvent.title, maxTitleWidth);
-    if (nextEvent.allDay)
-      return title;
-    if (inProgress)
-      return "now · " + title;
-    return fmtCountdown(minutesUntil) + " · " + title;
+    if (nextEvent.allDay) return "today";
+    if (inProgress) return "now";
+    return fmtCountdown(minutesUntil);
+  }
+
+  readonly property string tooltip: {
+    if (!nextEvent) return "";
+    var t = nextEvent.title;
+    if (nextEvent.allDay) return t;
+    var when = Qt.formatTime(nextEvent.start, "HH:mm") + "–" +
+               Qt.formatTime(nextEvent.end, "HH:mm");
+    return when + "  " + t;
   }
 
   readonly property string currentIcon: {
@@ -109,7 +112,7 @@ Item {
     oppositeDirection: BarService.getPillDirection(root)
     icon: root.currentIcon
     text: root.pillText
-    tooltipText: root.nextEvent ? root.pillText : ""
+    tooltipText: root.tooltip
     // Collapsed by default; hover reveals, click pins. Imminent / in-progress
     // still force it open so you can't miss those.
     autoHide: true

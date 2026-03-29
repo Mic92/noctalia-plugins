@@ -20,7 +20,6 @@
     "defaultSettings": {
       "lookaheadDays": 7,
       "pollInterval": 300,
-      "maxTitleWidth": 24,
       "hideWhenEmpty": true,
       "imminentMinutes": 15,
       "iconColor": "primary",

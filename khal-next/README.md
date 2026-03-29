@@ -9,12 +9,15 @@ a click-through agenda panel.
 
 ## What it does
 
-- **Bar pill**: `23m · team sync` — countdown, then `now · team sync` once
-  started. Turns red within a configurable "imminent" window (default 15 min).
-  Collapses to just an icon when the next event is further off.
-- **Panel** (click): agenda grouped by day, with clickable meeting URLs.
-- **Middle-click** / `join` IPC: `xdg-open` the next event's location — for
-  Google Meet / Jitsi / Zoom URLs that drops you straight into the meeting.
+- **Bar pill**: collapsed calendar icon by default. Hover reveals a compact
+  countdown (`23m`), tooltip shows the full time range + title. Click pins
+  the pill open; click again (or wait for the next event to roll over) to
+  unpin. Within the "imminent" window (default 15 min) or once the event
+  has started, the pill auto-expands and turns red/amber so you can't miss it.
+- **Middle-click** / right-click → Agenda: day-grouped upcoming events with
+  clickable meeting URLs.
+- **Right-click → Join** / `join` IPC: `xdg-open` the next event's location —
+  for Google Meet / Jitsi / Zoom URLs that drops you straight into the meeting.
 
 All-day events are shown in the panel but only surface in the pill if nothing
 timed is coming up.
@@ -43,7 +46,6 @@ Bind `join` in your compositor for a one-key "jump into meeting".
 | `lookaheadDays`   | 7       | How far ahead `khal list` looks               |
 | `pollInterval`    | 300     | Seconds between khal runs                     |
 | `imminentMinutes` | 15      | Red + expanded when next event ≤ this         |
-| `maxTitleWidth`   | 24      | Pill title truncation                         |
 | `hideWhenEmpty`   | true    | Hide widget entirely if nothing's scheduled   |
 | `khalArgs`        | `""`    | Extra args, e.g. `-a work -d holidays`        |
 | `iconColor`       | primary | Icon tint when idle                           |

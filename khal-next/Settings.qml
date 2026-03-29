@@ -60,15 +60,6 @@ ColumnLayout {
     onValueModified: { cfg.imminentMinutes = value; pluginApi?.saveSettings(); }
   }
 
-  NLabel { label: tr("settings.max-title-label") }
-
-  NSpinBox {
-    from: 8
-    to: 80
-    value: cfg.maxTitleWidth ?? defaults.maxTitleWidth
-    onValueModified: { cfg.maxTitleWidth = value; pluginApi?.saveSettings(); }
-  }
-
   NToggle {
     Layout.fillWidth: true
     label: tr("settings.hide-when-empty-label")
