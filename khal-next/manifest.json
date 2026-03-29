@@ -1,0 +1,30 @@
+{
+  "id": "khal-next",
+  "name": "Next Event",
+  "version": "0.1.0",
+  "author": "Jörg Thalheim",
+  "official": false,
+  "license": "MIT",
+  "description": "Shows the next upcoming khal calendar event in the bar with a countdown",
+  "tags": ["Bar", "Calendar"],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "lookaheadDays": 7,
+      "pollInterval": 300,
+      "maxTitleWidth": 24,
+      "hideWhenEmpty": true,
+      "imminentMinutes": 15,
+      "iconColor": "primary",
+      "khalArgs": ""
+    }
+  }
+}

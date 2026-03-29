@@ -1,0 +1,29 @@
+{
+  "menu": {
+    "join": "Join",
+    "refresh": "Refresh",
+    "settings": "Settings"
+  },
+  "panel": {
+    "header": "Upcoming",
+    "header-empty": "No upcoming events",
+    "header-error": "Calendar error",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "all-day": "all day",
+    "refresh": "Refresh",
+    "nothing-scheduled": "Nothing scheduled"
+  },
+  "settings": {
+    "title": "Next Event Settings",
+    "lookahead-label": "Look ahead (days)",
+    "poll-interval-label": "Poll interval (seconds)",
+    "imminent-label": "Imminent threshold (minutes)",
+    "imminent-description": "Expand the pill and turn it red when the next event starts within this many minutes.",
+    "max-title-label": "Max title width (chars)",
+    "hide-when-empty-label": "Hide when no upcoming events",
+    "khal-args-label": "Extra khal arguments",
+    "khal-args-description": "Passed verbatim to khal list (e.g. -a work to include only a calendar, -d holidays to exclude one).",
+    "icon-color-label": "Icon color"
+  }
+}
