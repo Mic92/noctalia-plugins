@@ -37,45 +37,6 @@ Then restart noctalia-shell and enable the plugin in Settings → Plugins.
 > [!NOTE]
 > `nostr-chat` also needs a Go daemon running — see its [README](./nostr-chat/README.md).
 
-## Plugins
-
-### alertmanager
-
-Polls `/api/v2/alerts` and shows a count badge in the bar. Click for the full
-list with labels, annotations and silence links. Turns red when something's
-firing, stays out of the way when it isn't.
-
-Configure `alertmanagerUrl` and `pollInterval` in the plugin's settings panel.
-
-### display-config
-
-A GUI for `niri msg output` (other compositors welcome, patches accepted). Lists
-connected outputs, lets you toggle power, pick a mode, set scale, and drag
-positions. Saves named presets — one click to switch between "laptop only",
-"docked 3-screen", etc.
-
-For more than two monitors it can shell out to `wdisplays` for the drag-and-drop
-arrangement, then read back the result.
-
-### nostr-chat
-
-A chat panel backed by a small Go daemon that speaks NIP-17 DMs. Originally
-built to talk to an [OpenCrow] LLM bot ("plot my CPU usage" → chart renders
-inline) but it's just a DM client — point it at any pubkey.
-
-Has its own [README](./nostr-chat/README.md) with NixOS module, keybinds, and
-hacking notes.
-
-[OpenCrow]: https://github.com/pinpox/opencrow
-
-### rbw-provider
-
-Type `rbw <query>` in the launcher, hit Enter on a match, password lands in your
-clipboard (auto-cleared after `clearAfterSeconds`). `Ctrl+Enter` copies the TOTP
-instead.
-
-Needs [`rbw`](https://github.com/doy/rbw) installed and unlocked.
-
 ## License
 
 MIT
