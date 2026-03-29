@@ -69,16 +69,9 @@ func newHarnessWithKey(t *testing.T, relay, peer string, sk nostr.SecretKey) *ha
 
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
-	go d.Run(ctx)
+	go d.Run(ctx, NewBridge())
 
-	h := &harness{d: d, keys: keys, events: events, sock: cfg.Socket, cancel: cancel}
-	// Boot status is the first event — consume it so tests start clean,
-	// and it doubles as a readiness signal for the socket.
-	ev := h.expect(t, EvStatus, 5*time.Second)
-	if !ev.Booted {
-		t.Fatalf("first status not Booted: %+v", ev)
-	}
-	return h
+	return &harness{d: d, keys: keys, events: events, sock: cfg.Socket, cancel: cancel}
 }
 
 // send writes one Command to the daemon's socket, the same way the QML

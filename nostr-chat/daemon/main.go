@@ -144,8 +144,9 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer cancel()
 
-	d := NewDaemon(cfg, keys, store, shellPush)
-	if err := d.Run(ctx); err != nil {
+	br := NewBridge()
+	d := NewDaemon(cfg, keys, store, br.Push)
+	if err := d.Run(ctx, br); err != nil {
 		slog.Error("daemon", "err", err)
 		os.Exit(1)
 	}
@@ -153,8 +154,7 @@ func main() {
 
 // Daemon wires the listener, store, socket and publish loop together.
 // Extracted from main so tests can drive the real event loop with an
-// in-memory relay and a channel-backed push instead of forking
-// noctalia-shell.
+// in-memory relay and a channel-backed push instead of a real socket.
 type Daemon struct {
 	cfg   Config
 	keys  Keys
@@ -175,8 +175,9 @@ func NewDaemon(cfg Config, keys Keys, store *Store, push PushFunc) *Daemon {
 
 // Run blocks until ctx is done. It starts the relay subscription,
 // socket server and publish loop, then dispatches rumors and commands
-// on the calling goroutine.
-func (d *Daemon) Run(ctx context.Context) error {
+// on the calling goroutine. br may be nil in tests that inject
+// commands directly.
+func (d *Daemon) Run(ctx context.Context, br *Bridge) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -200,27 +201,23 @@ func (d *Daemon) Run(ctx context.Context) error {
 		return ts
 	}, rumors)
 
-	go func() {
-		if err := serveSocket(ctx, d.cfg.Socket, func(c Command) { cmds <- c }); err != nil {
-			slog.Error("socket", "err", err)
-			cancel()
-		}
-	}()
+	if br != nil {
+		go func() {
+			if err := br.Serve(ctx, d.cfg.Socket, func(c Command) { cmds <- c }); err != nil {
+				slog.Error("socket", "err", err)
+				cancel()
+			}
+		}()
+	}
 
 	// Publishing blocks on slow/dead relays (nostr.0cx.de takes the full
 	// 15s timeout when down). Run it in its own goroutine so a stalled
 	// publish can't delay the next send's local echo or an incoming
 	// rumor's IPC push. The main loop only does fast work: sqlite +
-	// crypto + exec.
+	// crypto + a socket write.
 	drainNow := make(chan struct{}, 1)
 	drainNow <- struct{}{} // flush anything a prior crash left behind
 	go d.publishLoop(ctx, drainNow)
-
-	// Booted:true tells the shell this is a fresh daemon, not a replay
-	// response — it should request backfill. Without the flag the shell
-	// can't distinguish a restart from its own replay echo and either
-	// misses history or loops forever.
-	d.push(Event{Kind: EvStatus, Streaming: true, Booted: true, PubKey: d.keys.PK.Hex(), Name: d.cfg.Name})
 
 	for {
 		select {

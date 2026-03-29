@@ -5,8 +5,10 @@ import qs.Commons
 import qs.Services.UI
 
 // Thin view layer. All state — history, dedup, outbox, reconnect —
-// lives in nostr-chatd. We receive events via IpcHandler.recv() and
-// send commands over a one-shot unix socket.
+// lives in nostr-chatd. A single persistent unix socket carries NDJSON
+// both ways: we write commands, the daemon writes events. On connect
+// (and every reconnect) we send a replay; that's the whole resync
+// protocol.
 Item {
   id: root
 
@@ -92,70 +94,56 @@ Item {
     sockSend({ cmd: cmd.markRead });
   }
 
-  // One-shot socket: connect → write → disconnect. The daemon reads
-  // NDJSON lines and closes when we do.
-  //
-  // Quickshell's Socket fires connectedChanged for both edges and for
-  // the *requested* state, not the actual one — writing inside the
-  // handler races the real connect. Instead we write on the explicit
-  // onConnectionStateChanged only when the underlying socket is open.
+  // Persistent bidirectional socket. On connect we ask for a replay;
+  // the daemon answers with status + recent messages on the same pipe.
+  // A disconnect (daemon restart, suspend) just triggers the reconnect
+  // timer — next connect replays again, so the ListView converges
+  // without any booted/handshake dance.
   Socket {
     id: sock
     path: root.sockPath
-    property var queue: []
-    property bool draining: false
+    connected: true
+
+    parser: SplitParser { onRead: line => root.recv(line) }
 
     onConnectionStateChanged: {
-      if (!connected || draining || queue.length === 0) return;
-      draining = true;
-      for (const c of queue) write(JSON.stringify(c) + "\n");
-      flush();
-      queue = [];
-      // Let the daemon read before we hang up; Qt batches the close
-      // otherwise and the writes never hit the wire. If a sockSend
-      // raced in during this tick-gap its command is stranded (the
-      // draining guard bounced it), so re-drain instead of closing.
-      Qt.callLater(() => {
-        draining = false;
-        if (queue.length > 0) { connectionStateChanged(); return; }
-        connected = false;
-      });
+      if (connected) {
+        reconnect.interval = 500;
+        sockSend({ cmd: root.cmd.replay, n: root.cfg("maxHistory") || 200 });
+      } else {
+        chat.streaming = false;
+        reconnect.start();
+      }
     }
     onError: (e) => {
       chat.lastError = "daemon unreachable";
-      chat.streaming = false;
-      // Drop queued commands — they were one-shot anyway, and a stale
-      // `send` firing minutes later when the daemon returns would be
-      // surprising. The daemon's sqlite outbox handles real retries.
-      queue = [];
-      draining = false;
       Logger.w("NostrChat", "socket", e, "path", path);
     }
   }
-  function sockSend(cmd) {
-    sock.queue = sock.queue.concat([cmd]);
-    if (!sock.connected) sock.connected = true;
-    else sock.connectionStateChanged();  // already open — drain now
+  Timer {
+    id: reconnect
+    interval: 500
+    // Cap under the daemon's RestartSec so we're waiting when it
+    // returns, not the other way round.
+    onTriggered: { sock.connected = true; interval = Math.min(interval * 2, 4000); }
+  }
+  function sockSend(c) {
+    if (!sock.connected) return;  // replay-on-connect covers the gap
+    sock.write(JSON.stringify(c) + "\n");
+    sock.flush();
   }
 
-  // Events pushed by the daemon via `quickshell ipc call ... recv <json>`.
+  // One NDJSON line from the daemon.
   function recv(raw) {
     let ev;
     try { ev = JSON.parse(raw); }
     catch (e) { Logger.w("NostrChat", "bad ipc json", raw); return; }
 
     switch (ev.kind) {
-    case root.ev.status: {
+    case root.ev.status:
       chat.streaming = ev.streaming;
       chat.peerName = ev.name || chat.peerName;
-      // booted is set only on the daemon's very first status push —
-      // distinguishes a fresh process (needs backfill) from the replay
-      // handler's own status echo (would loop). Edge-detection on
-      // streaming can't do this: nothing ever flips it false.
-      if (ev.booted)
-        sockSend({ cmd: cmd.replay, n: cfg("maxHistory") || 50 });
       break;
-    }
 
     case root.ev.msg: {
       const m = ev.msg;
@@ -221,8 +209,6 @@ Item {
   IpcHandler {
     target: "plugin:nostr-chat"
 
-    function recv(json: string) { root.recv(json); }
-
     function tap() {
       const now = Date.now();
       if (now - root._lastTap < 400) toggle();
@@ -251,8 +237,4 @@ Item {
     function sendFile(path: string) { chat.sendFile(path, true); }
   }
 
-  // Ask the daemon to backfill on load. If it's not running yet the
-  // socket write fails silently; the status handler above re-requests
-  // when the daemon announces itself.
-  Component.onCompleted: sockSend({ cmd: cmd.replay, n: cfg("maxHistory") || 50 })
 }

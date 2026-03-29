@@ -7,8 +7,7 @@ import (
 	"log/slog"
 	"net"
 	"os"
-	"os/exec"
-	"time"
+	"sync"
 )
 
 // EventKind tags what the shell should do with a pushed Event. Typed
@@ -36,7 +35,6 @@ type Event struct {
 	Tries  int       `json:"tries,omitempty"`  // retry: attempt count
 	// status fields
 	Streaming bool   `json:"streaming,omitempty"`
-	Booted    bool   `json:"booted,omitempty"` // true only on the daemon's first status push
 	PubKey    string `json:"pubkey,omitempty"`
 	Name      string `json:"name,omitempty"` // display label for the panel header
 	Unread    int    `json:"unread,omitempty"`
@@ -44,25 +42,8 @@ type Event struct {
 }
 
 // PushFunc delivers an Event to the shell. Abstracted so tests can
-// capture events instead of forking noctalia-shell.
+// capture events in a channel instead of writing to a real socket.
 type PushFunc func(Event)
-
-// shellPush forks quickshell to inject one event into the plugin's
-// IpcHandler. Fire-and-forget: if the shell isn't running the exec
-// fails and we move on — the message is in sqlite, the shell will ask
-// for a replay when it comes back.
-func shellPush(ev Event) {
-	b, _ := json.Marshal(ev)
-	cmd := exec.Command("noctalia-shell", "ipc", "call", "plugin:nostr-chat", "recv", string(b))
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	// Don't block the listen loop on a slow shell.
-	go func() {
-		if err := cmd.Run(); err != nil {
-			slog.Debug("ipc push dropped (shell down?)", "err", err)
-		}
-	}()
-}
 
 // Cmd names a socket command. Same rationale as EventKind: the switch
 // in handleCommand is the only consumer, so a typo here fails loudly
@@ -89,10 +70,43 @@ type Command struct {
 	ID      string `json:"id,omitempty"`      // retry/cancel: rumor id
 }
 
-// serveSocket accepts one-shot connections: read one NDJSON line, act,
-// close. Keeps the QML side trivially simple — no keepalive, no
-// reconnect logic, just Socket{connected:true; write(...); connected:false}.
-func serveSocket(ctx context.Context, path string, handle func(Command)) error {
+// Bridge is a persistent bidirectional unix socket: the shell writes
+// NDJSON commands and reads NDJSON events on the same connection. This
+// replaces the old split transport (one-shot socket for commands,
+// `exec noctalia-shell ipc call` per event) that forked a child for
+// every push — 200 on a replay — bloating the Go thread pool and
+// delivering events out of order.
+//
+// The shell keeps the socket open for its lifetime and auto-reconnects
+// on error, sending a replay command on each connect. That's the whole
+// resync protocol: no booted flag, no IpcHandler round-trip, no exec.
+type Bridge struct {
+	mu    sync.Mutex
+	conns map[net.Conn]struct{}
+}
+
+func NewBridge() *Bridge { return &Bridge{conns: map[net.Conn]struct{}{}} }
+
+// Push writes ev as one NDJSON line to every connected client. A write
+// error means the client is gone — drop it; the next connect will
+// replay from sqlite.
+func (b *Bridge) Push(ev Event) {
+	line, _ := json.Marshal(ev)
+	line = append(line, '\n')
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	for c := range b.conns {
+		if _, err := c.Write(line); err != nil {
+			delete(b.conns, c)
+			c.Close()
+		}
+	}
+}
+
+// Serve accepts connections until ctx is done. Each connection is
+// registered for Push broadcasts and its reads are dispatched to
+// handle.
+func (b *Bridge) Serve(ctx context.Context, path string, handle func(Command)) error {
 	_ = os.Remove(path)
 	ln, err := net.Listen("unix", path)
 	if err != nil {
@@ -109,18 +123,27 @@ func serveSocket(ctx context.Context, path string, handle func(Command)) error {
 			slog.Warn("accept", "err", err)
 			continue
 		}
-		go func(c net.Conn) {
-			defer c.Close()
-			c.SetDeadline(time.Now().Add(5 * time.Second))
-			sc := bufio.NewScanner(c)
-			for sc.Scan() {
-				var cmd Command
-				if err := json.Unmarshal(sc.Bytes(), &cmd); err != nil {
-					slog.Warn("bad command", "raw", sc.Text(), "err", err)
-					continue
-				}
-				handle(cmd)
-			}
-		}(conn)
+		b.mu.Lock()
+		b.conns[conn] = struct{}{}
+		b.mu.Unlock()
+		go b.read(conn, handle)
+	}
+}
+
+func (b *Bridge) read(c net.Conn, handle func(Command)) {
+	defer func() {
+		b.mu.Lock()
+		delete(b.conns, c)
+		b.mu.Unlock()
+		c.Close()
+	}()
+	sc := bufio.NewScanner(c)
+	for sc.Scan() {
+		var cmd Command
+		if err := json.Unmarshal(sc.Bytes(), &cmd); err != nil {
+			slog.Warn("bad command", "raw", sc.Text(), "err", err)
+			continue
+		}
+		handle(cmd)
 	}
 }

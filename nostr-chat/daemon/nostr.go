@@ -80,13 +80,23 @@ func NewListener(keys Keys, relays []string) *Listener {
 // Run blocks until ctx is done, emitting unwrapped rumors on ch.
 // Pool.SubscribeMany handles per-relay reconnect internally; we only
 // loop here to recover from the channel closing entirely (all relays
-// dead at once). `since` is re-read from the store on each reconnect
-// so a drop after an hour doesn't re-fetch the whole hour.
+// dead at once) or when the suspend watchdog fires. `since` is re-read
+// from the store on each reconnect so a drop after an hour doesn't
+// re-fetch the whole hour.
 func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor) {
 	backoff := time.Second
 	for ctx.Err() == nil {
 		start := time.Now()
-		l.subscribeOnce(ctx, since(), ch)
+		// Cancel the subscription if we detect a suspend/resume: stale
+		// TCP sockets can survive a short sleep looking ESTABLISHED
+		// while the relay has long since timed us out. The pool's ping
+		// shares a goroutine with writes, so a zombie read socket goes
+		// unnoticed while publishes (which open fresh connections)
+		// still succeed. Force a full resubscribe.
+		subCtx, subCancel := context.WithCancel(ctx)
+		go watchSuspend(subCtx, func() { l.dropConnections(); subCancel() })
+		l.subscribeOnce(subCtx, since(), ch)
+		subCancel()
 		// A subscription that ran for a while was healthy — reset
 		// backoff so a brief blip doesn't leave us at 1-minute delays
 		// forever.
@@ -101,6 +111,41 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 		}
 		if backoff < time.Minute {
 			backoff *= 2
+		}
+	}
+}
+
+// dropConnections force-closes every pooled relay. EnsureRelay checks
+// IsConnected() before reuse, so the next subscribeOnce dials fresh
+// sockets instead of inheriting the zombie that triggered the watchdog.
+func (l *Listener) dropConnections() {
+	for _, r := range l.pool.Relays.Range {
+		if r != nil {
+			r.Close()
+		}
+	}
+}
+
+// watchSuspend calls cancel when wall-clock time jumps ahead of the
+// monotonic ticker — the signature of a suspend/resume. time.After
+// uses CLOCK_MONOTONIC, which pauses during suspend; time.Now().Unix()
+// reads CLOCK_REALTIME, which does not. A 30s tick that "took" 15
+// minutes of wall time means we slept for ~14.5min. time.Since() would
+// miss this because it subtracts monotonic readings.
+func watchSuspend(ctx context.Context, cancel func()) {
+	const tick = 30 * time.Second
+	for {
+		before := time.Now().Unix()
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(tick):
+		}
+		gap := time.Duration(time.Now().Unix()-before)*time.Second - tick
+		if gap > time.Minute {
+			slog.Info("time jump, resubscribing", "gap", gap.Round(time.Second))
+			cancel()
+			return
 		}
 	}
 }
