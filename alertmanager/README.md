@@ -14,7 +14,7 @@ Available in Settings → Plugins → Alertmanager:
 
 | Setting           | Default                   | Purpose                                  |
 | ----------------- | ------------------------- | ---------------------------------------- |
-| `alertmanagerUrl` | `http://alertmanager.r`   | Base URL of your Alertmanager instance   |
+| `alertmanagerUrl` | `http://localhost:9093`   | Base URL of your Alertmanager instance   |
 | `pollInterval`    | `30`                      | Seconds between `/api/v2/alerts` fetches |
 | `iconColor`       | `primary`                 | Bar icon color when everything is OK     |
 

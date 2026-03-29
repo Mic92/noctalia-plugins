@@ -27,7 +27,7 @@ ColumnLayout {
   NTextInput {
     Layout.fillWidth: true
     text: cfg.alertmanagerUrl ?? defaults.alertmanagerUrl
-    placeholderText: "http://alertmanager.r"
+    placeholderText: "http://localhost:9093"
     onEditingFinished: {
       cfg.alertmanagerUrl = text;
       pluginApi?.saveSettings();

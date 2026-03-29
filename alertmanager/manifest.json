@@ -18,7 +18,7 @@
   },
   "metadata": {
     "defaultSettings": {
-      "alertmanagerUrl": "http://alertmanager.r",
+      "alertmanagerUrl": "http://localhost:9093",
       "pollInterval": 30,
       "iconColor": "primary"
     }
