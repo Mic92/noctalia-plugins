@@ -13,23 +13,37 @@ Item {
   readonly property int alertCount: alertService?.alertCount ?? 0
   readonly property string fetchState: alertService?.fetchState ?? "idle"
 
-  // Group alerts by alertname for sectioned display
+  function severityRank(s) {
+    if (s === "critical") return 0;
+    if (s === "warning") return 1;
+    return 2;
+  }
+
+  // Group alerts by alertname for sectioned display.
+  // Each group carries its worst severity so the header can be colour-coded
+  // and the list sorted critical-first.
   readonly property var groupedAlerts: {
     var alerts = root.activeAlerts;
     var groups = {};
-    var order = [];
     for (var i = 0; i < alerts.length; i++) {
       var name = alerts[i].labels.alertname || "Unknown";
+      var sev = alerts[i].labels.severity || "warning";
       if (!groups[name]) {
-        groups[name] = [];
-        order.push(name);
+        groups[name] = { name: name, alerts: [], severity: sev };
       }
-      groups[name].push(alerts[i]);
+      groups[name].alerts.push(alerts[i]);
+      if (severityRank(sev) < severityRank(groups[name].severity)) {
+        groups[name].severity = sev;
+      }
     }
     var result = [];
-    for (var j = 0; j < order.length; j++) {
-      result.push({ name: order[j], alerts: groups[order[j]] });
-    }
+    for (var key in groups) result.push(groups[key]);
+    result.sort(function(a, b) {
+      var r = severityRank(a.severity) - severityRank(b.severity);
+      if (r !== 0) return r;
+      if (b.alerts.length !== a.alerts.length) return b.alerts.length - a.alerts.length;
+      return a.name.localeCompare(b.name);
+    });
     return result;
   }
 
@@ -128,7 +142,10 @@ Item {
           delegate: ColumnLayout {
             id: groupDelegate
 
-            property bool expanded: false
+            // Auto-expand critical groups and the sole group so urgent
+            // alerts are visible without an extra click.
+            property bool expanded: modelData.severity === "critical"
+              || root.groupedAlerts.length === 1
 
             Layout.fillWidth: true
             spacing: Style.marginXS
@@ -156,12 +173,31 @@ Item {
                   color: Color.mOnSurfaceVariant
                 }
 
+                // Severity dot — lets you triage without expanding.
+                Rectangle {
+                  implicitWidth: Style.fontSizeS * 0.7
+                  implicitHeight: implicitWidth
+                  radius: implicitWidth / 2
+                  color: {
+                    if (modelData.severity === "critical") return Color.mError;
+                    if (modelData.severity === "warning") return Color.mTertiary;
+                    return Color.mPrimary;
+                  }
+                }
+
                 NText {
-                  text: modelData.name + " (" + modelData.alerts.length + ")"
+                  text: modelData.name
                   font.bold: true
                   font.pixelSize: Style.fontSizeM
                   color: Color.mOnSurface
                   Layout.fillWidth: true
+                  elide: Text.ElideRight
+                }
+
+                NText {
+                  text: modelData.alerts.length.toString()
+                  font.pixelSize: Style.fontSizeS
+                  color: Color.mOnSurfaceVariant
                 }
               }
 
