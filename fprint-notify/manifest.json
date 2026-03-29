@@ -1,0 +1,22 @@
+{
+  "id": "fprint-notify",
+  "name": "Fingerprint Notify",
+  "version": "1.0.0",
+  "author": "Jörg Thalheim",
+  "official": false,
+  "license": "MIT",
+  "description": "Shows a toast when fprintd is waiting for a fingerprint (e.g. sudo)",
+  "tags": ["System", "Security"],
+  "entryPoints": {
+    "main": "Main.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "showSuccessToast": true,
+      "staleTimeoutSec": 30
+    }
+  }
+}
