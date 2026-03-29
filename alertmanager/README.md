@@ -8,6 +8,8 @@ The bar widget stays quiet (`iconColor`) when nothing's firing and goes red when
 there is — quick glance tells you if the world is on fire without having to open
 a dashboard.
 
+![alertmanager panel](https://github.com/Mic92/noctalia-plugins/releases/download/assets/alertmanager-screenshot.png)
+
 ## Settings
 
 Available in Settings → Plugins → Alertmanager:
