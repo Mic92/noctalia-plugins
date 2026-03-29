@@ -1,0 +1,18 @@
+{
+  "title-confirm": "Confirmação de chave SSH",
+  "title-prompt": "Frase secreta SSH",
+  "placeholder-passphrase": "Frase secreta",
+  "button-deny": "Negar",
+  "button-cancel": "Cancelar",
+  "button-allow": "Permitir",
+  "button-ok": "OK",
+  "settings": {
+    "title": "Configurações do SSH Askpass",
+    "confirm-method-label": "Método de confirmação",
+    "confirm-method-description": "Como aprovar confirmações de uso de chave do ssh-agent (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Clicar em Permitir / pressionar Enter",
+    "method-fingerprint": "Impressão digital (fprintd)",
+    "timeout-label": "Timeout de negação automática",
+    "timeout-description": "Negar automaticamente a solicitação se nenhuma decisão for tomada dentro deste tempo."
+  }
+}

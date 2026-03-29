@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "Czat",
+    "status-connected": "połączono",
+    "status-offline": "demon offline",
+    "search-tooltip": "Szukaj",
+    "search-placeholder": "Szukaj wiadomości…",
+    "new-messages": "{count} nowych",
+    "compose-placeholder": "Wiadomość do {name}…",
+    "compose-waiting": "Oczekiwanie na demona…",
+    "attach-image-tooltip": "Załącz obraz",
+    "attach-image-title": "Załącz obraz",
+    "time-now": "teraz"
+  },
+  "bubble": {
+    "reply-tooltip": "Odpowiedz",
+    "quote-missing": "↳ (wcześniejsza wiadomość)"
+  },
+  "settings": {
+    "nixos-hint": "Konfiguracja peera (pubkey, przekaźniki, nazwa wyświetlana) jest zarządzana przez moduł NixOS — zobacz services.nostr-chat w swojej konfiguracji.",
+    "history-limit-label": "Limit historii",
+    "history-limit-description": "Wiadomości przechowywane w odbiciu panelu w pamięci (SQLite zachowuje wszystko)."
+  }
+}

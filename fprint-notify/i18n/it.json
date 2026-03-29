@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Tocca il sensore di impronte",
+  "try-again": "Riprova",
+  "authenticated": "Autenticato",
+  "not-recognized": "Impronta non riconosciuta",
+  "settings": {
+    "title": "Impostazioni notifica impronte",
+    "show-success-label": "Mostra toast di successo",
+    "show-success-description": "Conferma brevemente quando un'impronta corrisponde. Disabilita per un funzionamento più silenzioso.",
+    "stale-timeout-label": "Timeout obsoleto",
+    "stale-timeout-description": "Chiudi il toast se fprintd non riporta mai un risultato (protegge da un client PAM bloccato)."
+  }
+}

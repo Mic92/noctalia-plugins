@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "Обновить",
+    "open-alertmanager": "Открыть Alertmanager",
+    "settings": "Настройки"
+  },
+  "panel": {
+    "header-error": "Ошибка получения оповещений",
+    "header-all-clear": "Всё в порядке — нет активных оповещений",
+    "header-active": "{count} активное оповещение",
+    "header-active-plural": "{count} активных оповещений",
+    "refresh": "Обновить",
+    "open-alertmanager": "Открыть Alertmanager",
+    "unknown-error": "Неизвестная ошибка",
+    "no-active-alerts": "✅ Нет активных оповещений"
+  },
+  "settings": {
+    "title": "Настройки Alertmanager",
+    "url-label": "URL Alertmanager",
+    "poll-interval-label": "Интервал опроса (секунды)",
+    "hide-when-zero-label": "Скрывать виджет при отсутствии оповещений",
+    "icon-color-label": "Цвет значка"
+  }
+}

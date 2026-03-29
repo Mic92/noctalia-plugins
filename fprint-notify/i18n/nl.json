@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Raak de vingerafdruksensor aan",
+  "try-again": "Opnieuw proberen",
+  "authenticated": "Geauthenticeerd",
+  "not-recognized": "Vingerafdruk niet herkend",
+  "settings": {
+    "title": "Vingerafdruknotificatie-instellingen",
+    "show-success-label": "Successtoast tonen",
+    "show-success-description": "Kort bevestigen wanneer een vingerafdruk overeenkomt. Schakel uit voor stillere werking.",
+    "stale-timeout-label": "Verlopen-timeout",
+    "stale-timeout-description": "Toast sluiten als fprintd nooit een resultaat meldt (bescherming tegen gecrashte PAM-client)."
+  }
+}

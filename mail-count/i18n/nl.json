@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "E-mail openen",
+    "refresh": "Vernieuwen",
+    "settings": "Instellingen"
+  },
+  "settings": {
+    "title": "Mailteller-instellingen",
+    "count-command-label": "Telcommando",
+    "count-command-description": "Shell-commando dat het aantal ongelezen berichten naar stdout schrijft.",
+    "click-command-label": "Klikcommando",
+    "click-command-description": "Commando dat wordt uitgevoerd bij klikken op de widget (bijv. je e-mailclient). Laat leeg om uit te schakelen.",
+    "poll-interval-label": "Poll-interval (seconden)",
+    "hide-when-zero-label": "Widget verbergen als de teller op nul staat",
+    "icon-color-label": "Pictogramkleur"
+  }
+}

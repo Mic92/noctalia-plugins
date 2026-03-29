@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "Otwórz pocztę",
+    "refresh": "Odśwież",
+    "settings": "Ustawienia"
+  },
+  "settings": {
+    "title": "Ustawienia licznika poczty",
+    "count-command-label": "Polecenie zliczania",
+    "count-command-description": "Polecenie powłoki wypisujące liczbę nieprzeczytanych wiadomości na stdout.",
+    "click-command-label": "Polecenie po kliknięciu",
+    "click-command-description": "Polecenie wykonywane po kliknięciu widżetu (np. twój klient poczty). Pozostaw puste, aby wyłączyć.",
+    "poll-interval-label": "Interwał odpytywania (sekundy)",
+    "hide-when-zero-label": "Ukryj widżet, gdy licznik wynosi zero",
+    "icon-color-label": "Kolor ikony"
+  }
+}

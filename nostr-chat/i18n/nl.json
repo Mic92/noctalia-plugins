@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "Chat",
+    "status-connected": "verbonden",
+    "status-offline": "daemon offline",
+    "search-tooltip": "Zoeken",
+    "search-placeholder": "Berichten doorzoeken…",
+    "new-messages": "{count} nieuw",
+    "compose-placeholder": "Bericht aan {name}…",
+    "compose-waiting": "Wachten op daemon…",
+    "attach-image-tooltip": "Afbeelding bijvoegen",
+    "attach-image-title": "Afbeelding bijvoegen",
+    "time-now": "nu"
+  },
+  "bubble": {
+    "reply-tooltip": "Beantwoorden",
+    "quote-missing": "↳ (eerder bericht)"
+  },
+  "settings": {
+    "nixos-hint": "Peer-configuratie (pubkey, relays, weergavenaam) wordt beheerd door de NixOS-module — zie services.nostr-chat in je configuratie.",
+    "history-limit-label": "Geschiedenislimiet",
+    "history-limit-description": "Berichten bijgehouden in het in-memory-spiegel van het paneel (SQLite bewaart alles)."
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Rozszerz w prawo",
+    "extend-left": "Rozszerz w lewo",
+    "external-only": "Tylko zewnętrzny",
+    "laptop-only": "Tylko laptop",
+    "preset": "Ustawienie: {name}",
+    "open-wdisplays": "Otwórz wdisplays",
+    "refresh": "Odśwież",
+    "settings": "Ustawienia"
+  },
+  "panel": {
+    "header-error": "Błąd zapytania o wyjścia",
+    "header-enabled": "{enabled}/{total} wyjście włączone",
+    "header-enabled-plural": "{enabled}/{total} wyjść włączonych",
+    "refresh": "Odśwież",
+    "open-wdisplays": "Otwórz wdisplays",
+    "reverting-in": "Przywracanie za {seconds}s",
+    "revert": "Przywróć",
+    "keep": "Zachowaj",
+    "unknown-error": "Nieznany błąd",
+    "mode": "Tryb",
+    "scale": "Skala",
+    "many-monitors-hint": "{count} monitorów — użyj wdisplays do rozmieszczenia, potem zapisz jako ustawienie",
+    "arrange": "Rozmieść",
+    "extend-right": "Rozszerz w prawo",
+    "extend-left": "Rozszerz w lewo",
+    "external-above": "Zewnętrzny powyżej",
+    "external-below": "Zewnętrzny poniżej",
+    "external-only": "Tylko zewnętrzny",
+    "laptop-only": "Tylko laptop",
+    "presets": "Ustawienia"
+  },
+  "settings": {
+    "title": "Ustawienia konfiguracji wyświetlacza",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (zalążek)",
+    "poll-interval-label": "Interwał odpytywania (sekundy)",
+    "icon-color-label": "Kolor ikony",
+    "presets-label": "Ustawienia ({count})",
+    "preset-name-placeholder": "Nazwa ustawienia",
+    "save-preset-tooltip": "Zapisz bieżący układ jako ustawienie",
+    "apply-preset-tooltip": "Zastosuj ustawienie",
+    "delete-preset-tooltip": "Usuń ustawienie"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "刷新",
+    "open-alertmanager": "打开 Alertmanager",
+    "settings": "设置"
+  },
+  "panel": {
+    "header-error": "获取告警时出错",
+    "header-all-clear": "一切正常 — 无活动告警",
+    "header-active": "{count} 个活动告警",
+    "header-active-plural": "{count} 个活动告警",
+    "refresh": "刷新",
+    "open-alertmanager": "打开 Alertmanager",
+    "unknown-error": "未知错误",
+    "no-active-alerts": "✅ 无活动告警"
+  },
+  "settings": {
+    "title": "Alertmanager 设置",
+    "url-label": "Alertmanager URL",
+    "poll-interval-label": "轮询间隔（秒）",
+    "hide-when-zero-label": "无告警时隐藏组件",
+    "icon-color-label": "图标颜色"
+  }
+}

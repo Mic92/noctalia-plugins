@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "指紋センサーに触れてください",
+  "try-again": "もう一度お試しください",
+  "authenticated": "認証されました",
+  "not-recognized": "指紋が認識されませんでした",
+  "settings": {
+    "title": "指紋通知設定",
+    "show-success-label": "成功トーストを表示",
+    "show-success-description": "指紋が一致したときに短く確認を表示します。静かな動作にしたい場合は無効にしてください。",
+    "stale-timeout-label": "タイムアウト",
+    "stale-timeout-description": "fprintd が結果を報告しない場合にトーストを閉じます（PAM クライアントのクラッシュ対策）。"
+  }
+}

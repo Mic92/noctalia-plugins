@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "Чат",
+    "status-connected": "подключено",
+    "status-offline": "демон офлайн",
+    "search-tooltip": "Поиск",
+    "search-placeholder": "Поиск сообщений…",
+    "new-messages": "{count} новых",
+    "compose-placeholder": "Сообщение для {name}…",
+    "compose-waiting": "Ожидание демона…",
+    "attach-image-tooltip": "Прикрепить изображение",
+    "attach-image-title": "Прикрепить изображение",
+    "time-now": "сейчас"
+  },
+  "bubble": {
+    "reply-tooltip": "Ответить",
+    "quote-missing": "↳ (более раннее сообщение)"
+  },
+  "settings": {
+    "nixos-hint": "Конфигурация собеседника (pubkey, релеи, отображаемое имя) управляется модулем NixOS — см. services.nostr-chat в вашей конфигурации.",
+    "history-limit-label": "Лимит истории",
+    "history-limit-description": "Сообщения, хранящиеся в зеркале панели в памяти (SQLite сохраняет всё)."
+  }
+}

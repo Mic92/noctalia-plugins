@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "打开邮件",
+    "refresh": "刷新",
+    "settings": "设置"
+  },
+  "settings": {
+    "title": "邮件计数设置",
+    "count-command-label": "计数命令",
+    "count-command-description": "将未读邮件数量输出到 stdout 的 shell 命令。",
+    "click-command-label": "点击命令",
+    "click-command-description": "点击组件时执行的命令（例如你的邮件客户端）。留空则禁用。",
+    "poll-interval-label": "轮询间隔（秒）",
+    "hide-when-zero-label": "计数为零时隐藏组件",
+    "icon-color-label": "图标颜色"
+  }
+}

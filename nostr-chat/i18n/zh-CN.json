@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "聊天",
+    "status-connected": "已连接",
+    "status-offline": "守护进程离线",
+    "search-tooltip": "搜索",
+    "search-placeholder": "搜索消息…",
+    "new-messages": "{count} 条新消息",
+    "compose-placeholder": "给 {name} 发消息…",
+    "compose-waiting": "等待守护进程…",
+    "attach-image-tooltip": "附加图片",
+    "attach-image-title": "附加图片",
+    "time-now": "刚刚"
+  },
+  "bubble": {
+    "reply-tooltip": "回复",
+    "quote-missing": "↳（更早的消息）"
+  },
+  "settings": {
+    "nixos-hint": "对端配置（公钥、中继、显示名称）由 NixOS 模块管理 — 请参阅配置中的 services.nostr-chat。",
+    "history-limit-label": "历史记录上限",
+    "history-limit-description": "面板内存镜像中保留的消息数（SQLite 会保留全部）。"
+  }
+}

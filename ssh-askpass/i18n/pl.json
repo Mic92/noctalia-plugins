@@ -1,0 +1,18 @@
+{
+  "title-confirm": "Potwierdzenie klucza SSH",
+  "title-prompt": "Hasło SSH",
+  "placeholder-passphrase": "Hasło",
+  "button-deny": "Odmów",
+  "button-cancel": "Anuluj",
+  "button-allow": "Zezwól",
+  "button-ok": "OK",
+  "settings": {
+    "title": "Ustawienia SSH Askpass",
+    "confirm-method-label": "Metoda potwierdzenia",
+    "confirm-method-description": "Jak zatwierdzać potwierdzenia użycia klucza ssh-agent (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Kliknij Zezwól / naciśnij Enter",
+    "method-fingerprint": "Odcisk palca (fprintd)",
+    "timeout-label": "Limit czasu automatycznej odmowy",
+    "timeout-description": "Automatycznie odmów żądania, jeśli decyzja nie zostanie podjęta w tym czasie."
+  }
+}

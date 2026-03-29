@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Pesquisar no Bitwarden (rbw)",
+  "loading": {
+    "name": "Carregando cofre…",
+    "description": "Executando rbw list"
+  },
+  "error": {
+    "name": "Erro do rbw",
+    "description": "{error} — ative para tentar novamente / desbloquear",
+    "unlock-failed": "rbw unlock falhou: {error}",
+    "command-failed": "Comando rbw falhou",
+    "list-failed": "rbw list falhou",
+    "wl-copy-failed": "wl-copy falhou",
+    "wtype-failed": "wtype falhou: {error}",
+    "already-running": "Ação já em andamento, ignorando"
+  },
+  "refresh": {
+    "name": "Atualizar cofre",
+    "description": "Reexecutar rbw list para buscar novas entradas"
+  },
+  "actions": {
+    "type-password": "Digitar senha",
+    "type-username": "Digitar nome de usuário",
+    "type-totp": "Digitar código TOTP",
+    "copy-password": "Copiar senha",
+    "copy-password-description": "Apenas para a área de transferência (sem auto-type)",
+    "back": "Voltar",
+    "back-description": "Voltar à pesquisa",
+    "no-username": "(nenhum)",
+    "no-username-warning": "Sem nome de usuário para {name}"
+  },
+  "labels": {
+    "password": "senha",
+    "username": "nome de usuário",
+    "totp": "código TOTP"
+  },
+  "toast": {
+    "copied": "{label} copiado para a área de transferência",
+    "typed": "{label} digitado"
+  },
+  "settings": {
+    "title": "Configurações do Bitwarden (rbw)",
+    "clear-after-label": "Limpar área de transferência após",
+    "clear-after-description": "Os segredos são copiados com wl-copy --sensitive e apagados após esse número de segundos."
+  }
+}

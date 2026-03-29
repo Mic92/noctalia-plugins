@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "搜索 Bitwarden (rbw)",
+  "loading": {
+    "name": "正在加载密码库…",
+    "description": "正在运行 rbw list"
+  },
+  "error": {
+    "name": "rbw 错误",
+    "description": "{error} — 选中以重试 / 解锁",
+    "unlock-failed": "rbw unlock 失败: {error}",
+    "command-failed": "rbw 命令失败",
+    "list-failed": "rbw list 失败",
+    "wl-copy-failed": "wl-copy 失败",
+    "wtype-failed": "wtype 失败: {error}",
+    "already-running": "操作已在运行，忽略"
+  },
+  "refresh": {
+    "name": "刷新密码库",
+    "description": "重新运行 rbw list 以获取新条目"
+  },
+  "actions": {
+    "type-password": "输入密码",
+    "type-username": "输入用户名",
+    "type-totp": "输入 TOTP 代码",
+    "copy-password": "复制密码",
+    "copy-password-description": "仅复制到剪贴板（不自动输入）",
+    "back": "返回",
+    "back-description": "返回搜索",
+    "no-username": "（无）",
+    "no-username-warning": "{name} 没有用户名"
+  },
+  "labels": {
+    "password": "密码",
+    "username": "用户名",
+    "totp": "TOTP 代码"
+  },
+  "toast": {
+    "copied": "已将{label}复制到剪贴板",
+    "typed": "已输入{label}"
+  },
+  "settings": {
+    "title": "Bitwarden (rbw) 设置",
+    "clear-after-label": "多久后清空剪贴板",
+    "clear-after-description": "机密信息通过 wl-copy --sensitive 复制，并在指定秒数后清除。"
+  }
+}

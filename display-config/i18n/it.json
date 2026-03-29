@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Estendi a destra",
+    "extend-left": "Estendi a sinistra",
+    "external-only": "Solo esterno",
+    "laptop-only": "Solo portatile",
+    "preset": "Preimpostazione: {name}",
+    "open-wdisplays": "Apri wdisplays",
+    "refresh": "Aggiorna",
+    "settings": "Impostazioni"
+  },
+  "panel": {
+    "header-error": "Errore nell'interrogazione delle uscite",
+    "header-enabled": "{enabled}/{total} uscita abilitata",
+    "header-enabled-plural": "{enabled}/{total} uscite abilitate",
+    "refresh": "Aggiorna",
+    "open-wdisplays": "Apri wdisplays",
+    "reverting-in": "Ripristino tra {seconds}s",
+    "revert": "Ripristina",
+    "keep": "Mantieni",
+    "unknown-error": "Errore sconosciuto",
+    "mode": "Modalità",
+    "scale": "Scala",
+    "many-monitors-hint": "{count} monitor — usa wdisplays per disporli, poi salva come preimpostazione",
+    "arrange": "Disponi",
+    "extend-right": "Estendi a destra",
+    "extend-left": "Estendi a sinistra",
+    "external-above": "Esterno sopra",
+    "external-below": "Esterno sotto",
+    "external-only": "Solo esterno",
+    "laptop-only": "Solo portatile",
+    "presets": "Preimpostazioni"
+  },
+  "settings": {
+    "title": "Impostazioni configurazione schermo",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (stub)",
+    "poll-interval-label": "Intervallo di polling (secondi)",
+    "icon-color-label": "Colore icona",
+    "presets-label": "Preimpostazioni ({count})",
+    "preset-name-placeholder": "Nome preimpostazione",
+    "save-preset-tooltip": "Salva il layout attuale come preimpostazione",
+    "apply-preset-tooltip": "Applica preimpostazione",
+    "delete-preset-tooltip": "Elimina preimpostazione"
+  }
+}

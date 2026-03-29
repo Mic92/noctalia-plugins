@@ -1,0 +1,18 @@
+{
+  "title-confirm": "SSH 密钥确认",
+  "title-prompt": "SSH 密码短语",
+  "placeholder-passphrase": "密码短语",
+  "button-deny": "拒绝",
+  "button-cancel": "取消",
+  "button-allow": "允许",
+  "button-ok": "确定",
+  "settings": {
+    "title": "SSH Askpass 设置",
+    "confirm-method-label": "确认方式",
+    "confirm-method-description": "如何批准 ssh-agent 密钥使用确认（SSH_ASKPASS_PROMPT=confirm）。",
+    "method-click": "点击允许 / 按回车",
+    "method-fingerprint": "指纹（fprintd）",
+    "timeout-label": "自动拒绝超时",
+    "timeout-description": "若在此时间内未做出决定，自动拒绝请求。"
+  }
+}

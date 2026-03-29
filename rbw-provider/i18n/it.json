@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Cerca in Bitwarden (rbw)",
+  "loading": {
+    "name": "Caricamento cassaforte…",
+    "description": "Esecuzione di rbw list"
+  },
+  "error": {
+    "name": "Errore rbw",
+    "description": "{error} — attiva per riprovare / sbloccare",
+    "unlock-failed": "rbw unlock fallito: {error}",
+    "command-failed": "Comando rbw fallito",
+    "list-failed": "rbw list fallito",
+    "wl-copy-failed": "wl-copy fallito",
+    "wtype-failed": "wtype fallito: {error}",
+    "already-running": "Azione già in corso, ignorata"
+  },
+  "refresh": {
+    "name": "Aggiorna cassaforte",
+    "description": "Riesegui rbw list per rilevare le nuove voci"
+  },
+  "actions": {
+    "type-password": "Digita password",
+    "type-username": "Digita nome utente",
+    "type-totp": "Digita codice TOTP",
+    "copy-password": "Copia password",
+    "copy-password-description": "Solo negli appunti (nessun auto-type)",
+    "back": "Indietro",
+    "back-description": "Torna alla ricerca",
+    "no-username": "(nessuno)",
+    "no-username-warning": "Nessun nome utente per {name}"
+  },
+  "labels": {
+    "password": "password",
+    "username": "nome utente",
+    "totp": "codice TOTP"
+  },
+  "toast": {
+    "copied": "{label} copiato negli appunti",
+    "typed": "{label} digitato"
+  },
+  "settings": {
+    "title": "Impostazioni Bitwarden (rbw)",
+    "clear-after-label": "Svuota appunti dopo",
+    "clear-after-description": "I segreti vengono copiati con wl-copy --sensitive e cancellati dopo questi secondi."
+  }
+}

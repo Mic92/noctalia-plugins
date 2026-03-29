@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Zoek in Bitwarden (rbw)",
+  "loading": {
+    "name": "Kluis laden…",
+    "description": "rbw list wordt uitgevoerd"
+  },
+  "error": {
+    "name": "rbw-fout",
+    "description": "{error} — activeer om opnieuw te proberen / te ontgrendelen",
+    "unlock-failed": "rbw unlock mislukt: {error}",
+    "command-failed": "rbw-commando mislukt",
+    "list-failed": "rbw list mislukt",
+    "wl-copy-failed": "wl-copy mislukt",
+    "wtype-failed": "wtype mislukt: {error}",
+    "already-running": "Actie wordt al uitgevoerd, wordt genegeerd"
+  },
+  "refresh": {
+    "name": "Kluis vernieuwen",
+    "description": "rbw list opnieuw uitvoeren om nieuwe items op te halen"
+  },
+  "actions": {
+    "type-password": "Wachtwoord typen",
+    "type-username": "Gebruikersnaam typen",
+    "type-totp": "TOTP-code typen",
+    "copy-password": "Wachtwoord kopiëren",
+    "copy-password-description": "Alleen naar klembord (geen auto-type)",
+    "back": "Terug",
+    "back-description": "Terug naar zoeken",
+    "no-username": "(geen)",
+    "no-username-warning": "Geen gebruikersnaam voor {name}"
+  },
+  "labels": {
+    "password": "wachtwoord",
+    "username": "gebruikersnaam",
+    "totp": "TOTP-code"
+  },
+  "toast": {
+    "copied": "{label} gekopieerd naar klembord",
+    "typed": "{label} getypt"
+  },
+  "settings": {
+    "title": "Bitwarden (rbw) instellingen",
+    "clear-after-label": "Klembord wissen na",
+    "clear-after-description": "Geheimen worden gekopieerd met wl-copy --sensitive en na dit aantal seconden gewist."
+  }
+}

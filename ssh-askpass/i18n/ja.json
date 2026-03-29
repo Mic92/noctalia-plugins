@@ -1,0 +1,18 @@
+{
+  "title-confirm": "SSH 鍵の確認",
+  "title-prompt": "SSH パスフレーズ",
+  "placeholder-passphrase": "パスフレーズ",
+  "button-deny": "拒否",
+  "button-cancel": "キャンセル",
+  "button-allow": "許可",
+  "button-ok": "OK",
+  "settings": {
+    "title": "SSH Askpass 設定",
+    "confirm-method-label": "確認方法",
+    "confirm-method-description": "ssh-agent の鍵使用確認を承認する方法（SSH_ASKPASS_PROMPT=confirm）。",
+    "method-click": "許可をクリック / Enter を押す",
+    "method-fingerprint": "指紋（fprintd）",
+    "timeout-label": "自動拒否タイムアウト",
+    "timeout-description": "この時間内に決定がなされない場合、リクエストを自動的に拒否します。"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Dotknij czytnika linii papilarnych",
+  "try-again": "Spróbuj ponownie",
+  "authenticated": "Uwierzytelniono",
+  "not-recognized": "Odcisk palca nie rozpoznany",
+  "settings": {
+    "title": "Ustawienia powiadomień o odciskach palców",
+    "show-success-label": "Pokaż powiadomienie o sukcesie",
+    "show-success-description": "Krótko potwierdź, gdy odcisk palca pasuje. Wyłącz dla cichszego działania.",
+    "stale-timeout-label": "Limit czasu bezczynności",
+    "stale-timeout-description": "Odrzuć powiadomienie, jeśli fprintd nigdy nie zgłosi wyniku (chroni przed zawieszonym klientem PAM)."
+  }
+}

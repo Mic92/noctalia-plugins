@@ -1,0 +1,18 @@
+{
+  "title-confirm": "Conferma chiave SSH",
+  "title-prompt": "Passphrase SSH",
+  "placeholder-passphrase": "Passphrase",
+  "button-deny": "Nega",
+  "button-cancel": "Annulla",
+  "button-allow": "Consenti",
+  "button-ok": "OK",
+  "settings": {
+    "title": "Impostazioni SSH Askpass",
+    "confirm-method-label": "Metodo di conferma",
+    "confirm-method-description": "Come approvare le conferme di utilizzo della chiave ssh-agent (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Clicca Consenti / premi Invio",
+    "method-fingerprint": "Impronta digitale (fprintd)",
+    "timeout-label": "Timeout rifiuto automatico",
+    "timeout-description": "Rifiuta automaticamente la richiesta se non viene presa una decisione entro questo tempo."
+  }
+}

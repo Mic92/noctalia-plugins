@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Расширить вправо",
+    "extend-left": "Расширить влево",
+    "external-only": "Только внешний",
+    "laptop-only": "Только ноутбук",
+    "preset": "Пресет: {name}",
+    "open-wdisplays": "Открыть wdisplays",
+    "refresh": "Обновить",
+    "settings": "Настройки"
+  },
+  "panel": {
+    "header-error": "Ошибка опроса выходов",
+    "header-enabled": "{enabled}/{total} выход включён",
+    "header-enabled-plural": "{enabled}/{total} выходов включено",
+    "refresh": "Обновить",
+    "open-wdisplays": "Открыть wdisplays",
+    "reverting-in": "Откат через {seconds}с",
+    "revert": "Откатить",
+    "keep": "Оставить",
+    "unknown-error": "Неизвестная ошибка",
+    "mode": "Режим",
+    "scale": "Масштаб",
+    "many-monitors-hint": "{count} мониторов — используйте wdisplays для расположения, затем сохраните как пресет",
+    "arrange": "Расположить",
+    "extend-right": "Расширить вправо",
+    "extend-left": "Расширить влево",
+    "external-above": "Внешний сверху",
+    "external-below": "Внешний снизу",
+    "external-only": "Только внешний",
+    "laptop-only": "Только ноутбук",
+    "presets": "Пресеты"
+  },
+  "settings": {
+    "title": "Настройки конфигурации дисплея",
+    "backend-label": "Бэкенд",
+    "backend-stub": "{name} (заглушка)",
+    "poll-interval-label": "Интервал опроса (секунды)",
+    "icon-color-label": "Цвет значка",
+    "presets-label": "Пресеты ({count})",
+    "preset-name-placeholder": "Имя пресета",
+    "save-preset-tooltip": "Сохранить текущую раскладку как пресет",
+    "apply-preset-tooltip": "Применить пресет",
+    "delete-preset-tooltip": "Удалить пресет"
+  }
+}

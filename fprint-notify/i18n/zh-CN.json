@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "请触摸指纹传感器",
+  "try-again": "请重试",
+  "authenticated": "已认证",
+  "not-recognized": "指纹未识别",
+  "settings": {
+    "title": "指纹通知设置",
+    "show-success-label": "显示成功通知",
+    "show-success-description": "指纹匹配时简短确认。如需更安静的操作请禁用。",
+    "stale-timeout-label": "过时超时",
+    "stale-timeout-description": "若 fprintd 一直不上报结果则关闭通知（防止 PAM 客户端崩溃后卡住）。"
+  }
+}

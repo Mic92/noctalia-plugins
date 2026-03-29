@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "Abrir e-mail",
+    "refresh": "Atualizar",
+    "settings": "Configurações"
+  },
+  "settings": {
+    "title": "Configurações do contador de e-mail",
+    "count-command-label": "Comando de contagem",
+    "count-command-description": "Comando shell que imprime o número de mensagens não lidas no stdout.",
+    "click-command-label": "Comando ao clicar",
+    "click-command-description": "Comando executado ao clicar no widget (ex.: seu cliente de e-mail). Deixe vazio para desativar.",
+    "poll-interval-label": "Intervalo de consulta (segundos)",
+    "hide-when-zero-label": "Ocultar widget quando a contagem for zero",
+    "icon-color-label": "Cor do ícone"
+  }
+}

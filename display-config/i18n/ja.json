@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "右に拡張",
+    "extend-left": "左に拡張",
+    "external-only": "外部のみ",
+    "laptop-only": "ノートPCのみ",
+    "preset": "プリセット: {name}",
+    "open-wdisplays": "wdisplays を開く",
+    "refresh": "更新",
+    "settings": "設定"
+  },
+  "panel": {
+    "header-error": "出力の照会中にエラーが発生しました",
+    "header-enabled": "{enabled}/{total} 出力が有効",
+    "header-enabled-plural": "{enabled}/{total} 出力が有効",
+    "refresh": "更新",
+    "open-wdisplays": "wdisplays を開く",
+    "reverting-in": "{seconds}秒後に元に戻します",
+    "revert": "元に戻す",
+    "keep": "保持",
+    "unknown-error": "不明なエラー",
+    "mode": "モード",
+    "scale": "スケール",
+    "many-monitors-hint": "{count} 台のモニター — wdisplays で配置してからプリセットとして保存してください",
+    "arrange": "配置",
+    "extend-right": "右に拡張",
+    "extend-left": "左に拡張",
+    "external-above": "外部を上に",
+    "external-below": "外部を下に",
+    "external-only": "外部のみ",
+    "laptop-only": "ノートPCのみ",
+    "presets": "プリセット"
+  },
+  "settings": {
+    "title": "ディスプレイ設定",
+    "backend-label": "バックエンド",
+    "backend-stub": "{name}（スタブ）",
+    "poll-interval-label": "ポーリング間隔（秒）",
+    "icon-color-label": "アイコンの色",
+    "presets-label": "プリセット（{count}）",
+    "preset-name-placeholder": "プリセット名",
+    "save-preset-tooltip": "現在のレイアウトをプリセットとして保存",
+    "apply-preset-tooltip": "プリセットを適用",
+    "delete-preset-tooltip": "プリセットを削除"
+  }
+}

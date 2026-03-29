@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Toque no sensor de impressão digital",
+  "try-again": "Tente novamente",
+  "authenticated": "Autenticado",
+  "not-recognized": "Impressão digital não reconhecida",
+  "settings": {
+    "title": "Configurações de notificação de impressão digital",
+    "show-success-label": "Mostrar notificação de sucesso",
+    "show-success-description": "Confirmar brevemente quando uma impressão digital corresponder. Desative para operação mais silenciosa.",
+    "stale-timeout-label": "Timeout obsoleto",
+    "stale-timeout-description": "Descartar a notificação se o fprintd nunca reportar um resultado (protege contra cliente PAM travado)."
+  }
+}

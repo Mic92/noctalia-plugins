@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "チャット",
+    "status-connected": "接続済み",
+    "status-offline": "デーモンがオフライン",
+    "search-tooltip": "検索",
+    "search-placeholder": "メッセージを検索…",
+    "new-messages": "{count} 件の新着",
+    "compose-placeholder": "{name} にメッセージ…",
+    "compose-waiting": "デーモンを待機中…",
+    "attach-image-tooltip": "画像を添付",
+    "attach-image-title": "画像を添付",
+    "time-now": "今"
+  },
+  "bubble": {
+    "reply-tooltip": "返信",
+    "quote-missing": "↳（以前のメッセージ）"
+  },
+  "settings": {
+    "nixos-hint": "ピア設定（公開鍵、リレー、表示名）は NixOS モジュールで管理されています — 設定の services.nostr-chat を参照してください。",
+    "history-limit-label": "履歴の上限",
+    "history-limit-description": "パネルのメモリ内ミラーに保持されるメッセージ数（SQLite はすべて保持します）。"
+  }
+}

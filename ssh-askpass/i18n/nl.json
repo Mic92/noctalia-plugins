@@ -1,0 +1,18 @@
+{
+  "title-confirm": "SSH-sleutelbevestiging",
+  "title-prompt": "SSH-wachtwoordzin",
+  "placeholder-passphrase": "Wachtwoordzin",
+  "button-deny": "Weigeren",
+  "button-cancel": "Annuleren",
+  "button-allow": "Toestaan",
+  "button-ok": "OK",
+  "settings": {
+    "title": "SSH Askpass-instellingen",
+    "confirm-method-label": "Bevestigingsmethode",
+    "confirm-method-description": "Hoe sleutelgebruik-bevestigingen van ssh-agent goed te keuren (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Klik op Toestaan / druk op Enter",
+    "method-fingerprint": "Vingerafdruk (fprintd)",
+    "timeout-label": "Timeout voor automatisch weigeren",
+    "timeout-description": "Verzoek automatisch weigeren als binnen deze tijd geen beslissing wordt genomen."
+  }
+}

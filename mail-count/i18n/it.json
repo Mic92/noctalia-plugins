@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "Apri posta",
+    "refresh": "Aggiorna",
+    "settings": "Impostazioni"
+  },
+  "settings": {
+    "title": "Impostazioni contatore posta",
+    "count-command-label": "Comando conteggio",
+    "count-command-description": "Comando shell che stampa il numero di messaggi non letti su stdout.",
+    "click-command-label": "Comando al clic",
+    "click-command-description": "Comando eseguito al clic sul widget (es. il tuo client di posta). Lascia vuoto per disabilitare.",
+    "poll-interval-label": "Intervallo di polling (secondi)",
+    "hide-when-zero-label": "Nascondi widget quando il conteggio è zero",
+    "icon-color-label": "Colore icona"
+  }
+}

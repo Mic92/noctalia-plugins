@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "Odśwież",
+    "open-alertmanager": "Otwórz Alertmanager",
+    "settings": "Ustawienia"
+  },
+  "panel": {
+    "header-error": "Błąd pobierania alertów",
+    "header-all-clear": "Wszystko w porządku — brak aktywnych alertów",
+    "header-active": "{count} aktywny alert",
+    "header-active-plural": "{count} aktywnych alertów",
+    "refresh": "Odśwież",
+    "open-alertmanager": "Otwórz Alertmanager",
+    "unknown-error": "Nieznany błąd",
+    "no-active-alerts": "✅ Brak aktywnych alertów"
+  },
+  "settings": {
+    "title": "Ustawienia Alertmanagera",
+    "url-label": "URL Alertmanagera",
+    "poll-interval-label": "Interwał odpytywania (sekundy)",
+    "hide-when-zero-label": "Ukryj widżet, gdy brak alertów",
+    "icon-color-label": "Kolor ikony"
+  }
+}

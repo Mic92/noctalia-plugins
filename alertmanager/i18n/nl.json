@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "Vernieuwen",
+    "open-alertmanager": "Alertmanager openen",
+    "settings": "Instellingen"
+  },
+  "panel": {
+    "header-error": "Fout bij ophalen van meldingen",
+    "header-all-clear": "Alles in orde — geen actieve meldingen",
+    "header-active": "{count} actieve melding",
+    "header-active-plural": "{count} actieve meldingen",
+    "refresh": "Vernieuwen",
+    "open-alertmanager": "Alertmanager openen",
+    "unknown-error": "Onbekende fout",
+    "no-active-alerts": "✅ Geen actieve meldingen"
+  },
+  "settings": {
+    "title": "Alertmanager-instellingen",
+    "url-label": "Alertmanager-URL",
+    "poll-interval-label": "Poll-interval (seconden)",
+    "hide-when-zero-label": "Widget verbergen als er geen meldingen zijn",
+    "icon-color-label": "Pictogramkleur"
+  }
+}

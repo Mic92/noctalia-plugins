@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "Aggiorna",
+    "open-alertmanager": "Apri Alertmanager",
+    "settings": "Impostazioni"
+  },
+  "panel": {
+    "header-error": "Errore nel recupero degli avvisi",
+    "header-all-clear": "Tutto a posto — nessun avviso attivo",
+    "header-active": "{count} avviso attivo",
+    "header-active-plural": "{count} avvisi attivi",
+    "refresh": "Aggiorna",
+    "open-alertmanager": "Apri Alertmanager",
+    "unknown-error": "Errore sconosciuto",
+    "no-active-alerts": "✅ Nessun avviso attivo"
+  },
+  "settings": {
+    "title": "Impostazioni Alertmanager",
+    "url-label": "URL Alertmanager",
+    "poll-interval-label": "Intervallo di polling (secondi)",
+    "hide-when-zero-label": "Nascondi widget quando non ci sono avvisi",
+    "icon-color-label": "Colore icona"
+  }
+}

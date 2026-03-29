@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Uitbreiden naar rechts",
+    "extend-left": "Uitbreiden naar links",
+    "external-only": "Alleen extern",
+    "laptop-only": "Alleen laptop",
+    "preset": "Voorinstelling: {name}",
+    "open-wdisplays": "wdisplays openen",
+    "refresh": "Vernieuwen",
+    "settings": "Instellingen"
+  },
+  "panel": {
+    "header-error": "Fout bij opvragen van uitgangen",
+    "header-enabled": "{enabled}/{total} uitgang ingeschakeld",
+    "header-enabled-plural": "{enabled}/{total} uitgangen ingeschakeld",
+    "refresh": "Vernieuwen",
+    "open-wdisplays": "wdisplays openen",
+    "reverting-in": "Terugdraaien over {seconds}s",
+    "revert": "Terugdraaien",
+    "keep": "Behouden",
+    "unknown-error": "Onbekende fout",
+    "mode": "Modus",
+    "scale": "Schaal",
+    "many-monitors-hint": "{count} schermen — gebruik wdisplays om te rangschikken en sla dan op als voorinstelling",
+    "arrange": "Rangschikken",
+    "extend-right": "Uitbreiden naar rechts",
+    "extend-left": "Uitbreiden naar links",
+    "external-above": "Extern boven",
+    "external-below": "Extern onder",
+    "external-only": "Alleen extern",
+    "laptop-only": "Alleen laptop",
+    "presets": "Voorinstellingen"
+  },
+  "settings": {
+    "title": "Schermconfiguratie-instellingen",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (stub)",
+    "poll-interval-label": "Poll-interval (seconden)",
+    "icon-color-label": "Pictogramkleur",
+    "presets-label": "Voorinstellingen ({count})",
+    "preset-name-placeholder": "Naam voorinstelling",
+    "save-preset-tooltip": "Huidige indeling opslaan als voorinstelling",
+    "apply-preset-tooltip": "Voorinstelling toepassen",
+    "delete-preset-tooltip": "Voorinstelling verwijderen"
+  }
+}

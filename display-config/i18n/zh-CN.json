@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "向右扩展",
+    "extend-left": "向左扩展",
+    "external-only": "仅外部",
+    "laptop-only": "仅笔记本",
+    "preset": "预设: {name}",
+    "open-wdisplays": "打开 wdisplays",
+    "refresh": "刷新",
+    "settings": "设置"
+  },
+  "panel": {
+    "header-error": "查询输出时出错",
+    "header-enabled": "已启用 {enabled}/{total} 个输出",
+    "header-enabled-plural": "已启用 {enabled}/{total} 个输出",
+    "refresh": "刷新",
+    "open-wdisplays": "打开 wdisplays",
+    "reverting-in": "{seconds} 秒后还原",
+    "revert": "还原",
+    "keep": "保留",
+    "unknown-error": "未知错误",
+    "mode": "模式",
+    "scale": "缩放",
+    "many-monitors-hint": "{count} 个显示器 — 使用 wdisplays 排列后保存为预设",
+    "arrange": "排列",
+    "extend-right": "向右扩展",
+    "extend-left": "向左扩展",
+    "external-above": "外部在上",
+    "external-below": "外部在下",
+    "external-only": "仅外部",
+    "laptop-only": "仅笔记本",
+    "presets": "预设"
+  },
+  "settings": {
+    "title": "显示配置设置",
+    "backend-label": "后端",
+    "backend-stub": "{name}（占位）",
+    "poll-interval-label": "轮询间隔（秒）",
+    "icon-color-label": "图标颜色",
+    "presets-label": "预设（{count}）",
+    "preset-name-placeholder": "预设名称",
+    "save-preset-tooltip": "将当前布局保存为预设",
+    "apply-preset-tooltip": "应用预设",
+    "delete-preset-tooltip": "删除预设"
+  }
+}

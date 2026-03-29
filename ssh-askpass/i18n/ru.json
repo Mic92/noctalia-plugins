@@ -1,0 +1,18 @@
+{
+  "title-confirm": "Подтверждение SSH-ключа",
+  "title-prompt": "Парольная фраза SSH",
+  "placeholder-passphrase": "Парольная фраза",
+  "button-deny": "Отклонить",
+  "button-cancel": "Отмена",
+  "button-allow": "Разрешить",
+  "button-ok": "OK",
+  "settings": {
+    "title": "Настройки SSH Askpass",
+    "confirm-method-label": "Метод подтверждения",
+    "confirm-method-description": "Как одобрять подтверждения использования ключа ssh-agent (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Нажать Разрешить / клавишу Enter",
+    "method-fingerprint": "Отпечаток пальца (fprintd)",
+    "timeout-label": "Таймаут автоотклонения",
+    "timeout-description": "Автоматически отклонять запрос, если решение не принято за это время."
+  }
+}

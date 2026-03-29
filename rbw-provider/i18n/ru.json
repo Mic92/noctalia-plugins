@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Поиск в Bitwarden (rbw)",
+  "loading": {
+    "name": "Загрузка хранилища…",
+    "description": "Выполнение rbw list"
+  },
+  "error": {
+    "name": "Ошибка rbw",
+    "description": "{error} — активируйте для повтора / разблокировки",
+    "unlock-failed": "Сбой rbw unlock: {error}",
+    "command-failed": "Сбой команды rbw",
+    "list-failed": "Сбой rbw list",
+    "wl-copy-failed": "Сбой wl-copy",
+    "wtype-failed": "Сбой wtype: {error}",
+    "already-running": "Действие уже выполняется, игнорируется"
+  },
+  "refresh": {
+    "name": "Обновить хранилище",
+    "description": "Перезапустить rbw list для получения новых записей"
+  },
+  "actions": {
+    "type-password": "Ввести пароль",
+    "type-username": "Ввести имя пользователя",
+    "type-totp": "Ввести код TOTP",
+    "copy-password": "Копировать пароль",
+    "copy-password-description": "Только в буфер обмена (без автоввода)",
+    "back": "Назад",
+    "back-description": "Вернуться к поиску",
+    "no-username": "(нет)",
+    "no-username-warning": "Нет имени пользователя для {name}"
+  },
+  "labels": {
+    "password": "пароль",
+    "username": "имя пользователя",
+    "totp": "код TOTP"
+  },
+  "toast": {
+    "copied": "{label} скопирован в буфер обмена",
+    "typed": "{label} введён"
+  },
+  "settings": {
+    "title": "Настройки Bitwarden (rbw)",
+    "clear-after-label": "Очистить буфер обмена через",
+    "clear-after-description": "Секреты копируются с wl-copy --sensitive и стираются через указанное число секунд."
+  }
+}

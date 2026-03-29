@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Szukaj w Bitwarden (rbw)",
+  "loading": {
+    "name": "Ładowanie sejfu…",
+    "description": "Uruchamianie rbw list"
+  },
+  "error": {
+    "name": "Błąd rbw",
+    "description": "{error} — aktywuj, aby ponowić / odblokować",
+    "unlock-failed": "rbw unlock nie powiodło się: {error}",
+    "command-failed": "Polecenie rbw nie powiodło się",
+    "list-failed": "rbw list nie powiodło się",
+    "wl-copy-failed": "wl-copy nie powiodło się",
+    "wtype-failed": "wtype nie powiodło się: {error}",
+    "already-running": "Akcja już trwa, ignorowanie"
+  },
+  "refresh": {
+    "name": "Odśwież sejf",
+    "description": "Uruchom ponownie rbw list, aby pobrać nowe wpisy"
+  },
+  "actions": {
+    "type-password": "Wpisz hasło",
+    "type-username": "Wpisz nazwę użytkownika",
+    "type-totp": "Wpisz kod TOTP",
+    "copy-password": "Kopiuj hasło",
+    "copy-password-description": "Tylko do schowka (bez auto-type)",
+    "back": "Wstecz",
+    "back-description": "Powrót do wyszukiwania",
+    "no-username": "(brak)",
+    "no-username-warning": "Brak nazwy użytkownika dla {name}"
+  },
+  "labels": {
+    "password": "hasło",
+    "username": "nazwa użytkownika",
+    "totp": "kod TOTP"
+  },
+  "toast": {
+    "copied": "Skopiowano {label} do schowka",
+    "typed": "Wpisano {label}"
+  },
+  "settings": {
+    "title": "Ustawienia Bitwarden (rbw)",
+    "clear-after-label": "Wyczyść schowek po",
+    "clear-after-description": "Sekrety są kopiowane z wl-copy --sensitive i usuwane po tylu sekundach."
+  }
+}

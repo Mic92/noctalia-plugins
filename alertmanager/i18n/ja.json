@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "更新",
+    "open-alertmanager": "Alertmanager を開く",
+    "settings": "設定"
+  },
+  "panel": {
+    "header-error": "アラートの取得中にエラーが発生しました",
+    "header-all-clear": "問題なし — アクティブなアラートはありません",
+    "header-active": "{count} 件のアクティブなアラート",
+    "header-active-plural": "{count} 件のアクティブなアラート",
+    "refresh": "更新",
+    "open-alertmanager": "Alertmanager を開く",
+    "unknown-error": "不明なエラー",
+    "no-active-alerts": "✅ アクティブなアラートはありません"
+  },
+  "settings": {
+    "title": "Alertmanager 設定",
+    "url-label": "Alertmanager URL",
+    "poll-interval-label": "ポーリング間隔（秒）",
+    "hide-when-zero-label": "アラートがない場合はウィジェットを非表示",
+    "icon-color-label": "アイコンの色"
+  }
+}

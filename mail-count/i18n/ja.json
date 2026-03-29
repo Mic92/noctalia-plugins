@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "メールを開く",
+    "refresh": "更新",
+    "settings": "設定"
+  },
+  "settings": {
+    "title": "メールカウント設定",
+    "count-command-label": "カウントコマンド",
+    "count-command-description": "未読メッセージ数を stdout に出力するシェルコマンド。",
+    "click-command-label": "クリックコマンド",
+    "click-command-description": "ウィジェットをクリックしたときに実行されるコマンド（例: メールクライアント）。無効にするには空にします。",
+    "poll-interval-label": "ポーリング間隔（秒）",
+    "hide-when-zero-label": "カウントがゼロのときウィジェットを非表示",
+    "icon-color-label": "アイコンの色"
+  }
+}

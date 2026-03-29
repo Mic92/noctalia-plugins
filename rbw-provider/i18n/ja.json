@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Bitwarden を検索 (rbw)",
+  "loading": {
+    "name": "ボールトを読み込み中…",
+    "description": "rbw list を実行中"
+  },
+  "error": {
+    "name": "rbw エラー",
+    "description": "{error} — 選択して再試行 / ロック解除",
+    "unlock-failed": "rbw unlock に失敗: {error}",
+    "command-failed": "rbw コマンドに失敗",
+    "list-failed": "rbw list に失敗",
+    "wl-copy-failed": "wl-copy に失敗",
+    "wtype-failed": "wtype に失敗: {error}",
+    "already-running": "アクションはすでに実行中のため無視します"
+  },
+  "refresh": {
+    "name": "ボールトを更新",
+    "description": "rbw list を再実行して新しいエントリを取得"
+  },
+  "actions": {
+    "type-password": "パスワードを入力",
+    "type-username": "ユーザー名を入力",
+    "type-totp": "TOTP コードを入力",
+    "copy-password": "パスワードをコピー",
+    "copy-password-description": "クリップボードのみ（自動入力なし）",
+    "back": "戻る",
+    "back-description": "検索に戻る",
+    "no-username": "（なし）",
+    "no-username-warning": "{name} のユーザー名がありません"
+  },
+  "labels": {
+    "password": "パスワード",
+    "username": "ユーザー名",
+    "totp": "TOTP コード"
+  },
+  "toast": {
+    "copied": "{label}をクリップボードにコピーしました",
+    "typed": "{label}を入力しました"
+  },
+  "settings": {
+    "title": "Bitwarden (rbw) 設定",
+    "clear-after-label": "クリップボードを消去するまでの時間",
+    "clear-after-description": "シークレットは wl-copy --sensitive でコピーされ、指定秒数後に消去されます。"
+  }
+}

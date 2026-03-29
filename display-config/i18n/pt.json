@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Estender à direita",
+    "extend-left": "Estender à esquerda",
+    "external-only": "Apenas externo",
+    "laptop-only": "Apenas portátil",
+    "preset": "Predefinição: {name}",
+    "open-wdisplays": "Abrir wdisplays",
+    "refresh": "Atualizar",
+    "settings": "Configurações"
+  },
+  "panel": {
+    "header-error": "Erro ao consultar saídas",
+    "header-enabled": "{enabled}/{total} saída ativada",
+    "header-enabled-plural": "{enabled}/{total} saídas ativadas",
+    "refresh": "Atualizar",
+    "open-wdisplays": "Abrir wdisplays",
+    "reverting-in": "Revertendo em {seconds}s",
+    "revert": "Reverter",
+    "keep": "Manter",
+    "unknown-error": "Erro desconhecido",
+    "mode": "Modo",
+    "scale": "Escala",
+    "many-monitors-hint": "{count} monitores — use o wdisplays para organizar e depois salve como predefinição",
+    "arrange": "Organizar",
+    "extend-right": "Estender à direita",
+    "extend-left": "Estender à esquerda",
+    "external-above": "Externo acima",
+    "external-below": "Externo abaixo",
+    "external-only": "Apenas externo",
+    "laptop-only": "Apenas portátil",
+    "presets": "Predefinições"
+  },
+  "settings": {
+    "title": "Configurações de exibição",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (stub)",
+    "poll-interval-label": "Intervalo de consulta (segundos)",
+    "icon-color-label": "Cor do ícone",
+    "presets-label": "Predefinições ({count})",
+    "preset-name-placeholder": "Nome da predefinição",
+    "save-preset-tooltip": "Salvar layout atual como predefinição",
+    "apply-preset-tooltip": "Aplicar predefinição",
+    "delete-preset-tooltip": "Excluir predefinição"
+  }
+}
