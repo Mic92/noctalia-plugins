@@ -1,0 +1,27 @@
+{
+  "id": "mail-count",
+  "name": "Mail Count",
+  "version": "1.0.0",
+  "author": "Jörg Thalheim",
+  "official": false,
+  "license": "MIT",
+  "description": "Shows unread mail count in the bar using a configurable shell command",
+  "tags": ["Bar", "System"],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "countCommand": "notmuch count tag:unread and tag:inbox",
+      "clickCommand": "xdg-open mailto:",
+      "pollInterval": 60,
+      "hideWhenZero": false,
+      "iconColor": "primary"
+    }
+  }
+}

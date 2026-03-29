@@ -1,0 +1,10 @@
+{
+  "widget": {
+    "tooltip": "Unread mail"
+  },
+  "menu": {
+    "open": "Open mail",
+    "refresh": "Refresh",
+    "settings": "Settings"
+  }
+}
