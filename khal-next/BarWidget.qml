@@ -50,6 +50,16 @@ Item {
   readonly property bool imminent: nextEvent && !nextEvent.allDay &&
                                    minutesUntil > 0 && minutesUntil <= imminentMinutes
 
+  // User-pinned reveal. Click toggles this; the pill stays expanded until
+  // clicked again or the current nextEvent changes (so you don't pin
+  // yesterday's meeting forever).
+  property bool pinned: false
+  property var pinnedEvent: null
+
+  onNextEventChanged: {
+    if (pinned && pinnedEvent !== nextEvent) pinned = false;
+  }
+
   function fmtCountdown(mins) {
     if (mins < 60) return mins + "m";
     var h = Math.floor(mins / 60);
@@ -99,17 +109,24 @@ Item {
     oppositeDirection: BarService.getPillDirection(root)
     icon: root.currentIcon
     text: root.pillText
-    // Expand the pill when something's close / running so you actually notice.
-    forceOpen: root.imminent || root.inProgress
+    tooltipText: root.nextEvent ? root.pillText : ""
+    // Collapsed by default; hover reveals, click pins. Imminent / in-progress
+    // still force it open so you can't miss those.
     autoHide: true
+    forceOpen: root.pinned || root.imminent || root.inProgress
     customTextIconColor: root.iconColor
 
     onClicked: {
-      if (pluginApi) pluginApi.openPanel(root.screen, root);
+      root.pinned = !root.pinned;
+      if (root.pinned) root.pinnedEvent = root.nextEvent;
     }
 
-    // Middle-click: jump straight into the meeting if the location is a URL.
-    onMiddleClicked: root.openLocation()
+    // Middle-click: agenda panel. Join moved to context menu / IPC only,
+    // since accidental middle-clicks into a meeting are worse than an
+    // extra right-click.
+    onMiddleClicked: {
+      if (pluginApi) pluginApi.openPanel(root.screen, root);
+    }
 
     onRightClicked: PanelService.showContextMenu(contextMenu, root, screen)
   }
@@ -127,6 +144,7 @@ Item {
       var m = [];
       if (root.nextEvent && root.nextEvent.location)
         m.push({ label: pluginApi?.tr("menu.join") ?? "Join", action: "join", icon: "external-link" });
+      m.push({ label: pluginApi?.tr("menu.agenda") ?? "Agenda", action: "agenda", icon: "calendar" });
       m.push({ label: pluginApi?.tr("menu.refresh") ?? "Refresh", action: "refresh", icon: "refresh" });
       m.push({ label: pluginApi?.tr("menu.settings") ?? "Settings", action: "settings", icon: "settings" });
       return m;
@@ -136,6 +154,7 @@ Item {
       contextMenu.close();
       PanelService.closeContextMenu(screen);
       if (action === "join") root.openLocation();
+      else if (action === "agenda") pluginApi?.openPanel(root.screen, root);
       else if (action === "refresh") calService?.refresh();
       else if (action === "settings") BarService.openPluginSettings(root.screen, pluginApi.manifest);
     }
