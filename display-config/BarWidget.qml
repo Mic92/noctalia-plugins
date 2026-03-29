@@ -19,6 +19,10 @@ Item {
   property var cfg: pluginApi?.pluginSettings || ({})
   property var defaults: pluginApi?.manifest?.metadata?.defaultSettings || ({})
 
+  function tr(key, args) {
+    return pluginApi?.tr(key, args) ?? key;
+  }
+
   readonly property string iconColorKey: cfg.iconColor ?? defaults.iconColor
   readonly property int enabledCount: displayService?.enabledCount ?? 0
   readonly property int outputCount: displayService?.outputCount ?? 0
@@ -79,22 +83,22 @@ Item {
       var m = [];
       if (root.outputCount === 2) {
         m.push({
-                 "label": "Extend right",
+                 "label": root.tr("menu.extend-right"),
                  "action": "arrange:extend-right",
                  "icon": "arrow-bar-right"
                });
         m.push({
-                 "label": "Extend left",
+                 "label": root.tr("menu.extend-left"),
                  "action": "arrange:extend-left",
                  "icon": "arrow-bar-left"
                });
         m.push({
-                 "label": "External only",
+                 "label": root.tr("menu.external-only"),
                  "action": "arrange:external-only",
                  "icon": "device-desktop"
                });
         m.push({
-                 "label": "Laptop only",
+                 "label": root.tr("menu.laptop-only"),
                  "action": "arrange:internal-only",
                  "icon": "device-laptop"
                });
@@ -102,23 +106,23 @@ Item {
       var presets = cfg.presets || [];
       for (var i = 0; i < presets.length; i++) {
         m.push({
-                 "label": "Preset: " + presets[i].name,
+                 "label": root.tr("menu.preset", { name: presets[i].name }),
                  "action": "preset:" + presets[i].name,
                  "icon": "layout"
                });
       }
       m.push({
-               "label": "Open wdisplays",
+               "label": root.tr("menu.open-wdisplays"),
                "action": "wdisplays",
                "icon": "external-link"
              });
       m.push({
-               "label": "Refresh",
+               "label": root.tr("menu.refresh"),
                "action": "refresh",
                "icon": "refresh"
              });
       m.push({
-               "label": "Settings",
+               "label": root.tr("menu.settings"),
                "action": "settings",
                "icon": "settings"
              });

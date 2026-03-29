@@ -22,6 +22,10 @@ Item {
   property bool verifyInProgress: false
   property string lastResult: ""
 
+  function tr(key) {
+    return pluginApi?.tr(key) ?? key;
+  }
+
   function cfg(key) {
     var s = pluginApi?.pluginSettings || {};
     var d = pluginApi?.manifest?.metadata?.defaultSettings || {};
@@ -92,7 +96,7 @@ Item {
     Logger.i("FprintNotify", "Verify started:", finger);
 
     ToastService.showNotice(
-      "Touch fingerprint sensor",
+      tr("touch-sensor"),
       _prettyFinger(finger),
       "fingerprint",
       // Long duration: we dismiss explicitly on VerifyStatus. This only
@@ -107,7 +111,7 @@ Item {
 
     if (!done) {
       // Retryable intermediate: swipe too short, finger not centered, etc.
-      ToastService.showWarning(_prettyResult(result), "Try again");
+      ToastService.showWarning(_prettyResult(result), tr("try-again"));
       staleTimer.restart();
       return;
     }
@@ -118,9 +122,9 @@ Item {
 
     if (result === "verify-match") {
       if (cfg("showSuccessToast"))
-        ToastService.showNotice("Authenticated", "", "fingerprint", 1500);
+        ToastService.showNotice(tr("authenticated"), "", "fingerprint", 1500);
     } else if (result === "verify-no-match") {
-      ToastService.showError("Fingerprint not recognized");
+      ToastService.showError(tr("not-recognized"));
     }
     // verify-disconnected / verify-unknown-error: stay quiet, the PAM
     // conversation will surface its own error in the terminal.

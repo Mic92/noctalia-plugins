@@ -23,6 +23,8 @@ Item {
   property string quotedText: ""
   // ago() depends on Panel's ticking clock, so it's injected.
   property var ago: ts => ""
+  // Injected by Panel so the delegate doesn't need pluginApi
+  property var tr: k => k
 
   // ── out ──────────────────────────────────────────────────────────
   signal replyRequested
@@ -43,7 +45,7 @@ Item {
   // selectByMouse.
   NIconButton {
     icon: "corner-down-right"
-    tooltipText: "Reply"
+    tooltipText: row.tr("bubble.reply-tooltip")
     baseSize: Style.baseWidgetSize * 0.7
     anchors.verticalCenter: bubble.verticalCenter
     anchors.left:  row.mine ? undefined : bubble.right
@@ -103,7 +105,7 @@ Item {
           anchors.margins: Style.marginXS
           text: row.quotedText
             ? "↳ " + Txt.snippet(row.quotedText, 60)
-            : "↳ (earlier message)"
+            : row.tr("bubble.quote-missing")
           font.pixelSize: Style.fontSizeXS
           elide: Text.ElideRight
           color: row.mine

@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "Chat",
+    "status-connected": "connected",
+    "status-offline": "daemon offline",
+    "search-tooltip": "Search",
+    "search-placeholder": "Search messages…",
+    "new-messages": "{count} new",
+    "compose-placeholder": "Message {name}…",
+    "compose-waiting": "Waiting for daemon…",
+    "attach-image-tooltip": "Attach image",
+    "attach-image-title": "Attach image",
+    "time-now": "now"
+  },
+  "bubble": {
+    "reply-tooltip": "Reply",
+    "quote-missing": "↳ (earlier message)"
+  },
+  "settings": {
+    "nixos-hint": "Peer configuration (pubkey, relays, display name) is managed by the NixOS module — see services.nostr-chat in your config.",
+    "history-limit-label": "History limit",
+    "history-limit-description": "Messages kept in the panel's in-memory mirror (sqlite keeps everything)."
+  }
+}

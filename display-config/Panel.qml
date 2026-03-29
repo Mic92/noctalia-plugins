@@ -17,6 +17,10 @@ Item {
 
   property var cfg: pluginApi?.pluginSettings || ({})
 
+  function tr(key, args) {
+    return pluginApi?.tr(key, args) ?? key;
+  }
+
   implicitWidth: 560
   implicitHeight: contentColumn.implicitHeight + Style.marginL * 2
 
@@ -46,8 +50,11 @@ Item {
       NText {
         text: {
           if (root.fetchState === "error")
-            return "Error querying outputs";
-          return root.enabledCount + "/" + root.outputCount + " output" + (root.outputCount !== 1 ? "s" : "") + " enabled";
+            return root.tr("panel.header-error");
+          return pluginApi?.trp("panel.header-enabled", root.outputCount, {
+                   enabled: root.enabledCount,
+                   total: root.outputCount
+                 }) ?? (root.enabledCount + "/" + root.outputCount + " outputs enabled");
         }
         font.pixelSize: Style.fontSizeL
         font.bold: true
@@ -58,14 +65,14 @@ Item {
       NIconButton {
         icon: "refresh"
         baseSize: 32
-        tooltipText: "Refresh"
+        tooltipText: root.tr("panel.refresh")
         onClicked: displayService?.fetchOutputs()
       }
 
       NIconButton {
         icon: "external-link"
         baseSize: 32
-        tooltipText: "Open wdisplays"
+        tooltipText: root.tr("panel.open-wdisplays")
         onClicked: {
           wdisplaysLauncher.startDetached();
           pluginApi?.closePanel(pluginApi.panelOpenScreen);
@@ -104,7 +111,7 @@ Item {
         }
 
         NText {
-          text: "Reverting in " + root.revertSeconds + "s"
+          text: root.tr("panel.reverting-in", { seconds: root.revertSeconds })
           font.pixelSize: Style.fontSizeM
           font.bold: true
           color: Color.mOnTertiary
@@ -112,14 +119,14 @@ Item {
         }
 
         NButton {
-          text: "Revert"
+          text: root.tr("panel.revert")
           icon: "restore"
           outlined: true
           onClicked: displayService?.doRevert()
         }
 
         NButton {
-          text: "Keep"
+          text: root.tr("panel.keep")
           icon: "check"
           onClicked: displayService?.confirmRevert()
         }
@@ -144,7 +151,7 @@ Item {
         // Error state
         NText {
           visible: root.fetchState === "error"
-          text: displayService?.errorMessage ?? "Unknown error"
+          text: displayService?.errorMessage ?? root.tr("panel.unknown-error")
           color: Color.mError
           Layout.fillWidth: true
           wrapMode: Text.WordWrap
@@ -218,7 +225,7 @@ Item {
                 spacing: Style.marginS
 
                 NText {
-                  text: "Mode"
+                  text: root.tr("panel.mode")
                   font.pixelSize: Style.fontSizeS
                   color: Color.mOnSurfaceVariant
                   Layout.preferredWidth: 60
@@ -270,7 +277,7 @@ Item {
                 spacing: Style.marginS
 
                 NText {
-                  text: "Scale"
+                  text: root.tr("panel.scale")
                   font.pixelSize: Style.fontSizeS
                   color: Color.mOnSurfaceVariant
                   Layout.preferredWidth: 60
@@ -325,7 +332,7 @@ Item {
           NDivider {}
 
           NText {
-            text: root.outputCount + " monitors — use wdisplays to arrange, then save as a preset"
+            text: root.tr("panel.many-monitors-hint", { count: root.outputCount })
             font.pixelSize: Style.fontSizeS
             color: Color.mOnSurfaceVariant
             Layout.fillWidth: true
@@ -335,7 +342,7 @@ Item {
           NButton {
             Layout.fillWidth: true
             icon: "external-link"
-            text: "Open wdisplays"
+            text: root.tr("panel.open-wdisplays")
             onClicked: {
               wdisplaysLauncher.startDetached();
               pluginApi?.closePanel(pluginApi.panelOpenScreen);
@@ -356,7 +363,7 @@ Item {
           NDivider {}
 
           NText {
-            text: "Arrange"
+            text: root.tr("panel.arrange")
             font.bold: true
             font.pixelSize: Style.fontSizeM
             color: Color.mOnSurface
@@ -371,37 +378,37 @@ Item {
             NButton {
               Layout.fillWidth: true
               icon: "arrow-bar-right"
-              text: "Extend right"
+              text: root.tr("panel.extend-right")
               onClicked: displayService?.applyArrangement("extend-right")
             }
             NButton {
               Layout.fillWidth: true
               icon: "arrow-bar-left"
-              text: "Extend left"
+              text: root.tr("panel.extend-left")
               onClicked: displayService?.applyArrangement("extend-left")
             }
             NButton {
               Layout.fillWidth: true
               icon: "arrow-bar-to-up"
-              text: "External above"
+              text: root.tr("panel.external-above")
               onClicked: displayService?.applyArrangement("stack-above")
             }
             NButton {
               Layout.fillWidth: true
               icon: "arrow-bar-to-down"
-              text: "External below"
+              text: root.tr("panel.external-below")
               onClicked: displayService?.applyArrangement("stack-below")
             }
             NButton {
               Layout.fillWidth: true
               icon: "device-desktop"
-              text: "External only"
+              text: root.tr("panel.external-only")
               onClicked: displayService?.applyArrangement("external-only")
             }
             NButton {
               Layout.fillWidth: true
               icon: "device-laptop"
-              text: "Laptop only"
+              text: root.tr("panel.laptop-only")
               onClicked: displayService?.applyArrangement("internal-only")
             }
           }
@@ -416,7 +423,7 @@ Item {
           NDivider {}
 
           NText {
-            text: "Presets"
+            text: root.tr("panel.presets")
             font.bold: true
             font.pixelSize: Style.fontSizeM
             color: Color.mOnSurface

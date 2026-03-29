@@ -1,0 +1,18 @@
+{
+  "title-confirm": "SSH Key Confirmation",
+  "title-prompt": "SSH Passphrase",
+  "placeholder-passphrase": "Passphrase",
+  "button-deny": "Deny",
+  "button-cancel": "Cancel",
+  "button-allow": "Allow",
+  "button-ok": "OK",
+  "settings": {
+    "title": "SSH Askpass Settings",
+    "confirm-method-label": "Confirmation method",
+    "confirm-method-description": "How to approve ssh-agent key-use confirmations (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Click Allow / press Enter",
+    "method-fingerprint": "Fingerprint (fprintd)",
+    "timeout-label": "Auto-deny timeout",
+    "timeout-description": "Deny the request automatically if no decision is made within this time."
+  }
+}

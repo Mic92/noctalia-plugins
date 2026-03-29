@@ -1,10 +1,24 @@
 {
-  "widget": {
-    "tooltip": "Alertmanager"
-  },
   "menu": {
-    "settings": "Settings",
     "refresh": "Refresh",
-    "open-alertmanager": "Open Alertmanager"
+    "open-alertmanager": "Open Alertmanager",
+    "settings": "Settings"
+  },
+  "panel": {
+    "header-error": "Error fetching alerts",
+    "header-all-clear": "All clear — no active alerts",
+    "header-active": "{count} active alert",
+    "header-active-plural": "{count} active alerts",
+    "refresh": "Refresh",
+    "open-alertmanager": "Open Alertmanager",
+    "unknown-error": "Unknown error",
+    "no-active-alerts": "✅ No active alerts"
+  },
+  "settings": {
+    "title": "Alertmanager Settings",
+    "url-label": "Alertmanager URL",
+    "poll-interval-label": "Poll interval (seconds)",
+    "hide-when-zero-label": "Hide widget when no alerts",
+    "icon-color-label": "Icon color"
   }
 }

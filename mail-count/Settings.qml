@@ -13,19 +13,23 @@ ColumnLayout {
 
   spacing: Style.marginM
 
+  function tr(key) {
+    return pluginApi?.tr(key) ?? key;
+  }
+
   NHeader {
-    label: "Mail Count Settings"
+    label: tr("settings.title")
     Layout.fillWidth: true
   }
 
   NDivider {}
 
   NLabel {
-    label: "Count command"
+    label: tr("settings.count-command-label")
   }
 
   NText {
-    text: "Shell command that prints the number of unread messages to stdout."
+    text: tr("settings.count-command-description")
     color: Color.mOnSurfaceVariant
     pointSize: Style.fontSizeXS
     Layout.fillWidth: true
@@ -43,11 +47,11 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Click command"
+    label: tr("settings.click-command-label")
   }
 
   NText {
-    text: "Command executed when the widget is clicked (e.g. your mail client). Leave empty to disable."
+    text: tr("settings.click-command-description")
     color: Color.mOnSurfaceVariant
     pointSize: Style.fontSizeXS
     Layout.fillWidth: true
@@ -65,7 +69,7 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Poll interval (seconds)"
+    label: tr("settings.poll-interval-label")
   }
 
   NSpinBox {
@@ -80,7 +84,7 @@ ColumnLayout {
 
   NToggle {
     Layout.fillWidth: true
-    label: "Hide widget when count is zero"
+    label: tr("settings.hide-when-zero-label")
     checked: cfg.hideWhenZero ?? defaults.hideWhenZero
     onToggled: function(checked) {
       cfg.hideWhenZero = checked;
@@ -89,7 +93,7 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Icon color"
+    label: tr("settings.icon-color-label")
   }
 
   NColorChoice {

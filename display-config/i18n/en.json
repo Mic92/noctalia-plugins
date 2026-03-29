@@ -1,10 +1,46 @@
 {
-  "widget": {
-    "tooltip": "Display Configuration"
-  },
   "menu": {
-    "settings": "Settings",
+    "extend-right": "Extend right",
+    "extend-left": "Extend left",
+    "external-only": "External only",
+    "laptop-only": "Laptop only",
+    "preset": "Preset: {name}",
+    "open-wdisplays": "Open wdisplays",
     "refresh": "Refresh",
-    "wdisplays": "Open wdisplays"
+    "settings": "Settings"
+  },
+  "panel": {
+    "header-error": "Error querying outputs",
+    "header-enabled": "{enabled}/{total} output enabled",
+    "header-enabled-plural": "{enabled}/{total} outputs enabled",
+    "refresh": "Refresh",
+    "open-wdisplays": "Open wdisplays",
+    "reverting-in": "Reverting in {seconds}s",
+    "revert": "Revert",
+    "keep": "Keep",
+    "unknown-error": "Unknown error",
+    "mode": "Mode",
+    "scale": "Scale",
+    "many-monitors-hint": "{count} monitors — use wdisplays to arrange, then save as a preset",
+    "arrange": "Arrange",
+    "extend-right": "Extend right",
+    "extend-left": "Extend left",
+    "external-above": "External above",
+    "external-below": "External below",
+    "external-only": "External only",
+    "laptop-only": "Laptop only",
+    "presets": "Presets"
+  },
+  "settings": {
+    "title": "Display Config Settings",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (stub)",
+    "poll-interval-label": "Poll interval (seconds)",
+    "icon-color-label": "Icon color",
+    "presets-label": "Presets ({count})",
+    "preset-name-placeholder": "Preset name",
+    "save-preset-tooltip": "Save current layout as preset",
+    "apply-preset-tooltip": "Apply preset",
+    "delete-preset-tooltip": "Delete preset"
   }
 }

@@ -13,6 +13,10 @@ Item {
   readonly property int alertCount: alertService?.alertCount ?? 0
   readonly property string fetchState: alertService?.fetchState ?? "idle"
 
+  function tr(key, args) {
+    return pluginApi?.tr(key, args) ?? key;
+  }
+
   function severityRank(s) {
     if (s === "critical") return 0;
     if (s === "warning") return 1;
@@ -70,10 +74,10 @@ Item {
       NText {
         text: {
           if (root.fetchState === "error")
-            return "Error fetching alerts";
+            return root.tr("panel.header-error");
           if (root.alertCount === 0)
-            return "All clear — no active alerts";
-          return root.alertCount + " active alert" + (root.alertCount !== 1 ? "s" : "");
+            return root.tr("panel.header-all-clear");
+          return pluginApi?.trp("panel.header-active", root.alertCount) ?? (root.alertCount + " active alerts");
         }
         font.pixelSize: Style.fontSizeL
         font.bold: true
@@ -84,14 +88,14 @@ Item {
       NIconButton {
         icon: "refresh"
         baseSize: 32
-        tooltipText: "Refresh"
+        tooltipText: root.tr("panel.refresh")
         onClicked: alertService?.fetchAlerts()
       }
 
       NIconButton {
         icon: "external-link"
         baseSize: 32
-        tooltipText: "Open Alertmanager"
+        tooltipText: root.tr("panel.open-alertmanager")
         onClicked: {
           var cfg = pluginApi?.pluginSettings || {};
           var defaults = pluginApi?.manifest?.metadata?.defaultSettings || {};
@@ -119,7 +123,7 @@ Item {
         // Error state
         NText {
           visible: root.fetchState === "error"
-          text: alertService?.errorMessage ?? "Unknown error"
+          text: alertService?.errorMessage ?? root.tr("panel.unknown-error")
           color: Color.mError
           Layout.fillWidth: true
           wrapMode: Text.WordWrap
@@ -128,7 +132,7 @@ Item {
         // Empty state
         NText {
           visible: root.fetchState === "success" && root.alertCount === 0
-          text: "✅ No active alerts"
+          text: root.tr("panel.no-active-alerts")
           color: Color.mOnSurfaceVariant
           Layout.fillWidth: true
           horizontalAlignment: Text.AlignHCenter

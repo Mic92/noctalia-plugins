@@ -13,19 +13,19 @@ ColumnLayout {
 
   function s(k, d) { return pluginApi?.pluginSettings?.[k] ?? d; }
   function set(k, v) { pluginApi?.setPluginSetting?.(k, v); }
+  function tr(k) { return pluginApi?.tr(k) ?? k; }
 
   NText {
     Layout.fillWidth: true
-    text: "Peer configuration (pubkey, relays, display name) is managed by "
-        + "the NixOS module — see services.nostr-chat in your config."
+    text: tr("settings.nixos-hint")
     wrapMode: Text.Wrap
     color: Color.mOnSurfaceVariant
   }
 
   NSpinBox {
     Layout.fillWidth: true
-    label: "History limit"
-    description: "Messages kept in the panel's in-memory mirror (sqlite keeps everything)."
+    label: tr("settings.history-limit-label")
+    description: tr("settings.history-limit-description")
     from: 20; to: 1000; stepSize: 20
     value: s("maxHistory", 200)
     onValueModified: set("maxHistory", value)

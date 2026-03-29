@@ -8,7 +8,8 @@
   "description": "Shows a toast when fprintd is waiting for a fingerprint (e.g. sudo)",
   "tags": ["System", "Security"],
   "entryPoints": {
-    "main": "Main.qml"
+    "main": "Main.qml",
+    "settings": "Settings.qml"
   },
   "dependencies": {
     "plugins": []

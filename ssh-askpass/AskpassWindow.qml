@@ -47,6 +47,10 @@ PanelWindow {
   implicitHeight: contentLayout.implicitHeight + Style.marginL * 2 + shadowPadding * 2
   color: "transparent"
 
+  function tr(key) {
+    return pluginApi?.tr(key) ?? key;
+  }
+
   function cfg(key) {
     var s = pluginApi?.pluginSettings || {};
     var d = pluginApi?.manifest?.metadata?.defaultSettings || {};
@@ -147,7 +151,7 @@ PanelWindow {
           spacing: Style.marginXS
 
           NText {
-            text: win.isConfirm ? "SSH Key Confirmation" : "SSH Passphrase"
+            text: win.isConfirm ? win.tr("title-confirm") : win.tr("title-prompt")
             pointSize: Style.fontSizeL
             font.weight: Style.fontWeightBold
             color: Color.mOnSurface
@@ -170,7 +174,7 @@ PanelWindow {
         id: passwordInput
         Layout.fillWidth: true
         visible: !win.isConfirm
-        placeholderText: "Passphrase"
+        placeholderText: win.tr("placeholder-passphrase")
         inputItem.echoMode: TextInput.Password
         onAccepted: win.finish(true, passwordInput.text)
       }
@@ -183,7 +187,7 @@ PanelWindow {
         Item { Layout.fillWidth: true }
 
         NButton {
-          text: win.isConfirm ? "Deny" : "Cancel"
+          text: win.isConfirm ? win.tr("button-deny") : win.tr("button-cancel")
           backgroundColor: Color.mSurfaceVariant
           textColor: Color.mOnSurfaceVariant
           outlined: false
@@ -191,7 +195,7 @@ PanelWindow {
         }
 
         NButton {
-          text: win.isConfirm ? "Allow" : "OK"
+          text: win.isConfirm ? win.tr("button-allow") : win.tr("button-ok")
           backgroundColor: Color.mPrimary
           textColor: Color.mOnPrimary
           // In fingerprint mode there is no Allow button — the sensor is

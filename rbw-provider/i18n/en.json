@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Search Bitwarden (rbw)",
+  "loading": {
+    "name": "Loading vault…",
+    "description": "Running rbw list"
+  },
+  "error": {
+    "name": "rbw error",
+    "description": "{error} — activate to retry / unlock",
+    "unlock-failed": "rbw unlock failed: {error}",
+    "command-failed": "rbw command failed",
+    "list-failed": "rbw list failed",
+    "wl-copy-failed": "wl-copy failed",
+    "wtype-failed": "wtype failed: {error}",
+    "already-running": "Action already running, ignoring"
+  },
+  "refresh": {
+    "name": "Refresh vault",
+    "description": "Re-run rbw list to pick up new entries"
+  },
+  "actions": {
+    "type-password": "Type password",
+    "type-username": "Type username",
+    "type-totp": "Type TOTP code",
+    "copy-password": "Copy password",
+    "copy-password-description": "To clipboard only (no auto-type)",
+    "back": "Back",
+    "back-description": "Return to search",
+    "no-username": "(none)",
+    "no-username-warning": "No username for {name}"
+  },
+  "labels": {
+    "password": "password",
+    "username": "username",
+    "totp": "TOTP code"
+  },
+  "toast": {
+    "copied": "Copied {label} to clipboard",
+    "typed": "Typed {label}"
+  },
+  "settings": {
+    "title": "Bitwarden (rbw) Settings",
+    "clear-after-label": "Clear clipboard after",
+    "clear-after-description": "Secrets are copied with wl-copy --sensitive and wiped after this many seconds."
+  }
+}

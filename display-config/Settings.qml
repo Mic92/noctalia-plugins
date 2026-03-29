@@ -14,25 +14,29 @@ ColumnLayout {
 
   spacing: Style.marginM
 
+  function tr(key, args) {
+    return pluginApi?.tr(key, args) ?? key;
+  }
+
   NHeader {
-    label: "Display Config Settings"
+    label: tr("settings.title")
     Layout.fillWidth: true
   }
 
   NDivider {}
 
   NLabel {
-    label: "Backend"
+    label: tr("settings.backend-label")
   }
 
   NComboBox {
     Layout.fillWidth: true
-    model: ListModel {
-      ListElement { key: "niri"; name: "niri" }
-      ListElement { key: "hyprland"; name: "Hyprland (stub)" }
-      ListElement { key: "sway"; name: "Sway (stub)" }
-      ListElement { key: "wlr-randr"; name: "wlr-randr (stub)" }
-    }
+    model: [
+      { key: "niri", name: "niri" },
+      { key: "hyprland", name: tr("settings.backend-stub", { name: "Hyprland" }) },
+      { key: "sway", name: tr("settings.backend-stub", { name: "Sway" }) },
+      { key: "wlr-randr", name: tr("settings.backend-stub", { name: "wlr-randr" }) }
+    ]
     currentKey: cfg.backend ?? defaults.backend
     onSelected: function (key) {
       cfg.backend = key;
@@ -42,7 +46,7 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Poll interval (seconds)"
+    label: tr("settings.poll-interval-label")
   }
 
   NSpinBox {
@@ -56,7 +60,7 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Icon color"
+    label: tr("settings.icon-color-label")
   }
 
   NColorChoice {
@@ -70,7 +74,7 @@ ColumnLayout {
   NDivider {}
 
   NLabel {
-    label: "Presets (" + ((cfg.presets || []).length) + ")"
+    label: tr("settings.presets-label", { count: (cfg.presets || []).length })
   }
 
   RowLayout {
@@ -80,12 +84,12 @@ ColumnLayout {
     NTextInput {
       id: presetNameInput
       Layout.fillWidth: true
-      placeholderText: "Preset name"
+      placeholderText: tr("settings.preset-name-placeholder")
     }
 
     NIconButton {
       icon: "device-floppy"
-      tooltipText: "Save current layout as preset"
+      tooltipText: tr("settings.save-preset-tooltip")
       enabled: presetNameInput.text.trim() !== ""
       onClicked: {
         displayService?.saveCurrentAsPreset(presetNameInput.text.trim());
@@ -109,13 +113,13 @@ ColumnLayout {
 
       NIconButton {
         icon: "player-play"
-        tooltipText: "Apply preset"
+        tooltipText: root.tr("settings.apply-preset-tooltip")
         onClicked: displayService?.applyPreset(modelData)
       }
 
       NIconButton {
         icon: "trash"
-        tooltipText: "Delete preset"
+        tooltipText: root.tr("settings.delete-preset-tooltip")
         onClicked: {
           var p = cfg.presets || [];
           p.splice(index, 1);

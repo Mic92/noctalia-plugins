@@ -9,7 +9,11 @@ Item {
 
     property var pluginApi: null
     property var launcher: null
-    property string name: "Bitwarden"
+    property string name: tr("provider-name")
+
+    function tr(key, args) {
+        return pluginApi?.tr(key, args) ?? key;
+    }
     property bool handleSearch: false
     property string supportedLayouts: "list"
     property bool supportsAutoPaste: false
@@ -29,7 +33,7 @@ Item {
         stderr: StdioCollector {}
         onExited: (exitCode) => {
             if (exitCode !== 0) {
-                ToastService.showError("rbw unlock failed: " + unlockProc.stderr.text.trim());
+                ToastService.showError(root.tr("error.unlock-failed", { error: unlockProc.stderr.text.trim() }));
             }
             root.fetchEntries();
         }
@@ -54,7 +58,7 @@ Item {
         stderr: StdioCollector {}
         onExited: (exitCode) => {
             if (exitCode !== 0) {
-                const err = actionProc.stderr.text.trim() || "rbw command failed";
+                const err = actionProc.stderr.text.trim() || root.tr("error.command-failed");
                 Logger.e("RbwProvider", actionLabel, "failed:", err);
                 ToastService.showError("rbw: " + err);
                 return;
@@ -64,7 +68,7 @@ Item {
                 typeDelay.pendingLabel = actionLabel;
                 typeDelay.restart();
             } else {
-                ToastService.showNotice("Copied " + actionLabel + " to clipboard");
+                ToastService.showNotice(root.tr("toast.copied", { label: actionLabel }));
             }
         }
     }
@@ -77,9 +81,9 @@ Item {
         onExited: (exitCode) => {
             if (exitCode !== 0) {
                 Logger.e("RbwProvider", "paste failed:", typeProc.stderr.text);
-                ToastService.showError("wtype failed: " + typeProc.stderr.text.trim());
+                ToastService.showError(root.tr("error.wtype-failed", { error: typeProc.stderr.text.trim() }));
             } else {
-                ToastService.showNotice("Typed " + typeProc.label);
+                ToastService.showNotice(root.tr("toast.typed", { label: typeProc.label }));
             }
         }
     }
@@ -117,7 +121,7 @@ Item {
         }
         onExited: (exitCode) => {
             if (exitCode !== 0) {
-                ToastService.showError("wl-copy failed");
+                ToastService.showError(root.tr("error.wl-copy-failed"));
                 return;
             }
             clearTimer.restart();
@@ -175,7 +179,7 @@ Item {
     function parseList(exitCode) {
         loading = false;
         if (exitCode !== 0) {
-            loadError = listProc.stderr.text.trim() || "rbw list failed";
+            loadError = listProc.stderr.text.trim() || tr("error.list-failed");
             Logger.e("RbwProvider", "list failed:", loadError);
             if (launcher && launcher.activeProvider === root) launcher.updateResults();
             return;
@@ -206,7 +210,7 @@ Item {
     function commands() {
         return [{
             name: ">rbw",
-            description: "Search Bitwarden (rbw)",
+            description: tr("command-description"),
             icon: "lock",
             isTablerIcon: true,
             isImage: false,
@@ -234,8 +238,8 @@ Item {
 
         if (loading) {
             return [{
-                name: "Loading vault…",
-                description: "Running rbw list",
+                name: tr("loading.name"),
+                description: tr("loading.description"),
                 icon: "refresh",
                 isTablerIcon: true,
                 onActivate: function() {}
@@ -244,8 +248,8 @@ Item {
 
         if (loadError) {
             return [{
-                name: "rbw error",
-                description: loadError + " — activate to retry / unlock",
+                name: tr("error.name"),
+                description: tr("error.description", { error: loadError }),
                 icon: "alert-circle",
                 isTablerIcon: true,
                 onActivate: function() {
@@ -260,8 +264,8 @@ Item {
         // Special command: manual vault refresh (new entries from rbw add/sync)
         if (query === "!") {
             return [{
-                name: "Refresh vault",
-                description: "Re-run rbw list to pick up new entries",
+                name: tr("refresh.name"),
+                description: tr("refresh.description"),
                 icon: "refresh",
                 isTablerIcon: true,
                 onActivate: function() {
@@ -306,52 +310,52 @@ Item {
         const title = entry.name + (entry.user ? " — " + entry.user : "");
         return [
             {
-                name: "Type password",
+                name: tr("actions.type-password"),
                 description: title,
                 icon: "key",
                 isTablerIcon: true,
                 onActivate: function() {
-                    runAction(["rbw", "get", entry.id], "password", "type");
+                    runAction(["rbw", "get", entry.id], tr("labels.password"), "type");
                     launcher.close();
                 }
             },
             {
-                name: "Type username",
-                description: entry.user || "(none)",
+                name: tr("actions.type-username"),
+                description: entry.user || tr("actions.no-username"),
                 icon: "user",
                 isTablerIcon: true,
                 onActivate: function() {
                     if (!entry.user) {
-                        ToastService.showWarning("No username for " + entry.name);
+                        ToastService.showWarning(tr("actions.no-username-warning", { name: entry.name }));
                         return;
                     }
                     launcher.close();
-                    Qt.callLater(() => root.typeText(entry.user, "username"));
+                    Qt.callLater(() => root.typeText(entry.user, tr("labels.username")));
                 }
             },
             {
-                name: "Type TOTP code",
+                name: tr("actions.type-totp"),
                 description: entry.name,
                 icon: "clock",
                 isTablerIcon: true,
                 onActivate: function() {
-                    runAction(["rbw", "code", entry.id], "TOTP code", "type");
+                    runAction(["rbw", "code", entry.id], tr("labels.totp"), "type");
                     launcher.close();
                 }
             },
             {
-                name: "Copy password",
-                description: "To clipboard only (no auto-type)",
+                name: tr("actions.copy-password"),
+                description: tr("actions.copy-password-description"),
                 icon: "clipboard",
                 isTablerIcon: true,
                 onActivate: function() {
-                    runAction(["rbw", "get", entry.id], "password", "copy");
+                    runAction(["rbw", "get", entry.id], tr("labels.password"), "copy");
                     launcher.close();
                 }
             },
             {
-                name: "Back",
-                description: "Return to search",
+                name: tr("actions.back"),
+                description: tr("actions.back-description"),
                 icon: "arrow-left",
                 isTablerIcon: true,
                 onActivate: back

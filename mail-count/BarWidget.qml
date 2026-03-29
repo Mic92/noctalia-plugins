@@ -75,17 +75,17 @@ Item {
 
     model: [
       {
-        "label": pluginApi?.tr("menu.open") || "Open mail",
+        "label": pluginApi?.tr("menu.open") ?? "Open mail",
         "action": "open",
         "icon": "mail"
       },
       {
-        "label": pluginApi?.tr("menu.refresh") || "Refresh",
+        "label": pluginApi?.tr("menu.refresh") ?? "Refresh",
         "action": "refresh",
         "icon": "refresh"
       },
       {
-        "label": pluginApi?.tr("menu.settings") || "Settings",
+        "label": pluginApi?.tr("menu.settings") ?? "Settings",
         "action": "settings",
         "icon": "settings"
       }

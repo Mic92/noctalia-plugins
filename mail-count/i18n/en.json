@@ -1,10 +1,17 @@
 {
-  "widget": {
-    "tooltip": "Unread mail"
-  },
   "menu": {
     "open": "Open mail",
     "refresh": "Refresh",
     "settings": "Settings"
+  },
+  "settings": {
+    "title": "Mail Count Settings",
+    "count-command-label": "Count command",
+    "count-command-description": "Shell command that prints the number of unread messages to stdout.",
+    "click-command-label": "Click command",
+    "click-command-description": "Command executed when the widget is clicked (e.g. your mail client). Leave empty to disable.",
+    "poll-interval-label": "Poll interval (seconds)",
+    "hide-when-zero-label": "Hide widget when count is zero",
+    "icon-color-label": "Icon color"
   }
 }

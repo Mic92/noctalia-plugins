@@ -15,7 +15,11 @@ Item {
   readonly property var state: pluginApi?.mainInstance?.state || ({})
   // Daemon pushes this in the status event — single source of truth is
   // the hm-module's displayName option, not a separate plugin setting.
-  readonly property string peerName: chat?.peerName || "Chat"
+  readonly property string peerName: chat?.peerName || tr("panel.default-peer-name")
+
+  function tr(key, args) {
+    return pluginApi?.tr(key, args) ?? key;
+  }
 
   // Look up a message by id to render the quoted snippet above a
   // threaded reply. Linear scan is fine — maxHistory caps it at ~200.
@@ -43,7 +47,7 @@ Item {
 
   function ago(ts) {
     const s = Math.max(0, (_now - ts) / 1000);
-    if (s < 60)   return "now";
+    if (s < 60)   return tr("panel.time-now");
     if (s < 3600) return Math.floor(s/60) + "m";
     if (s < 86400) return Math.floor(s/3600) + "h";
     return Qt.formatDateTime(new Date(ts), "ddd HH:mm");
@@ -73,14 +77,14 @@ Item {
           font.bold: true
         }
         NText {
-          text: chat?.streaming ? "connected" : "daemon offline"
+          text: chat?.streaming ? root.tr("panel.status-connected") : root.tr("panel.status-offline")
           font.pixelSize: Style.fontSizeXS
           color: Color.mOnSurfaceVariant
         }
       }
       NIconButton {
         icon: "search"
-        tooltipText: "Search"
+        tooltipText: root.tr("panel.search-tooltip")
         baseSize: Style.baseWidgetSize * 0.9
         onClicked: { searchBar.visible = !searchBar.visible; if (searchBar.visible) searchField.forceActiveFocus(); }
       }
@@ -140,7 +144,7 @@ Item {
       NTextInput {
         id: searchField
         Layout.fillWidth: true
-        placeholderText: "Search messages…"
+        placeholderText: root.tr("panel.search-placeholder")
         inputItem.onTextChanged: searchBar.refresh()
         inputItem.Keys.onReturnPressed: e => searchBar.step(e.modifiers & Qt.ShiftModifier ? -1 : 1)
         inputItem.Keys.onEscapePressed: searchBar.visible = false
@@ -200,6 +204,7 @@ Item {
         searchCurrent: searchBar.current === modelData.id
         quotedText: root.findMsg(modelData.replyTo)?.text ?? ""
         ago: root.ago
+        tr: root.tr
 
         onReplyRequested: {
           chat.replyTarget = { id: modelData.id, text: modelData.text };
@@ -243,7 +248,7 @@ Item {
         anchors.centerIn: parent
         spacing: Style.marginXS
         NText {
-          text: history.unseen + " new"
+          text: root.tr("panel.new-messages", { count: history.unseen })
           color: Color.mOnPrimary
           font.pixelSize: Style.fontSizeS
           font.bold: true
@@ -331,7 +336,7 @@ Item {
           ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
           TextArea {
             id: inputArea
-            placeholderText: chat?.streaming ? "Message " + root.peerName + "…" : "Waiting for daemon…"
+            placeholderText: chat?.streaming ? root.tr("panel.compose-placeholder", { name: root.peerName }) : root.tr("panel.compose-waiting")
             placeholderTextColor: Qt.alpha(Color.mOnSurfaceVariant, 0.6)
             color: Color.mOnSurface
             wrapMode: TextEdit.Wrap
@@ -379,7 +384,7 @@ Item {
       }
       NIconButton {
         icon: "paperclip"
-        tooltipText: "Attach image"
+        tooltipText: root.tr("panel.attach-image-tooltip")
         // Fixed size + bottom-align — the input now grows with
         // multiline content and we don't want 4×-tall buttons.
         baseSize: Style.baseWidgetSize * 1.1 * Style.uiScaleRatio
@@ -400,7 +405,7 @@ Item {
     // orphans. This one renders inside the panel overlay.
     NFilePicker {
       id: filePicker
-      title: "Attach image"
+      title: root.tr("panel.attach-image-title")
       selectionMode: "files"
       nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp"]
       initialPath: Quickshell.env("HOME") + "/Pictures"

@@ -73,17 +73,17 @@ Item {
 
     model: [
       {
-        "label": "Refresh",
+        "label": pluginApi?.tr("menu.refresh") ?? "Refresh",
         "action": "refresh",
         "icon": "refresh"
       },
       {
-        "label": "Open Alertmanager",
+        "label": pluginApi?.tr("menu.open-alertmanager") ?? "Open Alertmanager",
         "action": "open-url",
         "icon": "external-link"
       },
       {
-        "label": "Settings",
+        "label": pluginApi?.tr("menu.settings") ?? "Settings",
         "action": "settings",
         "icon": "settings"
       }

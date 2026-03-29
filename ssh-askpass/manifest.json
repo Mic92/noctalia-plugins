@@ -8,7 +8,8 @@
   "description": "SSH_ASKPASS provider with native noctalia dialogs. Handles both passphrase prompts and SSH_ASKPASS_PROMPT=confirm.",
   "tags": ["System", "Security"],
   "entryPoints": {
-    "main": "Main.qml"
+    "main": "Main.qml",
+    "settings": "Settings.qml"
   },
   "dependencies": {
     "plugins": []

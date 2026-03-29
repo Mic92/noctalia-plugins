@@ -13,15 +13,19 @@ ColumnLayout {
 
   spacing: Style.marginM
 
+  function tr(key) {
+    return pluginApi?.tr(key) ?? key;
+  }
+
   NHeader {
-    label: "Alertmanager Settings"
+    label: tr("settings.title")
     Layout.fillWidth: true
   }
 
   NDivider {}
 
   NLabel {
-    label: "Alertmanager URL"
+    label: tr("settings.url-label")
   }
 
   NTextInput {
@@ -35,7 +39,7 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Poll interval (seconds)"
+    label: tr("settings.poll-interval-label")
   }
 
   NSpinBox {
@@ -50,7 +54,7 @@ ColumnLayout {
 
   NToggle {
     Layout.fillWidth: true
-    label: "Hide widget when no alerts"
+    label: tr("settings.hide-when-zero-label")
     checked: cfg.hideWhenZero ?? defaults.hideWhenZero
     onToggled: function(checked) {
       cfg.hideWhenZero = checked;
@@ -59,7 +63,7 @@ ColumnLayout {
   }
 
   NLabel {
-    label: "Icon color"
+    label: tr("settings.icon-color-label")
   }
 
   NColorChoice {
