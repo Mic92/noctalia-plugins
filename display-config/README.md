@@ -3,6 +3,8 @@
 Configure monitor resolution, scale, position and power from the noctalia bar.
 A GUI for `niri msg output` — think of it as a compositor-native `arandr`.
 
+![display-config panel](https://github.com/Mic92/noctalia-plugins/releases/download/assets/display-config-screenshot.png)
+
 ## What it does
 
 **Bar widget** — monitor icon with a count badge. Turns highlighted for a few
