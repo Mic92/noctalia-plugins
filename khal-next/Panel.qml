@@ -145,7 +145,7 @@ Item {
                           ? root.tr("panel.all-day")
                           : Qt.formatTime(modelData.start, "HH:mm")
                     font.pixelSize: Style.fontSizeS
-                    font.family: Style.fontFamilyMono
+                    font.family: Settings.data.ui.fontFixed
                     color: Color.mOnSurfaceVariant
                     Layout.preferredWidth: 48
                   }
