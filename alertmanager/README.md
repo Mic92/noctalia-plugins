@@ -19,6 +19,7 @@ Available in Settings → Plugins → Alertmanager:
 | `alertmanagerUrl` | `http://localhost:9093`   | Base URL of your Alertmanager instance   |
 | `pollInterval`    | `30`                      | Seconds between `/api/v2/alerts` fetches |
 | `iconColor`       | `primary`                 | Bar icon color when everything is OK     |
+| `hideWhenZero`    | `false`                   | Hide widget entirely when no alerts      |
 
 Silenced, inhibited, and muted alerts are filtered out — the count only reflects
 things that actually want attention.

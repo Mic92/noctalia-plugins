@@ -48,6 +48,16 @@ ColumnLayout {
     }
   }
 
+  NToggle {
+    Layout.fillWidth: true
+    label: "Hide widget when no alerts"
+    checked: cfg.hideWhenZero ?? defaults.hideWhenZero
+    onToggled: function(checked) {
+      cfg.hideWhenZero = checked;
+      pluginApi?.saveSettings();
+    }
+  }
+
   NLabel {
     label: "Icon color"
   }

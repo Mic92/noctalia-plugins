@@ -20,6 +20,7 @@ Item {
   property var defaults: pluginApi?.manifest?.metadata?.defaultSettings || ({})
 
   readonly property string iconColorKey: cfg.iconColor ?? defaults.iconColor
+  readonly property bool hideWhenZero: cfg.hideWhenZero ?? defaults.hideWhenZero
   readonly property int alertCount: alertService?.alertCount ?? 0
   readonly property string fetchState: alertService?.fetchState ?? "idle"
 
@@ -40,8 +41,11 @@ Item {
     return Color.resolveColorKey(iconColorKey);
   }
 
-  implicitWidth: pill.width
-  implicitHeight: pill.height
+  readonly property bool shouldHide: hideWhenZero && alertCount === 0 && fetchState !== "error"
+
+  implicitWidth: shouldHide ? 0 : pill.width
+  implicitHeight: shouldHide ? 0 : pill.height
+  visible: !shouldHide
 
   BarPill {
     id: pill
