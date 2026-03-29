@@ -9,6 +9,7 @@ packaged here so others can steal the useful bits.
 | ---------------------------------- | ------------------------------------------------------------------- | --------------- |
 | [`alertmanager`](./alertmanager)   | Prometheus Alertmanager: alert count in the bar, details in a panel | bar + panel     |
 | [`display-config`](./display-config) | Change monitor resolution/scale/position/power from the bar       | bar + panel     |
+| [`fprint-notify`](./fprint-notify) | Toast when fprintd wants a fingerprint (so sudo doesn't block silently) | headless |
 | [`nostr-chat`](./nostr-chat)       | DM a Nostr peer (bot or human) in a slide-out panel. Images, history, the lot | panel |
 | [`rbw-provider`](./rbw-provider)   | Bitwarden search in the launcher via `rbw` — copy password/TOTP     | launcher        |
 
