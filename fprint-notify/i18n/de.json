@@ -1,0 +1,13 @@
+{
+  "touch-sensor": "Fingerabdrucksensor berühren",
+  "try-again": "Erneut versuchen",
+  "authenticated": "Authentifiziert",
+  "not-recognized": "Fingerabdruck nicht erkannt",
+  "settings": {
+    "title": "Fingerabdruck-Benachrichtigung-Einstellungen",
+    "show-success-label": "Erfolgstoast anzeigen",
+    "show-success-description": "Kurz bestätigen, wenn ein Fingerabdruck übereinstimmt. Deaktivieren für ruhigeren Betrieb.",
+    "stale-timeout-label": "Verwaisungs-Timeout",
+    "stale-timeout-description": "Toast verwerfen, wenn fprintd nie ein Ergebnis meldet (schützt vor abgestürztem PAM-Client)."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "panel": {
+    "default-peer-name": "Chat",
+    "status-connected": "verbunden",
+    "status-offline": "Daemon offline",
+    "search-tooltip": "Suchen",
+    "search-placeholder": "Nachrichten durchsuchen…",
+    "new-messages": "{count} neu",
+    "compose-placeholder": "Nachricht an {name}…",
+    "compose-waiting": "Warte auf Daemon…",
+    "attach-image-tooltip": "Bild anhängen",
+    "attach-image-title": "Bild anhängen",
+    "time-now": "jetzt"
+  },
+  "bubble": {
+    "reply-tooltip": "Antworten",
+    "quote-missing": "↳ (frühere Nachricht)"
+  },
+  "settings": {
+    "nixos-hint": "Die Peer-Konfiguration (Pubkey, Relays, Anzeigename) wird vom NixOS-Modul verwaltet — siehe services.nostr-chat in deiner Konfiguration.",
+    "history-limit-label": "Verlaufslimit",
+    "history-limit-description": "Nachrichten, die im In-Memory-Spiegel des Panels gehalten werden (SQLite behält alles)."
+  }
+}

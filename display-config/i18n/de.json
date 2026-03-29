@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "extend-right": "Nach rechts erweitern",
+    "extend-left": "Nach links erweitern",
+    "external-only": "Nur extern",
+    "laptop-only": "Nur Laptop",
+    "preset": "Voreinstellung: {name}",
+    "open-wdisplays": "wdisplays öffnen",
+    "refresh": "Aktualisieren",
+    "settings": "Einstellungen"
+  },
+  "panel": {
+    "header-error": "Fehler beim Abfragen der Ausgänge",
+    "header-enabled": "{enabled}/{total} Ausgang aktiviert",
+    "header-enabled-plural": "{enabled}/{total} Ausgänge aktiviert",
+    "refresh": "Aktualisieren",
+    "open-wdisplays": "wdisplays öffnen",
+    "reverting-in": "Zurücksetzen in {seconds}s",
+    "revert": "Zurücksetzen",
+    "keep": "Behalten",
+    "unknown-error": "Unbekannter Fehler",
+    "mode": "Modus",
+    "scale": "Skalierung",
+    "many-monitors-hint": "{count} Monitore — verwende wdisplays zum Anordnen, dann als Voreinstellung speichern",
+    "arrange": "Anordnen",
+    "extend-right": "Nach rechts erweitern",
+    "extend-left": "Nach links erweitern",
+    "external-above": "Extern oben",
+    "external-below": "Extern unten",
+    "external-only": "Nur extern",
+    "laptop-only": "Nur Laptop",
+    "presets": "Voreinstellungen"
+  },
+  "settings": {
+    "title": "Bildschirmkonfiguration-Einstellungen",
+    "backend-label": "Backend",
+    "backend-stub": "{name} (Platzhalter)",
+    "poll-interval-label": "Abfrageintervall (Sekunden)",
+    "icon-color-label": "Symbolfarbe",
+    "presets-label": "Voreinstellungen ({count})",
+    "preset-name-placeholder": "Name der Voreinstellung",
+    "save-preset-tooltip": "Aktuelles Layout als Voreinstellung speichern",
+    "apply-preset-tooltip": "Voreinstellung anwenden",
+    "delete-preset-tooltip": "Voreinstellung löschen"
+  }
+}

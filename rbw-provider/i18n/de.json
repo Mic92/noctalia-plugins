@@ -1,0 +1,47 @@
+{
+  "provider-name": "Bitwarden",
+  "command-description": "Bitwarden durchsuchen (rbw)",
+  "loading": {
+    "name": "Tresor wird geladen…",
+    "description": "Führe rbw list aus"
+  },
+  "error": {
+    "name": "rbw-Fehler",
+    "description": "{error} — aktivieren zum Wiederholen / Entsperren",
+    "unlock-failed": "rbw unlock fehlgeschlagen: {error}",
+    "command-failed": "rbw-Befehl fehlgeschlagen",
+    "list-failed": "rbw list fehlgeschlagen",
+    "wl-copy-failed": "wl-copy fehlgeschlagen",
+    "wtype-failed": "wtype fehlgeschlagen: {error}",
+    "already-running": "Aktion läuft bereits, wird ignoriert"
+  },
+  "refresh": {
+    "name": "Tresor aktualisieren",
+    "description": "rbw list erneut ausführen, um neue Einträge zu erfassen"
+  },
+  "actions": {
+    "type-password": "Passwort eintippen",
+    "type-username": "Benutzernamen eintippen",
+    "type-totp": "TOTP-Code eintippen",
+    "copy-password": "Passwort kopieren",
+    "copy-password-description": "Nur in Zwischenablage (kein Auto-Type)",
+    "back": "Zurück",
+    "back-description": "Zurück zur Suche",
+    "no-username": "(keiner)",
+    "no-username-warning": "Kein Benutzername für {name}"
+  },
+  "labels": {
+    "password": "Passwort",
+    "username": "Benutzername",
+    "totp": "TOTP-Code"
+  },
+  "toast": {
+    "copied": "{label} in Zwischenablage kopiert",
+    "typed": "{label} eingetippt"
+  },
+  "settings": {
+    "title": "Bitwarden (rbw) Einstellungen",
+    "clear-after-label": "Zwischenablage leeren nach",
+    "clear-after-description": "Geheimnisse werden mit wl-copy --sensitive kopiert und nach dieser Anzahl Sekunden gelöscht."
+  }
+}

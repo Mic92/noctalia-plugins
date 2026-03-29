@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "open": "E-Mail öffnen",
+    "refresh": "Aktualisieren",
+    "settings": "Einstellungen"
+  },
+  "settings": {
+    "title": "Mail-Count-Einstellungen",
+    "count-command-label": "Zählbefehl",
+    "count-command-description": "Shell-Befehl, der die Anzahl ungelesener Nachrichten auf stdout ausgibt.",
+    "click-command-label": "Klick-Befehl",
+    "click-command-description": "Befehl, der beim Anklicken des Widgets ausgeführt wird (z. B. dein Mail-Client). Zum Deaktivieren leer lassen.",
+    "poll-interval-label": "Abfrageintervall (Sekunden)",
+    "hide-when-zero-label": "Widget ausblenden, wenn Anzahl null ist",
+    "icon-color-label": "Symbolfarbe"
+  }
+}

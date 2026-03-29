@@ -1,0 +1,24 @@
+{
+  "menu": {
+    "refresh": "Aktualisieren",
+    "open-alertmanager": "Alertmanager öffnen",
+    "settings": "Einstellungen"
+  },
+  "panel": {
+    "header-error": "Fehler beim Abrufen der Alarme",
+    "header-all-clear": "Alles in Ordnung — keine aktiven Alarme",
+    "header-active": "{count} aktiver Alarm",
+    "header-active-plural": "{count} aktive Alarme",
+    "refresh": "Aktualisieren",
+    "open-alertmanager": "Alertmanager öffnen",
+    "unknown-error": "Unbekannter Fehler",
+    "no-active-alerts": "✅ Keine aktiven Alarme"
+  },
+  "settings": {
+    "title": "Alertmanager-Einstellungen",
+    "url-label": "Alertmanager-URL",
+    "poll-interval-label": "Abfrageintervall (Sekunden)",
+    "hide-when-zero-label": "Widget ausblenden, wenn keine Alarme",
+    "icon-color-label": "Symbolfarbe"
+  }
+}

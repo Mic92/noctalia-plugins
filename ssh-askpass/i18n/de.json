@@ -1,0 +1,18 @@
+{
+  "title-confirm": "SSH-Schlüssel-Bestätigung",
+  "title-prompt": "SSH-Passphrase",
+  "placeholder-passphrase": "Passphrase",
+  "button-deny": "Ablehnen",
+  "button-cancel": "Abbrechen",
+  "button-allow": "Erlauben",
+  "button-ok": "OK",
+  "settings": {
+    "title": "SSH-Askpass-Einstellungen",
+    "confirm-method-label": "Bestätigungsmethode",
+    "confirm-method-description": "Wie ssh-agent-Schlüsselnutzungs-Bestätigungen genehmigt werden (SSH_ASKPASS_PROMPT=confirm).",
+    "method-click": "Erlauben klicken / Enter drücken",
+    "method-fingerprint": "Fingerabdruck (fprintd)",
+    "timeout-label": "Auto-Ablehnungs-Timeout",
+    "timeout-description": "Anfrage automatisch ablehnen, wenn innerhalb dieser Zeit keine Entscheidung getroffen wird."
+  }
+}
