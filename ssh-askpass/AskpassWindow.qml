@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import qs.Commons
 import qs.Widgets
@@ -25,6 +26,10 @@ PanelWindow {
   function finish(ok, value) {
     if (_finished) return;
     _finished = true;
+    // Kill fprintd-verify if still running so it releases the device
+    // before the next PAM client (sudo etc.) wants it.
+    if (fprintVerify.running)
+      fprintVerify.signal(15);
     done(ok, value);
   }
 
@@ -33,6 +38,10 @@ PanelWindow {
 
   readonly property real shadowPadding: Style.shadowBlurMax + Style.marginL
   readonly property bool isConfirm: mode === "confirm"
+  readonly property bool useFingerprint: isConfirm && cfg("confirmMethod") === "fingerprint"
+
+  // fprintd-verify status line, e.g. "Verify result: verify-no-match (done)"
+  property string fprintStatus: ""
 
   implicitWidth: 420 * Style.uiScaleRatio + shadowPadding * 2
   implicitHeight: contentLayout.implicitHeight + Style.marginL * 2 + shadowPadding * 2
@@ -42,6 +51,30 @@ PanelWindow {
     var s = pluginApi?.pluginSettings || {};
     var d = pluginApi?.manifest?.metadata?.defaultSettings || {};
     return (key in s) ? s[key] : d[key];
+  }
+
+  // fprintd-verify exits 0 on match, non-zero otherwise. We treat its
+  // exit code as the Allow/Deny decision. Stderr carries human-readable
+  // status ("Verifying: right-index-finger", "verify-no-match") which we
+  // surface in the dialog so the user knows what's happening.
+  Process {
+    id: fprintVerify
+    command: ["fprintd-verify"]
+    running: win.visible && win.useFingerprint && !win._finished
+
+    stdout: SplitParser {
+      onRead: line => { if (line) win.fprintStatus = line; }
+    }
+    stderr: SplitParser {
+      onRead: line => { if (line) win.fprintStatus = line; }
+    }
+
+    onExited: (code, status) => {
+      if (win._finished) return;
+      // code 0 = verify-match. Anything else (no-match, device busy,
+      // disconnected) is a deny — fail closed.
+      win.finish(code === 0, "");
+    }
   }
 
   // Auto-deny on timeout so a forgotten prompt doesn't leave the agent wedged.
@@ -63,7 +96,9 @@ PanelWindow {
         win.finish(false, "");
         event.accepted = true;
       } else if (Keybinds.checkKey(event, "enter", Settings)) {
-        if (win.isConfirm) {
+        if (win.useFingerprint) {
+          // No Enter-to-allow when fingerprint is required.
+        } else if (win.isConfirm) {
           win.finish(true, "");
         } else if (passwordInput.text !== "") {
           win.finish(true, passwordInput.text);
@@ -102,7 +137,8 @@ PanelWindow {
           Layout.preferredWidth: Style.fontSizeXXL * 2
           Layout.preferredHeight: Style.fontSizeXXL * 2
           imagePath: ""
-          fallbackIcon: win.isConfirm ? "key" : "lock"
+          fallbackIcon: win.useFingerprint ? "fingerprint"
+                       : win.isConfirm ? "key" : "lock"
           borderWidth: 0
         }
 
@@ -119,7 +155,9 @@ PanelWindow {
           }
 
           NText {
-            text: win.promptText
+            text: win.useFingerprint && win.fprintStatus
+                  ? win.fprintStatus
+                  : win.promptText
             pointSize: Style.fontSizeS
             color: Color.mOnSurfaceVariant
             wrapMode: Text.Wrap
@@ -156,6 +194,9 @@ PanelWindow {
           text: win.isConfirm ? "Allow" : "OK"
           backgroundColor: Color.mPrimary
           textColor: Color.mOnPrimary
+          // In fingerprint mode there is no Allow button — the sensor is
+          // the button. Keeping Deny/Esc as the escape hatch.
+          visible: !win.useFingerprint
           enabled: win.isConfirm || passwordInput.text !== ""
           onClicked: {
             if (win.isConfirm)

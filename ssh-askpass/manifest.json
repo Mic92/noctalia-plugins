@@ -15,7 +15,8 @@
   },
   "metadata": {
     "defaultSettings": {
-      "confirmTimeoutSec": 30
+      "confirmTimeoutSec": 30,
+      "confirmMethod": "click"
     }
   }
 }
