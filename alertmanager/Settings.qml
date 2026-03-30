@@ -39,6 +39,20 @@ ColumnLayout {
   }
 
   NLabel {
+    label: tr("settings.prometheus-url-label")
+  }
+
+  NTextInput {
+    Layout.fillWidth: true
+    text: cfg.prometheusUrl ?? defaults.prometheusUrl ?? ""
+    placeholderText: "https://metrics.example.com"
+    onEditingFinished: {
+      cfg.prometheusUrl = text;
+      pluginApi?.saveSettings();
+    }
+  }
+
+  NLabel {
     label: tr("settings.poll-interval-label")
   }
 

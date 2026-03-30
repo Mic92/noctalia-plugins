@@ -51,6 +51,16 @@ Item {
     return result;
   }
 
+  function rewriteGeneratorUrl(url) {
+    var cfg = pluginApi?.pluginSettings || {};
+    var defaults = pluginApi?.manifest?.metadata?.defaultSettings || {};
+    var promBase = cfg.prometheusUrl ?? defaults.prometheusUrl ?? "";
+    if (promBase.length > 0) {
+      return url.replace(/^https?:\/\/[^\/]+/, promBase);
+    }
+    return url;
+  }
+
   implicitWidth: 420
   implicitHeight: contentColumn.implicitHeight + Style.marginL * 2
 
@@ -282,7 +292,7 @@ Item {
                   cursorShape: Qt.PointingHandCursor
                   onClicked: {
                     if (modelData.generatorURL) {
-                      Qt.openUrlExternally(modelData.generatorURL);
+                      Qt.openUrlExternally(root.rewriteGeneratorUrl(modelData.generatorURL));
                     }
                   }
                 }

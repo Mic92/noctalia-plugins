@@ -17,6 +17,7 @@
   "settings": {
     "title": "Alertmanager Settings",
     "url-label": "Alertmanager URL",
+    "prometheus-url-label": "Prometheus URL (rewrites alert links)",
     "poll-interval-label": "Poll interval (seconds)",
     "hide-when-zero-label": "Hide widget when no alerts",
     "ignore-alerts-label": "Ignored alerts (comma-separated)",
