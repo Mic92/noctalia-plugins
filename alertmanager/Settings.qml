@@ -63,6 +63,20 @@ ColumnLayout {
   }
 
   NLabel {
+    label: tr("settings.ignore-alerts-label")
+  }
+
+  NTextInput {
+    Layout.fillWidth: true
+    text: (cfg.ignoreAlerts ?? defaults.ignoreAlerts ?? []).join(", ")
+    placeholderText: "Watchdog, DeadManSwitch"
+    onEditingFinished: {
+      cfg.ignoreAlerts = text.split(",").map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+      pluginApi?.saveSettings();
+    }
+  }
+
+  NLabel {
     label: tr("settings.icon-color-label")
   }
 

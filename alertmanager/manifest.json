@@ -21,7 +21,8 @@
       "alertmanagerUrl": "http://localhost:9093",
       "pollInterval": 30,
       "iconColor": "primary",
-      "hideWhenZero": false
+      "hideWhenZero": false,
+      "ignoreAlerts": []
     }
   }
 }

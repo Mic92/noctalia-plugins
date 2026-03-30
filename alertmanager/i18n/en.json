@@ -19,6 +19,7 @@
     "url-label": "Alertmanager URL",
     "poll-interval-label": "Poll interval (seconds)",
     "hide-when-zero-label": "Hide widget when no alerts",
+    "ignore-alerts-label": "Ignored alerts (comma-separated)",
     "icon-color-label": "Icon color"
   }
 }

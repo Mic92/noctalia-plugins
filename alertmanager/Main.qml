@@ -54,12 +54,16 @@ Item {
       try {
         var alerts = JSON.parse(response);
         if (Array.isArray(alerts)) {
-          // Filter: active, not silenced, not inhibited, not muted
+          // Filter: active, not silenced, not inhibited, not muted, not ignored
+          var _cfg = pluginApi?.pluginSettings || {};
+          var _defaults = pluginApi?.manifest?.metadata?.defaultSettings || {};
+          var ignoreList = _cfg.ignoreAlerts ?? _defaults.ignoreAlerts ?? [];
           var active = alerts.filter(function(alert) {
             return alert.status.state === "active"
                 && alert.status.silencedBy.length === 0
                 && alert.status.inhibitedBy.length === 0
-                && (!alert.status.mutedBy || alert.status.mutedBy.length === 0);
+                && (!alert.status.mutedBy || alert.status.mutedBy.length === 0)
+                && ignoreList.indexOf(alert.labels.alertname) === -1;
           });
           active.sort(function(a, b) {
             var nameA = (a.labels.alertname || "").toLowerCase();
