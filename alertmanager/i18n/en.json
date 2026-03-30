@@ -12,7 +12,8 @@
     "refresh": "Refresh",
     "open-alertmanager": "Open Alertmanager",
     "unknown-error": "Unknown error",
-    "no-active-alerts": "✅ No active alerts"
+    "no-active-alerts": "✅ No active alerts",
+    "silenced-header": "Silenced / Inhibited"
   },
   "settings": {
     "title": "Alertmanager Settings",

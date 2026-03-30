@@ -14,6 +14,7 @@ Item {
     id: alertService
 
     property var activeAlerts: []
+    property var silencedAlerts: []
     property int alertCount: 0
     property string fetchState: "idle" // "idle", "loading", "success", "error"
     property string errorMessage: ""
@@ -74,10 +75,26 @@ Item {
             if (hostA !== hostB) return hostA < hostB ? -1 : 1;
             return 0;
           });
+          var silenced = alerts.filter(function(alert) {
+            return (alert.status.silencedBy.length > 0
+                || alert.status.inhibitedBy.length > 0
+                || (alert.status.mutedBy && alert.status.mutedBy.length > 0))
+                && ignoreList.indexOf(alert.labels.alertname) === -1;
+          });
+          silenced.sort(function(a, b) {
+            var nameA = (a.labels.alertname || "").toLowerCase();
+            var nameB = (b.labels.alertname || "").toLowerCase();
+            if (nameA !== nameB) return nameA < nameB ? -1 : 1;
+            var hostA = (a.labels.host || "").toLowerCase();
+            var hostB = (b.labels.host || "").toLowerCase();
+            if (hostA !== hostB) return hostA < hostB ? -1 : 1;
+            return 0;
+          });
           alertService.activeAlerts = active;
+          alertService.silencedAlerts = silenced;
           alertService.alertCount = active.length;
           alertService.fetchState = "success";
-          Logger.d("Alertmanager", "Fetched", active.length, "active alerts");
+          Logger.d("Alertmanager", "Fetched", active.length, "active,", silenced.length, "silenced alerts");
         }
       } catch (e) {
         alertService.fetchState = "error";
