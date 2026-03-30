@@ -12,13 +12,17 @@
     "refresh": "Aktualisieren",
     "open-alertmanager": "Alertmanager öffnen",
     "unknown-error": "Unbekannter Fehler",
-    "no-active-alerts": "✅ Keine aktiven Alarme"
+    "no-active-alerts": "✅ Keine aktiven Alarme",
+    "silenced-header": "Stummgeschaltet / Unterdrückt"
   },
   "settings": {
     "title": "Alertmanager-Einstellungen",
     "url-label": "Alertmanager-URL",
     "poll-interval-label": "Abfrageintervall (Sekunden)",
     "hide-when-zero-label": "Widget ausblenden, wenn keine Alarme",
+    "prometheus-url-label": "Prometheus-URL (schreibt Alert-Links um)",
+    "show-count-label": "Alarmanzahl auf dem Bar-Symbol anzeigen",
+    "ignore-alerts-label": "Ignorierte Alarme (kommagetrennt)",
     "icon-color-label": "Symbolfarbe"
   }
 }

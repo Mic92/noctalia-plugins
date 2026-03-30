@@ -12,13 +12,17 @@
     "refresh": "Atualizar",
     "open-alertmanager": "Abrir Alertmanager",
     "unknown-error": "Erro desconhecido",
-    "no-active-alerts": "✅ Nenhum alerta ativo"
+    "no-active-alerts": "✅ Nenhum alerta ativo",
+    "silenced-header": "Silenciados / Inibidos"
   },
   "settings": {
     "title": "Configurações do Alertmanager",
     "url-label": "URL do Alertmanager",
     "poll-interval-label": "Intervalo de consulta (segundos)",
     "hide-when-zero-label": "Ocultar widget quando não houver alertas",
+    "prometheus-url-label": "URL do Prometheus (reescreve links de alertas)",
+    "show-count-label": "Mostrar contagem de alertas no ícone da barra",
+    "ignore-alerts-label": "Alertas ignorados (separados por vírgula)",
     "icon-color-label": "Cor do ícone"
   }
 }

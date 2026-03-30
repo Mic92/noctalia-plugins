@@ -12,13 +12,17 @@
     "refresh": "Обновить",
     "open-alertmanager": "Открыть Alertmanager",
     "unknown-error": "Неизвестная ошибка",
-    "no-active-alerts": "✅ Нет активных оповещений"
+    "no-active-alerts": "✅ Нет активных оповещений",
+    "silenced-header": "Отключенные / Подавленные"
   },
   "settings": {
     "title": "Настройки Alertmanager",
     "url-label": "URL Alertmanager",
     "poll-interval-label": "Интервал опроса (секунды)",
     "hide-when-zero-label": "Скрывать виджет при отсутствии оповещений",
+    "prometheus-url-label": "URL Prometheus (переписывает ссылки оповещений)",
+    "show-count-label": "Показывать количество оповещений на значке панели",
+    "ignore-alerts-label": "Игнорируемые оповещения (через запятую)",
     "icon-color-label": "Цвет значка"
   }
 }

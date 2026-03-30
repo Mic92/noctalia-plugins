@@ -12,13 +12,17 @@
     "refresh": "刷新",
     "open-alertmanager": "打开 Alertmanager",
     "unknown-error": "未知错误",
-    "no-active-alerts": "✅ 无活动告警"
+    "no-active-alerts": "✅ 无活动告警",
+    "silenced-header": "已静音 / 已抑制"
   },
   "settings": {
     "title": "Alertmanager 设置",
     "url-label": "Alertmanager URL",
     "poll-interval-label": "轮询间隔（秒）",
     "hide-when-zero-label": "无告警时隐藏组件",
+    "prometheus-url-label": "Prometheus URL（重写告警链接）",
+    "show-count-label": "在栏图标上显示告警数量",
+    "ignore-alerts-label": "忽略的告警（逗号分隔）",
     "icon-color-label": "图标颜色"
   }
 }
