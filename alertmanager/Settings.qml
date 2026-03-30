@@ -76,6 +76,16 @@ ColumnLayout {
     }
   }
 
+  NToggle {
+    Layout.fillWidth: true
+    label: tr("settings.show-count-label")
+    checked: (cfg.showCount ?? defaults.showCount) !== false
+    onToggled: function(checked) {
+      cfg.showCount = checked;
+      pluginApi?.saveSettings();
+    }
+  }
+
   NLabel {
     label: tr("settings.ignore-alerts-label")
   }

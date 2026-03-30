@@ -23,6 +23,7 @@
       "pollInterval": 30,
       "iconColor": "primary",
       "hideWhenZero": false,
+      "showCount": true,
       "ignoreAlerts": []
     }
   }
