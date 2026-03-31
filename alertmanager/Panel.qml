@@ -10,6 +10,7 @@ Item {
   property var alertService: pluginApi?.mainInstance?.alertService || null
 
   readonly property var activeAlerts: alertService?.activeAlerts ?? []
+  readonly property var silencedAlerts: alertService?.silencedAlerts ?? []
   readonly property int alertCount: alertService?.alertCount ?? 0
   readonly property string fetchState: alertService?.fetchState ?? "idle"
 
@@ -49,6 +50,41 @@ Item {
       return a.name.localeCompare(b.name);
     });
     return result;
+  }
+
+  readonly property var groupedSilenced: {
+    var alerts = root.silencedAlerts;
+    var groups = {};
+    for (var i = 0; i < alerts.length; i++) {
+      var name = alerts[i].labels.alertname || "Unknown";
+      var sev = alerts[i].labels.severity || "warning";
+      if (!groups[name]) {
+        groups[name] = { name: name, alerts: [], severity: sev };
+      }
+      groups[name].alerts.push(alerts[i]);
+      if (severityRank(sev) < severityRank(groups[name].severity)) {
+        groups[name].severity = sev;
+      }
+    }
+    var result = [];
+    for (var key in groups) result.push(groups[key]);
+    result.sort(function(a, b) {
+      var r = severityRank(a.severity) - severityRank(b.severity);
+      if (r !== 0) return r;
+      if (b.alerts.length !== a.alerts.length) return b.alerts.length - a.alerts.length;
+      return a.name.localeCompare(b.name);
+    });
+    return result;
+  }
+
+  function rewriteGeneratorUrl(url) {
+    var cfg = pluginApi?.pluginSettings || {};
+    var defaults = pluginApi?.manifest?.metadata?.defaultSettings || {};
+    var promBase = cfg.prometheusUrl ?? defaults.prometheusUrl ?? "";
+    if (promBase.length > 0) {
+      return url.replace(/^https?:\/\/[^\/]+/, promBase);
+    }
+    return url;
   }
 
   implicitWidth: 420
@@ -282,7 +318,143 @@ Item {
                   cursorShape: Qt.PointingHandCursor
                   onClicked: {
                     if (modelData.generatorURL) {
-                      Qt.openUrlExternally(modelData.generatorURL);
+                      Qt.openUrlExternally(root.rewriteGeneratorUrl(modelData.generatorURL));
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Silenced/inhibited alerts section
+        NDivider {
+          Layout.fillWidth: true
+          Layout.topMargin: Style.marginM
+          visible: root.groupedSilenced.length > 0
+        }
+
+        NText {
+          visible: root.groupedSilenced.length > 0
+          text: root.tr("panel.silenced-header")
+          font.pixelSize: Style.fontSizeS
+          font.bold: true
+          color: Color.mOnSurfaceVariant
+          Layout.fillWidth: true
+          Layout.topMargin: Style.marginS
+          opacity: 0.6
+        }
+
+        Repeater {
+          model: root.groupedSilenced
+
+          delegate: ColumnLayout {
+            id: silencedDelegate
+
+            property bool expanded: false
+
+            Layout.fillWidth: true
+            spacing: Style.marginXS
+            opacity: 0.5
+
+            Rectangle {
+              Layout.fillWidth: true
+              Layout.preferredHeight: silencedHeaderRow.implicitHeight + Style.marginS * 2
+              Layout.topMargin: index > 0 ? Style.marginS : 0
+              radius: Style.radiusS
+              color: silencedHeaderMouse.containsMouse ? Color.mSurfaceVariant : "transparent"
+
+              RowLayout {
+                id: silencedHeaderRow
+                anchors.fill: parent
+                anchors.leftMargin: Style.marginS
+                anchors.rightMargin: Style.marginS
+                anchors.topMargin: Style.marginS
+                anchors.bottomMargin: Style.marginS
+                spacing: Style.marginS
+
+                NIcon {
+                  icon: silencedDelegate.expanded ? "chevron-down" : "chevron-right"
+                  pointSize: Style.fontSizeS
+                  color: Color.mOnSurfaceVariant
+                }
+
+                NText {
+                  text: modelData.name + " (" + modelData.alerts.length + ")"
+                  font.bold: true
+                  font.pixelSize: Style.fontSizeM
+                  color: Color.mOnSurfaceVariant
+                  Layout.fillWidth: true
+                }
+              }
+
+              MouseArea {
+                id: silencedHeaderMouse
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                onClicked: silencedDelegate.expanded = !silencedDelegate.expanded
+              }
+            }
+
+            Repeater {
+              model: silencedDelegate.expanded ? modelData.alerts : []
+
+              delegate: Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: silencedItemCol.implicitHeight + Style.marginM * 2
+                radius: Style.radiusM
+                color: Qt.alpha(Color.mSurfaceVariant, 0.5)
+
+                ColumnLayout {
+                  id: silencedItemCol
+                  anchors.fill: parent
+                  anchors.margins: Style.marginM
+                  spacing: Style.marginXS
+
+                  RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Style.marginS
+
+                    NIcon {
+                      icon: "volume-off"
+                      pointSize: Style.fontSizeM
+                      color: Color.mOnSurfaceVariant
+                    }
+
+                    NText {
+                      text: modelData.labels.host || modelData.labels.instance || ""
+                      font.pixelSize: Style.fontSizeS
+                      color: Color.mOnSurfaceVariant
+                      Layout.fillWidth: true
+                    }
+                  }
+
+                  NText {
+                    visible: text !== ""
+                    text: {
+                      if (modelData.annotations) {
+                        return modelData.annotations.description
+                          || modelData.annotations.summary
+                          || "";
+                      }
+                      return "";
+                    }
+                    font.pixelSize: Style.fontSizeS
+                    color: Color.mOnSurfaceVariant
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: 3
+                    elide: Text.ElideRight
+                  }
+                }
+
+                MouseArea {
+                  anchors.fill: parent
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: {
+                    if (modelData.generatorURL) {
+                      Qt.openUrlExternally(root.rewriteGeneratorUrl(modelData.generatorURL));
                     }
                   }
                 }

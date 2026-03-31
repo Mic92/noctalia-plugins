@@ -21,6 +21,7 @@ Item {
 
   readonly property string iconColorKey: cfg.iconColor ?? defaults.iconColor
   readonly property bool hideWhenZero: cfg.hideWhenZero ?? defaults.hideWhenZero
+  readonly property bool showCount: (cfg.showCount ?? defaults.showCount) !== false
   readonly property int alertCount: alertService?.alertCount ?? 0
   readonly property string fetchState: alertService?.fetchState ?? "idle"
 
@@ -52,8 +53,8 @@ Item {
     screen: root.screen
     oppositeDirection: BarService.getPillDirection(root)
     icon: root.currentIcon
-    text: root.alertCount.toString()
-    forceOpen: root.alertCount > 0
+    text: root.showCount ? root.alertCount.toString() : ""
+    forceOpen: root.alertCount > 0 && root.showCount
     autoHide: true
     customTextIconColor: root.iconColor
 

@@ -39,6 +39,20 @@ ColumnLayout {
   }
 
   NLabel {
+    label: tr("settings.prometheus-url-label")
+  }
+
+  NTextInput {
+    Layout.fillWidth: true
+    text: cfg.prometheusUrl ?? defaults.prometheusUrl ?? ""
+    placeholderText: "https://metrics.example.com"
+    onEditingFinished: {
+      cfg.prometheusUrl = text;
+      pluginApi?.saveSettings();
+    }
+  }
+
+  NLabel {
     label: tr("settings.poll-interval-label")
   }
 
@@ -58,6 +72,30 @@ ColumnLayout {
     checked: cfg.hideWhenZero ?? defaults.hideWhenZero
     onToggled: function(checked) {
       cfg.hideWhenZero = checked;
+      pluginApi?.saveSettings();
+    }
+  }
+
+  NToggle {
+    Layout.fillWidth: true
+    label: tr("settings.show-count-label")
+    checked: (cfg.showCount ?? defaults.showCount) !== false
+    onToggled: function(checked) {
+      cfg.showCount = checked;
+      pluginApi?.saveSettings();
+    }
+  }
+
+  NLabel {
+    label: tr("settings.ignore-alerts-label")
+  }
+
+  NTextInput {
+    Layout.fillWidth: true
+    text: (cfg.ignoreAlerts ?? defaults.ignoreAlerts ?? []).join(", ")
+    placeholderText: "Watchdog, DeadManSwitch"
+    onEditingFinished: {
+      cfg.ignoreAlerts = text.split(",").map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
       pluginApi?.saveSettings();
     }
   }

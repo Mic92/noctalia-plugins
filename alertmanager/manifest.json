@@ -19,9 +19,12 @@
   "metadata": {
     "defaultSettings": {
       "alertmanagerUrl": "http://localhost:9093",
+      "prometheusUrl": "",
       "pollInterval": 30,
       "iconColor": "primary",
-      "hideWhenZero": false
+      "hideWhenZero": false,
+      "showCount": true,
+      "ignoreAlerts": []
     }
   }
 }

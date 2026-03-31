@@ -12,13 +12,17 @@
     "refresh": "更新",
     "open-alertmanager": "Alertmanager を開く",
     "unknown-error": "不明なエラー",
-    "no-active-alerts": "✅ アクティブなアラートはありません"
+    "no-active-alerts": "✅ アクティブなアラートはありません",
+    "silenced-header": "サイレンス済み / 抑制済み"
   },
   "settings": {
     "title": "Alertmanager 設定",
     "url-label": "Alertmanager URL",
     "poll-interval-label": "ポーリング間隔（秒）",
     "hide-when-zero-label": "アラートがない場合はウィジェットを非表示",
+    "prometheus-url-label": "Prometheus URL（アラートリンクを書き換え）",
+    "show-count-label": "バーアイコンにアラート数を表示",
+    "ignore-alerts-label": "無視するアラート（カンマ区切り）",
     "icon-color-label": "アイコンの色"
   }
 }
