@@ -1,0 +1,11 @@
+{
+    "id": "desktop-calendar",
+    "name": "Calendar",
+    "version": "0.3.0",
+    "minNoctaliaVersion": "4.5.0",
+    "author": "phaer",
+    "description": "Desktop weekly calendar grid with events positioned by time and duration",
+    "entryPoints": {
+        "desktopWidget": "DesktopCalendarEvents.qml"
+    }
+}
