@@ -6,7 +6,6 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.Commons
 import qs.Widgets
-import qs.Services.UI
 
 // Dual-mode askpass dialog, styled after the polkit-agent plugin so the two
 // auth surfaces feel consistent.
@@ -96,10 +95,10 @@ PanelWindow {
     focus: true
 
     Keys.onPressed: function(event) {
-      if (Keybinds.checkKey(event, "escape", Settings)) {
+      if (event.key === Qt.Key_Escape) {
         win.finish(false, "");
         event.accepted = true;
-      } else if (Keybinds.checkKey(event, "enter", Settings)) {
+      } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
         if (win.useFingerprint) {
           // No Enter-to-allow when fingerprint is required.
         } else if (win.isConfirm) {
