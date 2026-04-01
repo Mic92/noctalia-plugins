@@ -21,6 +21,12 @@ Item {
 
   property var pluginApi: null
   property var window: null
+  property var windowConn: null  // conn that owns `window`; lets us tear down on disconnect
+
+  // FIFO of {conn, req} for callers that arrive while a dialog is up. Multiple
+  // ssh processes spawn independent askpass stubs that can't coordinate, so we
+  // serialise here. Stale entries (conn died waiting) are skipped at pop time.
+  property var pending: []
 
   readonly property string sockPath: {
     var rt = Quickshell.env("XDG_RUNTIME_DIR");
@@ -35,6 +41,18 @@ Item {
     handler: Socket {
       id: conn
 
+      // The owning conn dropping must close the active dialog and pump the
+      // queue, otherwise we wedge. Queued conns dropping are handled lazily
+      // at pop time (connected check) to keep this path simple.
+      onConnectedChanged: {
+        if (!connected && root.windowConn === conn) {
+          root.window?.destroy();
+          root.window = null;
+          root.windowConn = null;
+          root._drain();
+        }
+      }
+
       // Buffer until we see a full JSON line, then dispatch.
       parser: SplitParser {
         onRead: line => {
@@ -43,45 +61,67 @@ Item {
             root._dispatch(conn, req);
           } catch (e) {
             Logger.w("SshAskpass", "bad request:", line, e);
-            conn.write(JSON.stringify({ok: false}) + "\n");
+            root._reject(conn);
           }
         }
       }
     }
   }
 
+  function _reject(conn) {
+    conn.write(JSON.stringify({ok: false}) + "\n");
+    conn.flush(); // server-side socket: must flush or short-lived clients miss the reply
+  }
+
   function _dispatch(conn, req) {
-    Logger.i("SshAskpass", "request mode=" + req.mode);
-    if (window !== null) {
-      // One prompt at a time. ssh-agent serialises signing anyway, but be
-      // defensive against a misbehaving caller.
-      Logger.w("SshAskpass", "busy, rejecting");
-      conn.write(JSON.stringify({ok: false}) + "\n");
-      return;
+    Logger.i("SshAskpass", "request mode=" + req.mode + " pending=" + pending.length);
+    pending.push({conn: conn, req: req});
+    _drain();
+  }
+
+  // Pop the next live request and show it. Called after every dialog
+  // close (done/disconnect), so the queue self-serves.
+  function _drain() {
+    if (window !== null) return;
+
+    var next;
+    while ((next = pending.shift())) {
+      // Skip waiters whose stub already gave up.
+      if (next.conn.connected) break;
     }
+    if (!next) return;
 
     var comp = Qt.createComponent("AskpassWindow.qml");
     if (comp.status !== Component.Ready) {
       Logger.w("SshAskpass", "component error:", comp.errorString());
-      conn.write(JSON.stringify({ok: false}) + "\n");
+      _reject(next.conn);
+      Qt.callLater(_drain);
       return;
     }
 
-    window = comp.createObject(root, {
-      mode: req.mode || "prompt",
-      promptText: req.text || "",
+    var conn = next.conn;
+    var w = comp.createObject(root, {
+      mode: next.req.mode || "prompt",
+      promptText: next.req.text || "",
       pluginApi: Qt.binding(() => root.pluginApi)
     });
+    window = w;
+    windowConn = conn;
 
-    window.done.connect(function(ok, value) {
+    w.done.connect(function(ok, value) {
+      // conn may already be gone; write is a no-op then.
       conn.write(JSON.stringify({ok: ok, value: value}) + "\n");
-      if (window) {
-        window.destroy();
-        window = null;
+      conn.flush();
+      if (root.window === w) {
+        root.window = null;
+        root.windowConn = null;
       }
+      w.destroy();
+      // Next dialog only after this one's destroy has settled.
+      Qt.callLater(root._drain);
     });
 
-    window.visible = true;
+    w.visible = true;
   }
 
   Component.onCompleted: {
