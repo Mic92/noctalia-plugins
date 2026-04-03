@@ -106,7 +106,7 @@ Item {
           text: row.quotedText
             ? "↳ " + Txt.snippet(row.quotedText, 60)
             : row.tr("bubble.quote-missing")
-          font.pixelSize: Style.fontSizeXS
+          pointSize: Style.fontSizeXS
           elide: Text.ElideRight
           color: row.mine
             ? Qt.alpha(Color.mOnPrimary, 0.7)
@@ -171,7 +171,7 @@ Item {
         spacing: Style.marginXS
         NText {
           text: row.ago(msg.ts)
-          font.pixelSize: Style.fontSizeM
+          pointSize: Style.fontSizeM
           color: row.mine
             ? Qt.alpha(Color.mOnPrimary, 0.6)
             : Color.mOnSurfaceVariant
@@ -187,7 +187,7 @@ Item {
             if (a === "") return "✓";
             return (a === "+" || a === "✓") ? "✓✓" : a;
           }
-          font.pixelSize: Style.fontSizeL
+          pointSize: Style.fontSizeL
           color: (msg.tries ?? 0) > 0
             ? Color.mError
             : Qt.alpha(Color.mOnPrimary, 0.8)

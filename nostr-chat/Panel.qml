@@ -73,12 +73,12 @@ Item {
         Layout.fillWidth: true
         NText {
           text: root.peerName
-          font.pixelSize: Style.fontSizeL
+          pointSize: Style.fontSizeL
           font.bold: true
         }
         NText {
           text: chat?.streaming ? root.tr("panel.status-connected") : root.tr("panel.status-offline")
-          font.pixelSize: Style.fontSizeXS
+          pointSize: Style.fontSizeXS
           color: Color.mOnSurfaceVariant
         }
       }
@@ -155,7 +155,7 @@ Item {
           ? (searchBar.hits.indexOf(searchBar.current) + 1) + "/" + searchBar.hits.length
           : (searchField.text ? "0" : "")
         color: Color.mOnSurfaceVariant
-        font.pixelSize: Style.fontSizeS
+        pointSize: Style.fontSizeS
       }
       NIconButton { icon: "chevron-up";   baseSize: Style.baseWidgetSize * 0.8; onClicked: searchBar.step(1) }
       NIconButton { icon: "chevron-down"; baseSize: Style.baseWidgetSize * 0.8; onClicked: searchBar.step(-1) }
@@ -250,7 +250,7 @@ Item {
         NText {
           text: root.tr("panel.new-messages", { count: history.unseen })
           color: Color.mOnPrimary
-          font.pixelSize: Style.fontSizeS
+          pointSize: Style.fontSizeS
           font.bold: true
         }
         NIcon { icon: "chevron-down"; color: Color.mOnPrimary }
@@ -279,7 +279,7 @@ Item {
           Layout.fillWidth: true
           text: Txt.snippet(chat?.replyTarget?.text ?? "", 80)
           elide: Text.ElideRight
-          font.pixelSize: Style.fontSizeS
+          pointSize: Style.fontSizeS
           color: Color.mOnSurfaceVariant
         }
         NIconButton {
@@ -438,7 +438,7 @@ Item {
       visible: (chat?.lastError ?? "") !== ""
       text: chat?.lastError ?? ""
       color: Color.mError
-      font.pixelSize: Style.fontSizeS
+      pointSize: Style.fontSizeS
       Layout.fillWidth: true
       wrapMode: Text.Wrap
     }
@@ -449,7 +449,7 @@ Item {
   // Ctrl+F from anywhere in the panel. Shortcut rather than Keys so it
   // fires regardless of which TextArea currently has focus.
   Shortcut {
-    sequence: StandardKey.Find
+    sequences: [StandardKey.Find]
     enabled: root.visible
     onActivated: { searchBar.visible = true; searchField.forceActiveFocus(); }
   }
