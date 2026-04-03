@@ -33,9 +33,20 @@ Item {
     return rt + "/noctalia-ssh-askpass.sock";
   }
 
+  // Unlink stale socket before SocketServer.enable() runs so quickshell
+  // doesn't WARN about deleting it. The socket is always stale on restart
+  // (previous shell crashed or was killed), never a concurrent instance.
+  property bool _sockReady: false
+  Process {
+    id: sockCleanup
+    command: ["rm", "-f", "--", root.sockPath]
+    onExited: root._sockReady = true
+  }
+  onPluginApiChanged: if (pluginApi !== null && !_sockReady) sockCleanup.running = true
+
   SocketServer {
     id: server
-    active: pluginApi !== null
+    active: root._sockReady
     path: root.sockPath
 
     handler: Socket {
