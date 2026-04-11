@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"fiatjaf.com/nostr"
@@ -64,6 +66,12 @@ type Listener struct {
 	kr     nostr.Keyer
 	keys   Keys
 	relays []string
+
+	// OnHealth is invoked from the liveness watchdog with the set of
+	// currently-connected relay URLs. The daemon hooks this to push
+	// EvStatus transitions so the panel's "connected" reflects relay
+	// reality, not just "the unix socket is up".
+	OnHealth func(connected []string)
 }
 
 func NewListener(keys Keys, relays []string) *Listener {
@@ -94,7 +102,7 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 		// unnoticed while publishes (which open fresh connections)
 		// still succeed. Force a full resubscribe.
 		subCtx, subCancel := context.WithCancel(ctx)
-		go watchSuspend(subCtx, func() { l.dropConnections(); subCancel() })
+		go l.watchLiveness(subCtx, func() { l.dropConnections(); subCancel() })
 		l.subscribeOnce(subCtx, since(), ch)
 		subCancel()
 		// A subscription that ran for a while was healthy — reset
@@ -126,14 +134,27 @@ func (l *Listener) dropConnections() {
 	}
 }
 
-// watchSuspend calls cancel when wall-clock time jumps ahead of the
-// monotonic ticker — the signature of a suspend/resume. time.After
-// uses CLOCK_MONOTONIC, which pauses during suspend; time.Now().Unix()
-// reads CLOCK_REALTIME, which does not. A 30s tick that "took" 15
-// minutes of wall time means we slept for ~14.5min. time.Since() would
-// miss this because it subtracts monotonic readings.
-func watchSuspend(ctx context.Context, cancel func()) {
+// watchLiveness ticks every 30s and forces a resubscribe (via cancel)
+// when either condition hits:
+//
+//   - Wall-clock jumped ahead of the monotonic ticker — suspend/resume.
+//     time.After uses CLOCK_MONOTONIC, which pauses during suspend;
+//     time.Now().Unix() reads CLOCK_REALTIME, which does not. A 30s
+//     tick that "took" 15 minutes of wall time means we slept.
+//
+//   - No relay has been connected for three consecutive ticks. The
+//     pool's per-relay goroutine exits permanently on a CLOSED frame
+//     (pool.go subMany), so a healthy relay that sends CLOSED while a
+//     dead one is still retrying leaves SubscribeMany's channel open
+//     with zero live subs. Our outer Run loop never learns. Nuking the
+//     sub and starting fresh gives every relay a new goroutine.
+//
+// It also reports the connected set on every tick so the daemon can
+// surface real streaming status and the journal records which relay is
+// the culprit during an outage.
+func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
 	const tick = 30 * time.Second
+	var deadTicks int
 	for {
 		before := time.Now().Unix()
 		select {
@@ -147,7 +168,36 @@ func watchSuspend(ctx context.Context, cancel func()) {
 			cancel()
 			return
 		}
+
+		up := l.Connected()
+		slog.Debug("relay health", "connected", up, "of", len(l.relays))
+		if l.OnHealth != nil {
+			l.OnHealth(up)
+		}
+		if len(up) == 0 {
+			deadTicks++
+			if deadTicks >= 3 {
+				slog.Warn("no relay connected for 90s, resubscribing")
+				cancel()
+				return
+			}
+		} else {
+			deadTicks = 0
+		}
 	}
+}
+
+// Connected returns the URLs of relays the pool currently has an open
+// websocket to. Cheap enough to call from the replay handler so the
+// status it reports matches what the watchdog sees.
+func (l *Listener) Connected() []string {
+	var up []string
+	for _, url := range l.relays {
+		if r, ok := l.pool.Relays.Load(nostr.NormalizeURL(url)); ok && r != nil && r.IsConnected() {
+			up = append(up, url)
+		}
+	}
+	return up
 }
 
 func (l *Listener) subscribeOnce(ctx context.Context, since int64, ch chan<- Rumor) {
@@ -326,29 +376,40 @@ func (l *Listener) PublishRaw(ctx context.Context, rumorID, themJSON, usJSON str
 	return l.publishConnected(ctx, rumorID, them, us)
 }
 
+// publishConnected fans the wraps out to every already-open relay in
+// parallel, each with its own 3s deadline. A zombie connection (TCP up,
+// app dead — the state watchLiveness eventually reaps) used to soak the
+// shared timeout and starve the good relays; now it just times out on
+// its own while the others ack.
 func (l *Listener) publishConnected(ctx context.Context, rumorID string, evs ...nostr.Event) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-	var ok, fail, skip int
+	var ok, fail, skip atomic.Int32
+	var wg sync.WaitGroup
 	for _, url := range l.relays {
 		r, loaded := l.pool.Relays.Load(nostr.NormalizeURL(url))
 		if !loaded || r == nil || !r.IsConnected() {
-			skip++
+			skip.Add(1)
 			continue
 		}
-		for _, ev := range evs {
-			if err := r.Publish(ctx, ev); err != nil {
-				fail++
-				slog.Debug("relay rejected", "relay", url, "err", err)
-			} else {
-				ok++
-				slog.Debug("relay accepted", "relay", url)
+		wg.Add(1)
+		go func(url string, r *nostr.Relay) {
+			defer wg.Done()
+			pctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+			defer cancel()
+			for _, ev := range evs {
+				if err := r.Publish(pctx, ev); err != nil {
+					fail.Add(1)
+					slog.Debug("relay rejected", "relay", url, "err", err)
+				} else {
+					ok.Add(1)
+					slog.Debug("relay accepted", "relay", url)
+				}
 			}
-		}
+		}(url, r)
 	}
-	slog.Debug("publish done", "rumor", rumorID[:8], "ok", ok, "fail", fail, "skip", skip)
-	if ok == 0 {
-		if skip == len(l.relays) {
+	wg.Wait()
+	slog.Debug("publish done", "rumor", rumorID[:8], "ok", ok.Load(), "fail", fail.Load(), "skip", skip.Load())
+	if ok.Load() == 0 {
+		if int(skip.Load()) == len(l.relays) {
 			return ErrNoRelayConnected
 		}
 		return fmt.Errorf("publish: no relay accepted")

@@ -46,6 +46,9 @@ Item {
     id: chat
     property string peerName: ""   // from daemon's NOSTR_CHAT_DISPLAY_NAME
     property bool streaming: false
+    property int relaysUp: 0
+    property int relaysTotal: 0
+    property var relays: []        // connected URLs, for the header tooltip
     property string lastError: ""
     property var messages: []   // [{id, from, text, ts, ack, image, replyTo, state, tries}]
     property var replyTarget: null  // {id, text} — set by Panel when user clicks a bubble
@@ -154,8 +157,11 @@ Item {
 
     switch (ev.kind) {
     case root.ev.status:
-      chat.streaming = ev.streaming;
-      chat.peerName = ev.name || chat.peerName;
+      chat.streaming   = ev.streaming;
+      chat.relaysUp    = ev.relaysUp || 0;
+      chat.relaysTotal = ev.relaysTotal || chat.relaysTotal;
+      chat.relays      = ev.relays || [];
+      chat.peerName    = ev.name || chat.peerName;
       break;
 
     case root.ev.msg: {

@@ -348,5 +348,3 @@ func tagValue(tags nostr.Tags, key string) string {
 	}
 	return ""
 }
-
-
