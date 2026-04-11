@@ -108,7 +108,9 @@ Item {
 
     onConnectionStateChanged: {
       if (connected) {
+        reconnect.stop();
         reconnect.interval = 500;
+        chat.lastError = "";
         sockSend({ cmd: root.cmd.replay, n: root.cfg("maxHistory") || 200 });
       } else {
         chat.streaming = false;
@@ -118,14 +120,25 @@ Item {
     onError: (e) => {
       chat.lastError = "daemon unreachable";
       Logger.w("NostrChat", "socket", e, "path", path);
+      // A failed connect() does not toggle `connected`, so the
+      // state-change handler above never fires when the daemon was
+      // down to begin with. Keep poking until it shows up.
+      reconnect.start();
     }
   }
   Timer {
     id: reconnect
     interval: 500
-    // Cap under the daemon's RestartSec so we're waiting when it
-    // returns, not the other way round.
-    onTriggered: { sock.connected = true; interval = Math.min(interval * 2, 4000); }
+    // Repeat so we keep trying while the daemon is absent — a refused
+    // connect leaves `connected` untouched and thus won't re-arm us via
+    // onConnectionStateChanged. Cap under the daemon's RestartSec so
+    // we're waiting when it returns, not the other way round.
+    repeat: true
+    onTriggered: {
+      sock.connected = false;  // force a fresh attempt even if stuck
+      sock.connected = true;
+      interval = Math.min(interval * 2, 4000);
+    }
   }
   function sockSend(c) {
     if (!sock.connected) return;  // replay-on-connect covers the gap
