@@ -30,13 +30,13 @@ import (
 
 type Config struct {
 	PeerPubKey string
-	Relays    []string
-	Blossom   []string // upload targets for send-file
-	SecretCmd string // shell command that prints the nsec to stdout
-	Name      string // display label pushed to the shell in status events
-	Socket    string
-	StateDir  string
-	CacheDir  string // downloaded attachments
+	Relays     []string
+	Blossom    []string // upload targets for send-file
+	SecretCmd  string   // shell command that prints the nsec to stdout
+	Name       string   // display label pushed to the shell in status events
+	Socket     string
+	StateDir   string
+	CacheDir   string // downloaded attachments
 }
 
 func xdg(env, fallback string) string {
@@ -54,11 +54,11 @@ func loadConfig() Config {
 	}
 	c := Config{
 		PeerPubKey: os.Getenv("NOSTR_CHAT_PEER_PUBKEY"),
-		SecretCmd: os.Getenv("NOSTR_CHAT_SECRET_CMD"),
-		Name:      envOr("NOSTR_CHAT_DISPLAY_NAME", "Chat"),
-		Socket:    filepath.Join(runtime, "nostr-chatd.sock"),
-		StateDir:  filepath.Join(xdg("XDG_STATE_HOME", ".local/state"), "nostr-chatd"),
-		CacheDir:  filepath.Join(xdg("XDG_CACHE_HOME", ".cache"), "nostr-chatd", "media"),
+		SecretCmd:  os.Getenv("NOSTR_CHAT_SECRET_CMD"),
+		Name:       envOr("NOSTR_CHAT_DISPLAY_NAME", "Chat"),
+		Socket:     filepath.Join(runtime, "nostr-chatd.sock"),
+		StateDir:   filepath.Join(xdg("XDG_STATE_HOME", ".local/state"), "nostr-chatd"),
+		CacheDir:   filepath.Join(xdg("XDG_CACHE_HOME", ".cache"), "nostr-chatd", "media"),
 	}
 	for _, r := range strings.Split(os.Getenv("NOSTR_CHAT_RELAYS"), ",") {
 		if r = strings.TrimSpace(r); r != "" {
@@ -164,13 +164,25 @@ type Daemon struct {
 }
 
 func NewDaemon(cfg Config, keys Keys, store *Store, push PushFunc) *Daemon {
-	return &Daemon{
+	d := &Daemon{
 		cfg:   cfg,
 		keys:  keys,
 		store: store,
 		lst:   NewListener(keys, cfg.Relays),
 		push:  push,
 	}
+	// Streaming status follows actual relay connectivity, not the unix
+	// socket. Push on count change (not every 30s tick) so the header's
+	// n/m updates promptly when a relay drops without flooding IPC.
+	last := -1
+	d.lst.OnHealth = func(up []string) {
+		if len(up) == last {
+			return
+		}
+		last = len(up)
+		d.push(d.statusEvent(up, 0))
+	}
+	return d
 }
 
 // Run blocks until ctx is done. It starts the relay subscription,
@@ -427,7 +439,7 @@ func (d *Daemon) handleCommand(ctx context.Context, c Command, drainNow chan<- s
 			return
 		}
 		unread, _ := store.UnreadCount(ctx)
-		d.push(Event{Kind: EvStatus, Streaming: true, PubKey: keys.PK.Hex(), Name: cfg.Name, Unread: unread})
+		d.push(d.statusEvent(d.lst.Connected(), unread))
 		for _, m := range msgs {
 			m := m
 			d.push(Event{Kind: EvMsg, Msg: &m})
@@ -465,6 +477,16 @@ func (d *Daemon) handleCommand(ctx context.Context, c Command, drainNow chan<- s
 
 	default:
 		slog.Warn("unknown cmd", "cmd", c.Cmd)
+	}
+}
+
+// statusEvent builds the status push in one place so replay and the
+// health watchdog can't drift on which fields they fill.
+func (d *Daemon) statusEvent(up []string, unread int) Event {
+	return Event{
+		Kind: EvStatus, Streaming: len(up) > 0,
+		RelaysUp: len(up), RelaysTotal: len(d.cfg.Relays), Relays: up,
+		PubKey: d.keys.PK.Hex(), Name: d.cfg.Name, Unread: unread,
 	}
 }
 
@@ -523,5 +545,3 @@ func (d *Daemon) publishLoop(ctx context.Context, kick <-chan struct{}) {
 		}
 	}
 }
-
-

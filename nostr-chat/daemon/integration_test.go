@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/base64"
 	"encoding/json"
 	"net"
+	"net/http"
 	"net/http/httptest"
 	"path/filepath"
 	"strings"
@@ -42,21 +45,21 @@ type harness struct {
 	cancel context.CancelFunc
 }
 
-func newHarness(t *testing.T, relay, peer string) *harness {
-	return newHarnessWithKey(t, relay, peer, nostr.Generate())
+func newHarness(t *testing.T, relay, peer string, extraRelays ...string) *harness {
+	return newHarnessWithKey(t, relay, peer, nostr.Generate(), extraRelays...)
 }
 
-func newHarnessWithKey(t *testing.T, relay, peer string, sk nostr.SecretKey) *harness {
+func newHarnessWithKey(t *testing.T, relay, peer string, sk nostr.SecretKey, extraRelays ...string) *harness {
 	t.Helper()
 	dir := t.TempDir()
 	keys := Keys{SK: sk, PK: nostr.GetPublicKey(sk)}
 	cfg := Config{
 		PeerPubKey: peer,
-		Relays:    []string{relay},
-		Name:      "test",
-		Socket:    filepath.Join(dir, "sock"),
-		StateDir:  filepath.Join(dir, "state"),
-		CacheDir:  filepath.Join(dir, "cache"),
+		Relays:     append([]string{relay}, extraRelays...),
+		Name:       "test",
+		Socket:     filepath.Join(dir, "sock"),
+		StateDir:   filepath.Join(dir, "state"),
+		CacheDir:   filepath.Join(dir, "cache"),
 	}
 	store, err := OpenStore(cfg.StateDir)
 	if err != nil {
@@ -281,5 +284,114 @@ func TestStrangerIgnored(t *testing.T) {
 		}
 	case <-time.After(500 * time.Millisecond):
 		// good — nothing surfaced
+	}
+}
+
+func wsAccept(key string) string {
+	h := sha1.Sum([]byte(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"))
+	return base64.StdEncoding.EncodeToString(h[:])
+}
+
+// startZombieRelay accepts the websocket upgrade and then never reads
+// or writes another byte. To the pool it looks IsConnected(), so
+// publishConnected will try it; the old sequential loop with a shared
+// 5s context would burn that budget here before reaching a good relay.
+func startZombieRelay(t *testing.T) string {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hj, ok := w.(http.Hijacker)
+		if !ok {
+			http.Error(w, "no hijack", 500)
+			return
+		}
+		key := r.Header.Get("Sec-WebSocket-Key")
+		conn, buf, err := hj.Hijack()
+		if err != nil {
+			return
+		}
+		_, _ = buf.WriteString("HTTP/1.1 101 Switching Protocols\r\n" +
+			"Upgrade: websocket\r\nConnection: Upgrade\r\n" +
+			"Sec-WebSocket-Accept: " + wsAccept(key) + "\r\n\r\n")
+		_ = buf.Flush()
+		<-r.Context().Done()
+		_ = conn.Close()
+	}))
+	t.Cleanup(srv.Close)
+	return "ws" + strings.TrimPrefix(srv.URL, "http")
+}
+
+// TestPublishWithZombieRelay: one good relay plus one zombie that
+// upgrades then black-holes. publishConnected must still get an ack
+// from the good relay within its per-relay timeout instead of the
+// zombie head-of-line blocking the whole batch.
+func TestPublishWithZombieRelay(t *testing.T) {
+	t.Parallel()
+	good := startTestRelay(t)
+	zombie := startZombieRelay(t)
+
+	peerSK := nostr.Generate()
+	peerPK := nostr.GetPublicKey(peerSK)
+	// Zombie listed first so a sequential loop would hit it first.
+	h := newHarness(t, zombie, peerPK.Hex(), good)
+
+	// Wait for the pool to actually open the zombie so publishConnected
+	// doesn't just skip it. The good relay's REQ will land too but we
+	// only need the zombie's IsConnected() to flip.
+	deadline := time.After(5 * time.Second)
+	for {
+		if r, ok := h.d.lst.pool.Relays.Load(nostr.NormalizeURL(zombie)); ok && r != nil && r.IsConnected() {
+			break
+		}
+		select {
+		case <-deadline:
+			t.Fatal("zombie never connected")
+		case <-time.After(20 * time.Millisecond):
+		}
+	}
+
+	h.send(t, Command{Cmd: CmdSend, Text: "survives zombie"})
+	h.expect(t, EvMsg, 5*time.Second)
+
+	// 4s budget: good relay round-trip is ~ms; the per-relay 3s timeout
+	// on the zombie runs concurrently. Under the old shared-5s code the
+	// good relay never got a turn and EvSent never arrived.
+	start := time.Now()
+	sent := h.expect(t, EvSent, 4*time.Second)
+	if sent.State != StateSent {
+		t.Fatalf("sent = %+v", sent)
+	}
+	t.Logf("EvSent after %s", time.Since(start).Round(time.Millisecond))
+}
+
+// TestReplayStatusReflectsRelays: replaying before any relay connects
+// must report streaming=false; after a real subscription is up,
+// streaming=true. Guards against the previous hard-coded `true`.
+func TestReplayStatusReflectsRelays(t *testing.T) {
+	t.Parallel()
+	peerPK := nostr.GetPublicKey(nostr.Generate())
+
+	offline := newHarness(t, "ws://127.0.0.1:1", peerPK.Hex())
+	offline.send(t, Command{Cmd: CmdReplay, N: 1})
+	st := offline.expect(t, EvStatus, 5*time.Second)
+	if st.Streaming || st.RelaysUp != 0 || st.RelaysTotal != 1 {
+		t.Errorf("offline replay: streaming=%v up=%d/%d, want false 0/1",
+			st.Streaming, st.RelaysUp, st.RelaysTotal)
+	}
+
+	relay := startTestRelay(t)
+	online := newHarness(t, relay, peerPK.Hex())
+	deadline := time.After(5 * time.Second)
+	for len(online.d.lst.Connected()) == 0 {
+		select {
+		case <-deadline:
+			t.Fatal("relay never connected")
+		case <-time.After(20 * time.Millisecond):
+		}
+	}
+	online.send(t, Command{Cmd: CmdReplay, N: 1})
+	st = online.expect(t, EvStatus, 5*time.Second)
+	if !st.Streaming || st.RelaysUp != 1 || st.RelaysTotal != 1 || len(st.Relays) != 1 {
+		t.Errorf("online replay: streaming=%v up=%d/%d relays=%v, want true 1/1",
+			st.Streaming, st.RelaysUp, st.RelaysTotal, st.Relays)
 	}
 }

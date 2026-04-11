@@ -34,11 +34,16 @@ type Event struct {
 	State  State     `json:"state,omitempty"`  // sent
 	Tries  int       `json:"tries,omitempty"`  // retry: attempt count
 	// status fields
-	Streaming bool   `json:"streaming,omitempty"`
-	PubKey    string `json:"pubkey,omitempty"`
-	Name      string `json:"name,omitempty"` // display label for the panel header
-	Unread    int    `json:"unread,omitempty"`
-	Text      string `json:"text,omitempty"` // error
+	// Not omitempty: the shell must see an explicit false to flip the
+	// header to "offline" when the watchdog reports zero relays.
+	Streaming   bool     `json:"streaming"`
+	RelaysUp    int      `json:"relaysUp"`
+	RelaysTotal int      `json:"relaysTotal,omitempty"`
+	Relays      []string `json:"relays,omitempty"` // connected URLs, for tooltip
+	PubKey      string   `json:"pubkey,omitempty"`
+	Name        string   `json:"name,omitempty"` // display label for the panel header
+	Unread      int      `json:"unread,omitempty"`
+	Text        string   `json:"text,omitempty"` // error
 }
 
 // PushFunc delivers an Event to the shell. Abstracted so tests can

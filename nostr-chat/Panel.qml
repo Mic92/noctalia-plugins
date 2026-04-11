@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import qs.Commons
+import qs.Services.UI
 import qs.Widgets
 import "MsgText.js" as Txt
 
@@ -77,7 +78,11 @@ Item {
           font.bold: true
         }
         NText {
-          text: chat?.streaming ? root.tr("panel.status-connected") : root.tr("panel.status-offline")
+          // "connected · 2/3" — the count is locale-neutral so we don't
+          // have to thread args through every translation.
+          text: chat?.streaming
+            ? root.tr("panel.status-connected") + " \u00b7 " + chat.relaysUp + "/" + chat.relaysTotal
+            : root.tr("panel.status-offline")
           pointSize: Style.fontSizeXS
           color: Color.mOnSurfaceVariant
         }
@@ -89,8 +94,18 @@ Item {
         onClicked: { searchBar.visible = !searchBar.visible; if (searchBar.visible) searchField.forceActiveFocus(); }
       }
       Rectangle {
+        id: relayDot
         implicitWidth: 8; implicitHeight: 8; radius: 4
-        color: chat?.streaming ? Color.mTertiary : Color.mError
+        // green = all relays up, amber = degraded, red = none.
+        color: !chat?.streaming ? Color.mError
+             : (chat.relaysUp < chat.relaysTotal ? Color.mSecondary : Color.mTertiary)
+        HoverHandler {
+          onHoveredChanged: hovered
+            ? TooltipService.show(relayDot,
+                chat?.relays?.length ? chat.relays.join("\n")
+                                     : root.tr("panel.status-offline"))
+            : TooltipService.hide(relayDot)
+        }
       }
     }
 
