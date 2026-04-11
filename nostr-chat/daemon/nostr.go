@@ -123,14 +123,19 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 	}
 }
 
-// dropConnections force-closes every pooled relay. EnsureRelay checks
-// IsConnected() before reuse, so the next subscribeOnce dials fresh
-// sockets instead of inheriting the zombie that triggered the watchdog.
+// dropConnections force-closes every pooled relay and evicts it from
+// the pool map. Upstream Relay.Close() only cancels connectionContext;
+// the conn goroutines watch pool.Context, so r.closed never flips and
+// IsConnected() stays true. EnsureRelay/publishConnected would then
+// keep returning the poisoned handle, with every Publish failing fast
+// on "Close() called" while health still reported N/N — so we delete
+// the entry too and let the next subscribeOnce redial from scratch.
 func (l *Listener) dropConnections() {
-	for _, r := range l.pool.Relays.Range {
+	for url, r := range l.pool.Relays.Range {
 		if r != nil {
 			r.Close()
 		}
+		l.pool.Relays.Delete(url)
 	}
 }
 
