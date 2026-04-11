@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	_ "modernc.org/sqlite"
 )
@@ -20,7 +21,8 @@ var schema string
 // we don't need WAL-level concurrency tricks — but WAL is still set so
 // a stray `sqlite3` CLI read won't block the listen loop mid-INSERT.
 type Store struct {
-	db *sql.DB
+	db   *sql.DB
+	lock *os.File
 }
 
 // Message is the shape we hand to the shell. Direction is derived from
@@ -62,6 +64,18 @@ func OpenStore(dir string) (*Store, error) {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return nil, err
 	}
+	// Exclusive flock on the state dir: a second daemon (e.g. systemd
+	// restarting under a dev.sh instance) would otherwise unlink the
+	// live socket and race InsertMessage's ON CONFLICT, swallowing
+	// pushes meant for the connected shell. Fail loud instead.
+	lf, err := os.OpenFile(filepath.Join(dir, "lock"), os.O_RDWR|os.O_CREATE, 0o600)
+	if err != nil {
+		return nil, err
+	}
+	if err := syscall.Flock(int(lf.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); err != nil {
+		lf.Close()
+		return nil, fmt.Errorf("state dir locked by another nostr-chatd: %w", err)
+	}
 	db, err := sql.Open("sqlite", filepath.Join(dir, "messages.db")+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)")
 	if err != nil {
 		return nil, err
@@ -90,10 +104,15 @@ func OpenStore(dir string) (*Store, error) {
 		db.Exec(`DROP TABLE outbox`)
 		db.Exec(schema)
 	}
-	return &Store{db: db}, nil
+	return &Store{db: db, lock: lf}, nil
 }
 
-func (s *Store) Close() error { return s.db.Close() }
+func (s *Store) Close() error {
+	if s.lock != nil {
+		s.lock.Close()
+	}
+	return s.db.Close()
+}
 
 // InsertMessage returns false if the id already existed. Dedup lives
 // here, not in memory — the rumor id is the primary key so replaying
