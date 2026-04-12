@@ -2,11 +2,11 @@ module github.com/Mic92/dotfiles/pkgs/nostr-chatd
 
 go 1.25
 
-// Tracks gitnostr.com/.../nostrlib master plus three race fixes: subMany
+// Tracks gitnostr.com/.../nostrlib master plus four race fixes: subMany
 // no longer mutates the caller's urls slice, slicestore locks the read
 // side, and Subscription.dispatchEvent holds mu so the unsub close
 // can't race the send. Drop once upstream takes them.
-replace fiatjaf.com/nostr => github.com/Mic92/nostr v0.0.0-20260412120438-549f7af74682
+replace fiatjaf.com/nostr => github.com/Mic92/nostr v0.0.0-20260412122041-6fb975ee70da
 
 require (
 	fiatjaf.com/nostr v0.0.0-20260222210222-32dd39da81f3
