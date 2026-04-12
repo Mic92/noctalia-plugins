@@ -12,6 +12,7 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"flag"
@@ -39,48 +40,36 @@ type Config struct {
 	CacheDir   string // downloaded attachments
 }
 
-func xdg(env, fallback string) string {
-	if v := os.Getenv(env); v != "" {
-		return v
-	}
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, fallback)
-}
-
 func loadConfig() Config {
-	runtime := os.Getenv("XDG_RUNTIME_DIR")
-	if runtime == "" {
-		runtime = fmt.Sprintf("/run/user/%d", os.Getuid())
+	home, _ := os.UserHomeDir()
+	xdg := func(env, fallback string) string {
+		return cmp.Or(os.Getenv(env), filepath.Join(home, fallback))
 	}
+	runtime := cmp.Or(os.Getenv("XDG_RUNTIME_DIR"), fmt.Sprintf("/run/user/%d", os.Getuid()))
 	c := Config{
 		PeerPubKey: os.Getenv("NOSTR_CHAT_PEER_PUBKEY"),
 		SecretCmd:  os.Getenv("NOSTR_CHAT_SECRET_CMD"),
-		Name:       envOr("NOSTR_CHAT_DISPLAY_NAME", "Chat"),
+		Name:       cmp.Or(os.Getenv("NOSTR_CHAT_DISPLAY_NAME"), "Chat"),
 		Socket:     filepath.Join(runtime, "nostr-chatd.sock"),
 		StateDir:   filepath.Join(xdg("XDG_STATE_HOME", ".local/state"), "nostr-chatd"),
 		CacheDir:   filepath.Join(xdg("XDG_CACHE_HOME", ".cache"), "nostr-chatd", "media"),
 	}
-	for _, r := range strings.Split(os.Getenv("NOSTR_CHAT_RELAYS"), ",") {
-		if r = strings.TrimSpace(r); r != "" {
-			c.Relays = append(c.Relays, r)
-		}
-	}
-	for _, r := range strings.Split(os.Getenv("NOSTR_CHAT_BLOSSOM"), ",") {
-		if r = strings.TrimSpace(r); r != "" {
-			c.Blossom = append(c.Blossom, r)
-		}
-	}
+	c.Relays = splitList(os.Getenv("NOSTR_CHAT_RELAYS"))
+	c.Blossom = splitList(os.Getenv("NOSTR_CHAT_BLOSSOM"))
 	flag.StringVar(&c.Socket, "socket", c.Socket, "unix socket path")
 	flag.StringVar(&c.StateDir, "state", c.StateDir, "sqlite state dir")
 	flag.Parse()
 	return c
 }
 
-func envOr(k, d string) string {
-	if v := os.Getenv(k); v != "" {
-		return v
+func splitList(s string) []string {
+	var out []string
+	for _, r := range strings.Split(s, ",") {
+		if r = strings.TrimSpace(r); r != "" {
+			out = append(out, r)
+		}
 	}
-	return d
+	return out
 }
 
 // fetchSecret runs a shell command and returns its trimmed stdout.
@@ -228,7 +217,13 @@ func (d *Daemon) Run(ctx context.Context, br *Bridge) error {
 	// rumor's IPC push. The main loop only does fast work: sqlite +
 	// crypto + a socket write.
 	drainNow := make(chan struct{}, 1)
-	drainNow <- struct{}{} // flush anything a prior crash left behind
+	kick := func() {
+		select {
+		case drainNow <- struct{}{}:
+		default:
+		}
+	}
+	kick() // flush anything a prior crash left behind
 	go d.publishLoop(ctx, drainNow)
 
 	for {
@@ -240,7 +235,7 @@ func (d *Daemon) Run(ctx context.Context, br *Bridge) error {
 			d.handleRumor(ctx, r, startedAt)
 		case c := <-cmds:
 			slog.Debug("command", "cmd", c.Cmd, "n", c.N, "reply_to", c.ReplyTo, "path", c.Path)
-			d.handleCommand(ctx, c, drainNow)
+			d.handleCommand(ctx, c, kick)
 		}
 	}
 }
@@ -268,21 +263,20 @@ func (d *Daemon) handleRumor(ctx context.Context, r Rumor, startedAt int64) {
 		// kind 14 chat, kind 15 file, or anything else the peer wraps —
 		// store them all, the UI only cares about in/out.
 		mine := r.PubKey == keys.PK.Hex()
-		fromPeer := r.PubKey == cfg.PeerPubKey
-		if !mine && !fromPeer {
+		if !mine && r.PubKey != cfg.PeerPubKey {
 			return // e.g. github-notifier spamming our p-tag
 		}
 		content := r.Content
 		if r.Kind == KindFileMessage {
-			mt := tagValue(r.Tags, "file-type")
-			content = fmt.Sprintf("📎 %s", mt)
-			if mt == "" {
-				content = "📎 file"
-			}
+			content = "📎 " + cmp.Or(tagValue(r.Tags, "file-type"), "file")
+		}
+		dir := DirIn
+		if mine {
+			dir = DirOut
 		}
 		m := Message{
 			ID: r.ID, PubKey: r.PubKey, Content: content, TS: r.TS,
-			Dir:     map[bool]Dir{true: DirOut, false: DirIn}[mine],
+			Dir:     dir,
 			Read:    mine || r.TS < startedAt,
 			ReplyTo: r.ETag, // kind-14 e-tag = threaded reply target
 		}
@@ -324,7 +318,7 @@ func (d *Daemon) handleRumor(ctx context.Context, r Rumor, startedAt int64) {
 	}
 }
 
-func (d *Daemon) handleCommand(ctx context.Context, c Command, drainNow chan<- struct{}) {
+func (d *Daemon) handleCommand(ctx context.Context, c Command, kick func()) {
 	store, lst, cfg, keys := d.store, d.lst, d.cfg, d.keys
 	switch c.Cmd {
 	case CmdSend:
@@ -354,10 +348,7 @@ func (d *Daemon) handleCommand(ctx context.Context, c Command, drainNow chan<- s
 			slog.Error("enqueue", "err", err)
 			return
 		}
-		select {
-		case drainNow <- struct{}{}:
-		default:
-		}
+		kick()
 
 	case CmdSendFile:
 		if c.Path == "" {
@@ -422,10 +413,7 @@ func (d *Daemon) handleCommand(ctx context.Context, c Command, drainNow chan<- s
 				slog.Error("enqueue file", "err", err)
 				return
 			}
-			select {
-			case drainNow <- struct{}{}:
-			default:
-			}
+			kick()
 		}(c.Path, c.Unlink)
 
 	case CmdReplay:
@@ -458,10 +446,7 @@ func (d *Daemon) handleCommand(ctx context.Context, c Command, drainNow chan<- s
 			slog.Warn("retry-now", "err", err)
 			return
 		}
-		select {
-		case drainNow <- struct{}{}:
-		default:
-		}
+		kick()
 
 	case CmdCancel:
 		if c.ID == "" {

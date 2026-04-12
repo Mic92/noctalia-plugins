@@ -1,7 +1,9 @@
-fiatjaf.com/nostr v0.0.0-20260222210222-32dd39da81f3 h1:Dybe60NIdmuPtg+VOReMQdTxBNJx/bpW9DIavvFDGp0=
-fiatjaf.com/nostr v0.0.0-20260222210222-32dd39da81f3/go.mod h1:ue7yw0zHfZj23Ml2kVSdBx0ENEaZiuvGxs/8VEN93FU=
+fiatjaf.com/lib v0.3.6 h1:GRZNSxHI2EWdjSKVuzaT+c0aifLDtS16SzkeJaHyJfY=
+fiatjaf.com/lib v0.3.6/go.mod h1:UlHaZvPHj25PtKLh9GjZkUHRmQ2xZ8Jkoa4VRaLeeQ8=
 github.com/ImVexed/fasturl v0.0.0-20230304231329-4e41488060f3 h1:ClzzXMDDuUbWfNNZqGeYq4PnYOlwlOVIvSyNaIy0ykg=
 github.com/ImVexed/fasturl v0.0.0-20230304231329-4e41488060f3/go.mod h1:we0YA5CsBbH5+/NUzC/AlMmxaDtWlXeNsqrwXjTzmzA=
+github.com/Mic92/nostr v0.0.0-20260412120438-549f7af74682 h1:pzaWpmhd1ZquGIG7D6ny6X+aHkqoZbQ4A+v95nYo1Dk=
+github.com/Mic92/nostr v0.0.0-20260412120438-549f7af74682/go.mod h1:1cmygNC87Pw06/WjkZqDV+Xo6rV10kpTjzuayosIX4Y=
 github.com/PowerDNS/lmdb-go v1.9.3 h1:AUMY2pZT8WRpkEv39I9Id3MuoHd+NZbTVpNhruVkPTg=
 github.com/PowerDNS/lmdb-go v1.9.3/go.mod h1:TE0l+EZK8Z1B4dx070ZxkWTlp8RG1mjN0/+FkFRQMtU=
 github.com/aead/siphash v1.0.1/go.mod h1:Nywa3cDsYNNK3gaciGTWPwHt0wlpNV15vwmswBAUSII=
