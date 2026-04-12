@@ -63,9 +63,15 @@ type Rumor struct {
 // kind-7 reactions (read receipts) and kind-15 files the same way.
 type Listener struct {
 	pool   *nostr.Pool
+	poolMu sync.RWMutex
 	kr     nostr.Keyer
 	keys   Keys
 	relays []string
+	// resub is kicked by publishConnected when a relay socket looks
+	// alive but swallowed the EVENT (no OK within 3s). Run drains it
+	// and tears the pool down so the redial can pick a working address
+	// family instead of waiting ~90s for the library's ping reaper.
+	resub chan struct{}
 
 	// OnHealth is invoked from the liveness watchdog with the set of
 	// currently-connected relay URLs. The daemon hooks this to push
@@ -74,15 +80,24 @@ type Listener struct {
 	OnHealth func(connected []string)
 }
 
-func NewListener(keys Keys, relays []string) *Listener {
-	kr := keyer.NewPlainKeySigner(keys.SK)
-	pool := nostr.NewPool(nostr.PoolOptions{
+func newPool(kr nostr.Keyer) *nostr.Pool {
+	return nostr.NewPool(nostr.PoolOptions{
 		// Relays that require NIP-42 auth will drop 1059 subs otherwise.
 		AuthRequiredHandler: func(ctx context.Context, ev *nostr.Event) error {
 			return kr.SignEvent(ctx, ev)
 		},
 	})
-	return &Listener{pool: pool, kr: kr, keys: keys, relays: relays}
+}
+
+func NewListener(keys Keys, relays []string) *Listener {
+	kr := keyer.NewPlainKeySigner(keys.SK)
+	return &Listener{
+		pool:   newPool(kr),
+		kr:     kr,
+		keys:   keys,
+		relays: relays,
+		resub:  make(chan struct{}, 1),
+	}
 }
 
 // Run blocks until ctx is done, emitting unwrapped rumors on ch.
@@ -102,7 +117,16 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 		// unnoticed while publishes (which open fresh connections)
 		// still succeed. Force a full resubscribe.
 		subCtx, subCancel := context.WithCancel(ctx)
-		go l.watchLiveness(subCtx, func() { l.dropConnections(); subCancel() })
+		reset := func() { l.resetPool(); subCancel() }
+		go l.watchLiveness(subCtx, reset)
+		go func() {
+			select {
+			case <-subCtx.Done():
+			case <-l.resub:
+				slog.Info("publish timeout, forcing resubscribe")
+				reset()
+			}
+		}()
 		l.subscribeOnce(subCtx, since(), ch)
 		subCancel()
 		// A subscription that ran for a while was healthy — reset
@@ -123,20 +147,22 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 	}
 }
 
-// dropConnections force-closes every pooled relay and evicts it from
-// the pool map. Upstream Relay.Close() only cancels connectionContext;
-// the conn goroutines watch pool.Context, so r.closed never flips and
-// IsConnected() stays true. EnsureRelay/publishConnected would then
-// keep returning the poisoned handle, with every Publish failing fast
-// on "Close() called" while health still reported N/N — so we delete
-// the entry too and let the next subscribeOnce redial from scratch.
-func (l *Listener) dropConnections() {
-	for url, r := range l.pool.Relays.Range {
-		if r != nil {
-			r.Close()
-		}
-		l.pool.Relays.Delete(url)
-	}
+// resetPool throws the whole pool away and installs a fresh one.
+// Upstream Relay.Close only cancels connectionContext, but the conn
+// goroutines block on pool.Context — so the websocket fd, the read
+// loop and the 29s pinger all survive a per-relay Close. The previous
+// dropConnections therefore leaked one socket per relay on every
+// suspend/resume (and the leaked v4 socket kept happily pinging while
+// the active v6 one was black-holed). Cancelling the pool's root
+// context is the only handle that actually tears the conns down; the
+// next subscribeOnce then redials from scratch and Go's happy-eyeballs
+// gets another chance at the address family that still routes.
+func (l *Listener) resetPool() {
+	l.poolMu.Lock()
+	old := l.pool
+	l.pool = newPool(l.kr)
+	l.poolMu.Unlock()
+	old.Close("reset")
 }
 
 // watchLiveness ticks every 30s and forces a resubscribe (via cancel)
@@ -196,9 +222,12 @@ func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
 // websocket to. Cheap enough to call from the replay handler so the
 // status it reports matches what the watchdog sees.
 func (l *Listener) Connected() []string {
+	l.poolMu.RLock()
+	p := l.pool
+	l.poolMu.RUnlock()
 	var up []string
 	for _, url := range l.relays {
-		if r, ok := l.pool.Relays.Load(nostr.NormalizeURL(url)); ok && r != nil && r.IsConnected() {
+		if r, ok := p.Relays.Load(nostr.NormalizeURL(url)); ok && r != nil && r.IsConnected() {
 			up = append(up, url)
 		}
 	}
@@ -211,12 +240,37 @@ func (l *Listener) subscribeOnce(ctx context.Context, since int64, ch chan<- Rum
 		adj = 0
 	}
 	slog.Info("subscribing", "relays", l.relays, "since", since, "adjusted", int64(adj))
+	l.poolMu.RLock()
+	p := l.pool
+	l.poolMu.RUnlock()
 	filter := nostr.Filter{
 		Kinds: []nostr.Kind{nostr.KindGiftWrap},
 		Tags:  nostr.TagMap{"p": {l.keys.PK.Hex()}},
 		Since: adj,
 	}
-	for ev := range l.pool.SubscribeMany(ctx, l.relays, filter, nostr.SubscriptionOptions{}) {
+	// One SubscribeMany per relay, merged here. With a single multi-URL
+	// call upstream tracks `pending` on a striped xsync.Counter, and
+	// when our resubscribe cancels ctx the per-relay goroutines can
+	// both observe Value()==0 and double-close the events channel
+	// (panic). One URL per call → pending=1 → no race, and we get to
+	// dedup on rumor id (post-unwrap) instead of wrap id anyway.
+	events := make(chan nostr.RelayEvent)
+	var wg sync.WaitGroup
+	for _, url := range l.relays {
+		wg.Add(1)
+		go func(url string) {
+			defer wg.Done()
+			for ev := range p.SubscribeMany(ctx, []string{url}, filter, nostr.SubscriptionOptions{}) {
+				select {
+				case events <- ev:
+				case <-ctx.Done():
+					return
+				}
+			}
+		}(url)
+	}
+	go func() { wg.Wait(); close(events) }()
+	for ev := range events {
 		rumor, err := nip59.GiftUnwrap(ev.Event,
 			func(pk nostr.PubKey, ct string) (string, error) {
 				return l.kr.Decrypt(ctx, ct, pk)
@@ -383,14 +437,19 @@ func (l *Listener) PublishRaw(ctx context.Context, rumorID, themJSON, usJSON str
 
 // publishConnected fans the wraps out to every already-open relay in
 // parallel, each with its own 3s deadline. A zombie connection (TCP up,
-// app dead — the state watchLiveness eventually reaps) used to soak the
-// shared timeout and starve the good relays; now it just times out on
-// its own while the others ack.
+// app dead) just times out on its own while the others ack — and now
+// also triggers a pool reset so the next attempt redials instead of
+// reusing the black-holed socket until the library's ping reaper
+// notices ~90s later.
 func (l *Listener) publishConnected(ctx context.Context, rumorID string, evs ...nostr.Event) error {
+	l.poolMu.RLock()
+	p := l.pool
+	l.poolMu.RUnlock()
 	var ok, fail, skip atomic.Int32
+	var stuck atomic.Bool
 	var wg sync.WaitGroup
 	for _, url := range l.relays {
-		r, loaded := l.pool.Relays.Load(nostr.NormalizeURL(url))
+		r, loaded := p.Relays.Load(nostr.NormalizeURL(url))
 		if !loaded || r == nil || !r.IsConnected() {
 			skip.Add(1)
 			continue
@@ -401,18 +460,35 @@ func (l *Listener) publishConnected(ctx context.Context, rumorID string, evs ...
 			pctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 			defer cancel()
 			for _, ev := range evs {
-				if err := r.Publish(pctx, ev); err != nil {
-					fail.Add(1)
-					slog.Debug("relay rejected", "relay", url, "err", err)
-				} else {
+				err := r.Publish(pctx, ev)
+				if err == nil {
 					ok.Add(1)
 					slog.Debug("relay accepted", "relay", url)
+					continue
 				}
+				fail.Add(1)
+				if errors.Is(err, context.DeadlineExceeded) && ctx.Err() == nil {
+					// Write went into the kernel send-buf but no OK came
+					// back: the path is dead even though IsConnected()
+					// says otherwise. Flag for a redial and don't shove
+					// the second wrap down the same pipe.
+					stuck.Store(true)
+					slog.Debug("relay timeout", "relay", url)
+				} else {
+					slog.Debug("relay rejected", "relay", url, "err", err)
+				}
+				return
 			}
 		}(url, r)
 	}
 	wg.Wait()
 	slog.Debug("publish done", "rumor", rumorID[:8], "ok", ok.Load(), "fail", fail.Load(), "skip", skip.Load())
+	if stuck.Load() {
+		select {
+		case l.resub <- struct{}{}:
+		default:
+		}
+	}
 	if ok.Load() == 0 {
 		if int(skip.Load()) == len(l.relays) {
 			return ErrNoRelayConnected
