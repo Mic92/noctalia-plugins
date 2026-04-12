@@ -4,7 +4,7 @@ buildGoModule {
   pname = "nostr-chatd";
   version = "0.1.0";
   src = ./.;
-  vendorHash = "sha256-CgmvTPG+GMIJiXm0Q44/ti/yIKAq1JqIsc9HZxzLHU4=";
+  vendorHash = "sha256-j5zsJhU5RAB1uF2ZayQJ+3CotLWCh/PTY/Ag5TQRf90=";
 
   # modernc.org/sqlite is pure Go — no CGO, no system deps.
   env.CGO_ENABLED = "0";
