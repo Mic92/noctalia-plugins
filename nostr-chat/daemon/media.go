@@ -341,10 +341,8 @@ func detectContentType(filePath string, data []byte) string {
 }
 
 func tagValue(tags nostr.Tags, key string) string {
-	for _, t := range tags {
-		if len(t) >= 2 && t[0] == key {
-			return t[1]
-		}
+	if t := tags.Find(key); t != nil {
+		return t[1]
 	}
 	return ""
 }

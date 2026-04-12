@@ -9,7 +9,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"slices"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -296,9 +298,12 @@ func wsAccept(key string) string {
 // or writes another byte. To the pool it looks IsConnected(), so
 // publishConnected will try it; the old sequential loop with a shared
 // 5s context would burn that budget here before reaching a good relay.
-func startZombieRelay(t *testing.T) string {
+// dials counts every upgrade so tests can assert a redial happened.
+func startZombieRelay(t *testing.T) (url string, dials *atomic.Int32) {
 	t.Helper()
+	dials = &atomic.Int32{}
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		dials.Add(1)
 		hj, ok := w.(http.Hijacker)
 		if !ok {
 			http.Error(w, "no hijack", 500)
@@ -317,7 +322,7 @@ func startZombieRelay(t *testing.T) string {
 		_ = conn.Close()
 	}))
 	t.Cleanup(srv.Close)
-	return "ws" + strings.TrimPrefix(srv.URL, "http")
+	return "ws" + strings.TrimPrefix(srv.URL, "http"), dials
 }
 
 // TestPublishWithZombieRelay: one good relay plus one zombie that
@@ -327,7 +332,7 @@ func startZombieRelay(t *testing.T) string {
 func TestPublishWithZombieRelay(t *testing.T) {
 	t.Parallel()
 	good := startTestRelay(t)
-	zombie := startZombieRelay(t)
+	zombie, _ := startZombieRelay(t)
 
 	peerSK := nostr.Generate()
 	peerPK := nostr.GetPublicKey(peerSK)
@@ -339,7 +344,7 @@ func TestPublishWithZombieRelay(t *testing.T) {
 	// only need the zombie's IsConnected() to flip.
 	deadline := time.After(5 * time.Second)
 	for {
-		if r, ok := h.d.lst.pool.Relays.Load(nostr.NormalizeURL(zombie)); ok && r != nil && r.IsConnected() {
+		if slices.Contains(h.d.lst.Connected(), zombie) {
 			break
 		}
 		select {
@@ -361,6 +366,45 @@ func TestPublishWithZombieRelay(t *testing.T) {
 		t.Fatalf("sent = %+v", sent)
 	}
 	t.Logf("EvSent after %s", time.Since(start).Round(time.Millisecond))
+}
+
+// TestZombieRelayTriggersRedial: a relay whose socket is up but never
+// answers OK (the dual-stack/suspend black-hole) must not be reused
+// indefinitely. The 3s publish timeout should kick a pool reset so the
+// next subscribeOnce redials — happy-eyeballs gets another shot at the
+// address family that still routes, instead of waiting ~90s for the
+// library's ping reaper.
+func TestZombieRelayTriggersRedial(t *testing.T) {
+	t.Parallel()
+	zombie, dials := startZombieRelay(t)
+
+	peerPK := nostr.GetPublicKey(nostr.Generate())
+	h := newHarness(t, zombie, peerPK.Hex())
+
+	deadline := time.After(5 * time.Second)
+	for dials.Load() == 0 {
+		select {
+		case <-deadline:
+			t.Fatal("zombie never dialed")
+		case <-time.After(20 * time.Millisecond):
+		}
+	}
+
+	h.send(t, Command{Cmd: CmdSend, Text: "into the void"})
+	h.expect(t, EvMsg, 5*time.Second)
+	// publishConnected hits the 3s deadline, flags the socket stuck,
+	// and Run swaps the pool. publishLoop then sees no connected relay
+	// on the fresh pool and reports the defer.
+	h.expect(t, EvRetry, 5*time.Second)
+
+	deadline = time.After(5 * time.Second)
+	for dials.Load() < 2 {
+		select {
+		case <-deadline:
+			t.Fatalf("no redial after timeout, dials=%d", dials.Load())
+		case <-time.After(20 * time.Millisecond):
+		}
+	}
 }
 
 // TestReplayStatusReflectsRelays: replaying before any relay connects

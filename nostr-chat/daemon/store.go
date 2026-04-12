@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"syscall"
 
@@ -194,9 +195,7 @@ func (s *Store) Recent(ctx context.Context, n int) ([]Message, error) {
 		out = append(out, m)
 	}
 	// Reverse to chronological — cheaper than ORDER BY ASC + OFFSET math.
-	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
-		out[i], out[j] = out[j], out[i]
-	}
+	slices.Reverse(out)
 	return out, rows.Err()
 }
 
