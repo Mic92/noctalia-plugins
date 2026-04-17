@@ -471,6 +471,7 @@ Item {
 
       _kanshiPendingProfile = newConfig;
       kanshiWriteProcess.command = ["sh", "-c", "mkdir -p ~/.config/kanshi && cat > ~/.config/kanshi/config"];
+      kanshiWriteProcess.stdinEnabled = true;
       kanshiWriteProcess.running = true;
     }
 
@@ -674,9 +675,9 @@ Item {
     stderr: StdioCollector {}
     stdinEnabled: true
 
-    onStarted: function () {
+    onStarted: {
       write(displayService._kanshiPendingProfile);
-      closeStdin();
+      stdinEnabled = false;
     }
 
     onExited: function (exitCode) {
