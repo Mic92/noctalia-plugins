@@ -29,7 +29,13 @@
     "external-below": "Внешний снизу",
     "external-only": "Только внешний",
     "laptop-only": "Только ноутбук",
-    "presets": "Пресеты"
+    "presets": "Пресеты",
+    "remember-monitors": "Remember monitors",
+    "remember-monitors-hint": "Save current layout to kanshi for automatic restore",
+    "kanshi-overwrite-confirm": "Profile \"{name}\" already exists in kanshi config. Overwrite?",
+    "kanshi-not-installed": "kanshi is not installed",
+    "kanshi-not-running": "Saved to kanshi config, but kanshi is not running",
+    "kanshi-saved": "Saved kanshi profile: {name}"
   },
   "settings": {
     "title": "Настройки конфигурации дисплея",

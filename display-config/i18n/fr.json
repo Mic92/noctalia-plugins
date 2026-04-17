@@ -29,7 +29,13 @@
     "external-below": "Externe en dessous",
     "external-only": "Externe uniquement",
     "laptop-only": "Portable uniquement",
-    "presets": "Préréglages"
+    "presets": "Préréglages",
+    "remember-monitors": "Remember monitors",
+    "remember-monitors-hint": "Save current layout to kanshi for automatic restore",
+    "kanshi-overwrite-confirm": "Profile \"{name}\" already exists in kanshi config. Overwrite?",
+    "kanshi-not-installed": "kanshi is not installed",
+    "kanshi-not-running": "Saved to kanshi config, but kanshi is not running",
+    "kanshi-saved": "Saved kanshi profile: {name}"
   },
   "settings": {
     "title": "Paramètres de configuration d'affichage",
