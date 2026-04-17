@@ -769,5 +769,8 @@ Item {
     function keep() {
       displayService.confirmRevert();
     }
+    function kanshi() {
+      displayService.saveToKanshi(false);
+    }
   }
 }
