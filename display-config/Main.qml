@@ -435,8 +435,10 @@ Item {
         return;
       }
       _kanshiInteractive = interactive !== false;
-      // Step 1: check if kanshi is installed
-      kanshiCheckProcess.running = true;
+      // Writing the config doesn't require kanshi to be installed — it's
+      // just a file. The post-write reload attempt covers both the
+      // "not installed" and "not running" cases with a single warning.
+      kanshiReadProcess.running = true;
     }
 
     function _kanshiDoWrite(forceOverwrite) {
@@ -640,24 +642,7 @@ Item {
 
   // --- Kanshi file I/O processes ------------------------------------------
 
-  // Step 1: check if kanshi is installed
-  Process {
-    id: kanshiCheckProcess
-    command: ["sh", "-c", "command -v kanshi"]
-    stdout: StdioCollector {}
-
-    onExited: function (exitCode) {
-      if (exitCode !== 0) {
-        ToastService.showError(
-          pluginApi?.tr("panel.kanshi-not-installed") || "kanshi is not installed");
-        return;
-      }
-      // Step 2: read existing config
-      kanshiReadProcess.running = true;
-    }
-  }
-
-  // Step 2: read existing kanshi config (may not exist yet)
+  // Step 1: read existing kanshi config (may not exist yet)
   Process {
     id: kanshiReadProcess
     command: ["sh", "-c", "cat ~/.config/kanshi/config 2>/dev/null || true"]
@@ -687,12 +672,14 @@ Item {
         return;
       }
       Logger.i("DisplayConfig", "Saved kanshi profile:", displayService._kanshiPendingName);
-      // Step 4: reload kanshi (if running)
+      // Step 3: reload kanshi (if running)
       kanshiReloadProcess.running = true;
     }
   }
 
-  // Step 4: SIGHUP kanshi to reload, or warn if not running
+  // Step 3: SIGHUP kanshi to reload. Failure (exit != 0) means kanshi is
+  // either not installed or not running — same user-visible consequence
+  // (no auto-apply), so we show one unified warning.
   Process {
     id: kanshiReloadProcess
     command: ["pkill", "-HUP", "kanshi"]
@@ -700,9 +687,8 @@ Item {
 
     onExited: function (exitCode) {
       if (exitCode !== 0) {
-        // kanshi not running
         ToastService.showWarning(
-          pluginApi?.tr("panel.kanshi-not-running") || "Saved to kanshi config, but kanshi is not running");
+          pluginApi?.tr("panel.kanshi-inactive") || "Install and start kanshi to automatically apply monitor setups");
       } else {
         ToastService.showNotice(
           pluginApi?.tr("panel.kanshi-saved") || "Saved to kanshi config",

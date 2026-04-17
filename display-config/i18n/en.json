@@ -33,8 +33,7 @@
     "remember-monitors": "Remember monitors",
     "remember-monitors-hint": "Save current layout to kanshi for automatic restore",
     "kanshi-overwrite-confirm": "A profile for this monitor setup already exists in kanshi config. Overwrite?",
-    "kanshi-not-installed": "kanshi is not installed",
-    "kanshi-not-running": "Saved to kanshi config, but kanshi is not running",
+    "kanshi-inactive": "Install and start kanshi to automatically apply monitor setups",
     "kanshi-saved": "Saved to kanshi config"
   },
   "settings": {
