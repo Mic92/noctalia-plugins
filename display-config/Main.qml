@@ -336,6 +336,146 @@ Item {
       runNextApply();
     }
 
+    // --- Kanshi integration -------------------------------------------------
+
+    // Pending kanshi profile text and name, set before the async read kicks off.
+    property string _kanshiPendingProfile: ""
+    property string _kanshiPendingName: ""
+    property bool _kanshiInteractive: true
+
+    function _kanshiProfileName() {
+      var models = [];
+      for (var i = 0; i < outputs.length; i++) {
+        var m = outputs[i].model || outputs[i].name;
+        models.push(m);
+      }
+      models.sort();
+      return models.join("_").replace(/[^A-Za-z0-9_.-]/g, "-");
+    }
+
+    function _kanshiOutputLine(o) {
+      var make = (o.make && o.make.trim() !== "") ? o.make : "Unknown";
+      var model = (o.model && o.model.trim() !== "") ? o.model : "Unknown";
+      var serial = (o.serial && o.serial.trim && o.serial.trim() !== "") ? o.serial : "*";
+      var criteria = '"' + make + ' ' + model + ' ' + serial + '"';
+
+      if (!o.enabled)
+        return "    output " + criteria + " disable";
+
+      var parts = ["    output", criteria];
+      if (o.currentMode) {
+        // currentMode is "WxH@rate", kanshi wants "WxH@rateHz"
+        parts.push("mode " + o.currentMode + "Hz");
+      }
+      parts.push("position " + o.position.x + "," + o.position.y);
+      if (o.scale !== undefined && o.scale !== 1.0)
+        parts.push("scale " + o.scale);
+      if (o.transform && o.transform !== "normal")
+        parts.push("transform " + o.transform);
+      parts.push("enable");
+      return parts.join(" ");
+    }
+
+    function _kanshiBuildProfile() {
+      var name = _kanshiProfileName();
+      var lines = ["profile " + name + " {"];
+      for (var i = 0; i < outputs.length; i++)
+        lines.push(_kanshiOutputLine(outputs[i]));
+      lines.push("}");
+      return { "name": name, "text": lines.join("\n") + "\n" };
+    }
+
+    function _kanshiReplaceProfile(existingConfig, profileName, newProfileText) {
+      var lines = existingConfig.split("\n");
+      var result = [];
+      var inBlock = false;
+      var depth = 0;
+      var pattern = new RegExp("^\\s*profile\\s+" + profileName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "\\s*\\{");
+
+      for (var i = 0; i < lines.length; i++) {
+        if (!inBlock && pattern.test(lines[i])) {
+          inBlock = true;
+          depth = 0;
+          // Count braces on this line
+          for (var j = 0; j < lines[i].length; j++) {
+            if (lines[i][j] === '{') depth++;
+            else if (lines[i][j] === '}') depth--;
+          }
+          if (depth <= 0) {
+            inBlock = false;
+          }
+          continue; // skip this line (part of old block)
+        }
+        if (inBlock) {
+          for (var k = 0; k < lines[i].length; k++) {
+            if (lines[i][k] === '{') depth++;
+            else if (lines[i][k] === '}') depth--;
+          }
+          if (depth <= 0)
+            inBlock = false;
+          continue; // skip this line (part of old block)
+        }
+        result.push(lines[i]);
+      }
+
+      // Remove trailing blank lines, then append new profile
+      while (result.length > 0 && result[result.length - 1].trim() === "")
+        result.pop();
+      if (result.length > 0)
+        result.push(""); // blank line separator
+      result.push(newProfileText);
+      return result.join("\n");
+    }
+
+    // interactive: if true, show overwrite confirmation toast on duplicate;
+    //              if false (IPC), silently overwrite.
+    function saveToKanshi(interactive) {
+      if (outputs.length === 0) {
+        Logger.w("DisplayConfig", "No outputs to save to kanshi");
+        return;
+      }
+      _kanshiInteractive = interactive !== false;
+      // Step 1: check if kanshi is installed
+      kanshiCheckProcess.running = true;
+    }
+
+    function _kanshiDoWrite(forceOverwrite) {
+      var profile = _kanshiBuildProfile();
+      _kanshiPendingName = profile.name;
+
+      var existing = kanshiReadProcess.stdout.text || "";
+      var hasProfile = existing.length > 0
+          && new RegExp("^\\s*profile\\s+" + profile.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "\\s*\\{", "m").test(existing);
+
+      if (hasProfile && !forceOverwrite && _kanshiInteractive) {
+        // Ask user to confirm overwrite via toast
+        ToastService.showNotice(
+          pluginApi?.tr("panel.kanshi-overwrite-confirm", { name: profile.name }) || ("Profile \"" + profile.name + "\" exists. Overwrite?"),
+          "", "alert-triangle", 10000, "Overwrite", function() {
+            displayService._kanshiDoWrite(true);
+          });
+        return;
+      }
+
+      var newConfig;
+      if (hasProfile) {
+        newConfig = _kanshiReplaceProfile(existing, profile.name, profile.text);
+      } else {
+        // Append
+        var trimmed = existing.replace(/\s+$/, "");
+        if (trimmed.length > 0)
+          newConfig = trimmed + "\n\n" + profile.text;
+        else
+          newConfig = profile.text;
+      }
+
+      _kanshiPendingProfile = newConfig;
+      kanshiWriteProcess.command = ["sh", "-c", "mkdir -p ~/.config/kanshi && cat > ~/.config/kanshi/config"];
+      kanshiWriteProcess.running = true;
+    }
+
+    // --- end kanshi integration ---------------------------------------------
+
     function saveCurrentAsPreset(name) {
       var cfg = pluginApi?.pluginSettings || {};
       if (!cfg.presets)
@@ -494,6 +634,79 @@ Item {
         Logger.w("DisplayConfig", "Apply failed:", exitCode, stderr.text);
       }
       displayService.runNextApply();
+    }
+  }
+
+  // --- Kanshi file I/O processes ------------------------------------------
+
+  // Step 1: check if kanshi is installed
+  Process {
+    id: kanshiCheckProcess
+    command: ["sh", "-c", "command -v kanshi"]
+    stdout: StdioCollector {}
+
+    onExited: function (exitCode) {
+      if (exitCode !== 0) {
+        ToastService.showError(
+          pluginApi?.tr("panel.kanshi-not-installed") || "kanshi is not installed");
+        return;
+      }
+      // Step 2: read existing config
+      kanshiReadProcess.running = true;
+    }
+  }
+
+  // Step 2: read existing kanshi config (may not exist yet)
+  Process {
+    id: kanshiReadProcess
+    command: ["sh", "-c", "cat ~/.config/kanshi/config 2>/dev/null || true"]
+    stdout: StdioCollector {}
+
+    onExited: function () {
+      displayService._kanshiDoWrite(false);
+    }
+  }
+
+  // Step 3: write the config file
+  Process {
+    id: kanshiWriteProcess
+    stdout: StdioCollector {}
+    stderr: StdioCollector {}
+    stdinEnabled: true
+
+    onStarted: function () {
+      write(displayService._kanshiPendingProfile);
+      closeStdin();
+    }
+
+    onExited: function (exitCode) {
+      if (exitCode !== 0) {
+        Logger.e("DisplayConfig", "Failed to write kanshi config:", stderr.text);
+        ToastService.showError("Failed to write kanshi config");
+        return;
+      }
+      Logger.i("DisplayConfig", "Saved kanshi profile:", displayService._kanshiPendingName);
+      // Step 4: reload kanshi (if running)
+      kanshiReloadProcess.running = true;
+    }
+  }
+
+  // Step 4: SIGHUP kanshi to reload, or warn if not running
+  Process {
+    id: kanshiReloadProcess
+    command: ["pkill", "-HUP", "kanshi"]
+    stdout: StdioCollector {}
+
+    onExited: function (exitCode) {
+      if (exitCode !== 0) {
+        // kanshi not running
+        ToastService.showWarning(
+          pluginApi?.tr("panel.kanshi-not-running") || "Saved to kanshi config, but kanshi is not running");
+      } else {
+        ToastService.showNotice(
+          pluginApi?.tr("panel.kanshi-saved", { name: displayService._kanshiPendingName }) || ("Saved kanshi profile: " + displayService._kanshiPendingName),
+          "", "check", 3000);
+      }
     }
   }
 
