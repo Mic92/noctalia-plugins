@@ -444,6 +444,33 @@ Item {
             }
           }
         }
+
+        // Remember monitors — save to kanshi config
+        ColumnLayout {
+          Layout.fillWidth: true
+          spacing: Style.marginS
+
+          NDivider {}
+
+          RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.marginS
+
+            NText {
+              text: root.tr("panel.remember-monitors-hint")
+              font.pixelSize: Style.fontSizeXS
+              color: Color.mOnSurfaceVariant
+              wrapMode: Text.WordWrap
+              Layout.fillWidth: true
+            }
+
+            NButton {
+              icon: "device-floppy"
+              text: root.tr("panel.remember-monitors")
+              onClicked: displayService?.saveToKanshi()
+            }
+          }
+        }
       }
     }
   }
