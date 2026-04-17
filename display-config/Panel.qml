@@ -445,32 +445,29 @@ Item {
           }
         }
 
-        // Remember monitors — save to kanshi config
-        ColumnLayout {
-          Layout.fillWidth: true
-          spacing: Style.marginS
+      }
+    }
 
-          NDivider {}
+    // Remember monitors — save to kanshi config (outside Flickable so
+    // it's always visible without scrolling)
+    NDivider {}
 
-          RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.marginS
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: Style.marginS
 
-            NText {
-              text: root.tr("panel.remember-monitors-hint")
-              font.pixelSize: Style.fontSizeXS
-              color: Color.mOnSurfaceVariant
-              wrapMode: Text.WordWrap
-              Layout.fillWidth: true
-            }
+      NText {
+        text: root.tr("panel.remember-monitors-hint")
+        font.pixelSize: Style.fontSizeXS
+        color: Color.mOnSurfaceVariant
+        wrapMode: Text.WordWrap
+        Layout.fillWidth: true
+      }
 
-            NButton {
-              icon: "device-floppy"
-              text: root.tr("panel.remember-monitors")
-              onClicked: displayService?.saveToKanshi()
-            }
-          }
-        }
+      NButton {
+        icon: "device-floppy"
+        text: root.tr("panel.remember-monitors")
+        onClicked: displayService?.saveToKanshi()
       }
     }
   }
