@@ -409,6 +409,7 @@ Item {
                   "name": name,
                   "make": o.make || "",
                   "model": o.model || "",
+                  "serial": o.serial || null,
                   "enabled": cur !== null,
                   "currentMode": cur,
                   "modes": modes,
