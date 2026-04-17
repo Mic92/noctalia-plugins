@@ -450,7 +450,7 @@ Item {
       if (hasProfile && !forceOverwrite && _kanshiInteractive) {
         // Ask user to confirm overwrite via toast
         ToastService.showNotice(
-          pluginApi?.tr("panel.kanshi-overwrite-confirm", { name: profile.name }) || ("Profile \"" + profile.name + "\" exists. Overwrite?"),
+          pluginApi?.tr("panel.kanshi-overwrite-confirm") || "A profile for this monitor setup already exists in kanshi config. Overwrite?",
           "", "alert-triangle", 10000, "Overwrite", function() {
             displayService._kanshiDoWrite(true);
           });
@@ -705,7 +705,7 @@ Item {
           pluginApi?.tr("panel.kanshi-not-running") || "Saved to kanshi config, but kanshi is not running");
       } else {
         ToastService.showNotice(
-          pluginApi?.tr("panel.kanshi-saved", { name: displayService._kanshiPendingName }) || ("Saved kanshi profile: " + displayService._kanshiPendingName),
+          pluginApi?.tr("panel.kanshi-saved") || "Saved to kanshi config",
           "", "check", 3000);
       }
     }
