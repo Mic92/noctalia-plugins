@@ -42,7 +42,7 @@ PanelWindow {
   // fprintd-verify status line, e.g. "Verify result: verify-no-match (done)"
   property string fprintStatus: ""
 
-  implicitWidth: 420 * Style.uiScaleRatio + shadowPadding * 2
+  implicitWidth: 500 * Style.uiScaleRatio + shadowPadding * 2
   implicitHeight: contentLayout.implicitHeight + Style.marginL * 2 + shadowPadding * 2
   color: "transparent"
 
@@ -157,12 +157,26 @@ PanelWindow {
             Layout.fillWidth: true
           }
 
+          // Per-line NText keeps fingerprint wrap from bleeding into the next line.
+          Repeater {
+            model: win.promptText.split("\n")
+            NText {
+              required property string modelData
+              readonly property bool hi: modelData.startsWith("Requested by")
+              text: modelData
+              pointSize: Style.fontSizeS
+              font.weight: hi ? Style.fontWeightMedium : Style.fontWeightRegular
+              color: hi ? Color.mOnSurface : Color.mOnSurfaceVariant
+              wrapMode: Text.Wrap
+              Layout.fillWidth: true
+            }
+          }
+
           NText {
-            text: win.useFingerprint && win.fprintStatus
-                  ? win.fprintStatus
-                  : win.promptText
+            visible: win.useFingerprint && win.fprintStatus !== ""
+            text: win.fprintStatus
             pointSize: Style.fontSizeS
-            color: Color.mOnSurfaceVariant
+            color: Color.mPrimary
             wrapMode: Text.Wrap
             Layout.fillWidth: true
           }
