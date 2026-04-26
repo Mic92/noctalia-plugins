@@ -29,7 +29,14 @@
     "external-below": "Extern onder",
     "external-only": "Alleen extern",
     "laptop-only": "Alleen laptop",
-    "presets": "Voorinstellingen"
+    "presets": "Voorinstellingen",
+    "kanshi-profiles": "Kanshi-profielen",
+    "kanshi-unavailable": "kanshictl niet bereikbaar",
+    "kanshi-reload": "Kanshi-configuratie herladen",
+    "kanshi-update": "Overschrijven met huidige indeling",
+    "kanshi-pick-placeholder": "Profiel wisselen of opslaan…",
+    "kanshi-save-as": "＋ Huidige indeling opslaan als '{name}'",
+    "kanshi-save-as-hint": "＋ Typ een naam om de huidige indeling op te slaan…"
   },
   "settings": {
     "title": "Schermconfiguratie-instellingen",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "Naam voorinstelling",
     "save-preset-tooltip": "Huidige indeling opslaan als voorinstelling",
     "apply-preset-tooltip": "Voorinstelling toepassen",
-    "delete-preset-tooltip": "Voorinstelling verwijderen"
+    "delete-preset-tooltip": "Voorinstelling verwijderen",
+    "kanshi-enabled-label": "Kanshi-integratie",
+    "kanshi-enabled-desc": "Kanshi-profielen tonen/wisselen en opgeslagen indelingen exporteren naar een beheerde kanshi-configuratie",
+    "kanshi-config-dir-label": "Kanshi-configuratiemap (leeg = $XDG_CONFIG_HOME/kanshi)"
   }
 }

@@ -29,7 +29,14 @@
     "external-below": "Externe en dessous",
     "external-only": "Externe uniquement",
     "laptop-only": "Portable uniquement",
-    "presets": "Préréglages"
+    "presets": "Préréglages",
+    "kanshi-profiles": "Profils kanshi",
+    "kanshi-unavailable": "kanshictl injoignable",
+    "kanshi-reload": "Recharger la configuration kanshi",
+    "kanshi-update": "Écraser avec la disposition actuelle",
+    "kanshi-pick-placeholder": "Changer ou enregistrer un profil…",
+    "kanshi-save-as": "＋ Enregistrer la disposition actuelle sous '{name}'",
+    "kanshi-save-as-hint": "＋ Saisir un nom pour enregistrer la disposition actuelle…"
   },
   "settings": {
     "title": "Paramètres de configuration d'affichage",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "Nom du préréglage",
     "save-preset-tooltip": "Enregistrer la disposition actuelle comme préréglage",
     "apply-preset-tooltip": "Appliquer le préréglage",
-    "delete-preset-tooltip": "Supprimer le préréglage"
+    "delete-preset-tooltip": "Supprimer le préréglage",
+    "kanshi-enabled-label": "Intégration kanshi",
+    "kanshi-enabled-desc": "Lister/changer les profils kanshi et exporter les dispositions enregistrées vers une configuration kanshi gérée",
+    "kanshi-config-dir-label": "Répertoire de configuration kanshi (vide = $XDG_CONFIG_HOME/kanshi)"
   }
 }

@@ -29,7 +29,14 @@
     "external-below": "外部を下に",
     "external-only": "外部のみ",
     "laptop-only": "ノートPCのみ",
-    "presets": "プリセット"
+    "presets": "プリセット",
+    "kanshi-profiles": "Kanshi プロファイル",
+    "kanshi-unavailable": "kanshictl に接続できません",
+    "kanshi-reload": "kanshi 設定を再読み込み",
+    "kanshi-update": "現在のレイアウトで上書き",
+    "kanshi-pick-placeholder": "プロファイルを切り替え／保存…",
+    "kanshi-save-as": "＋ 現在のレイアウトを '{name}' として保存",
+    "kanshi-save-as-hint": "＋ 名前を入力して現在のレイアウトを保存…"
   },
   "settings": {
     "title": "ディスプレイ設定",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "プリセット名",
     "save-preset-tooltip": "現在のレイアウトをプリセットとして保存",
     "apply-preset-tooltip": "プリセットを適用",
-    "delete-preset-tooltip": "プリセットを削除"
+    "delete-preset-tooltip": "プリセットを削除",
+    "kanshi-enabled-label": "Kanshi 連携",
+    "kanshi-enabled-desc": "kanshi プロファイルの一覧・切り替えと、保存したレイアウトを管理対象の kanshi 設定へ書き出し",
+    "kanshi-config-dir-label": "kanshi 設定ディレクトリ（空欄 = $XDG_CONFIG_HOME/kanshi）"
   }
 }

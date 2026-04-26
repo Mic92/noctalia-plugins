@@ -29,7 +29,14 @@
     "external-below": "外部在下",
     "external-only": "仅外部",
     "laptop-only": "仅笔记本",
-    "presets": "预设"
+    "presets": "预设",
+    "kanshi-profiles": "Kanshi 配置方案",
+    "kanshi-unavailable": "无法连接 kanshictl",
+    "kanshi-reload": "重新加载 kanshi 配置",
+    "kanshi-update": "用当前布局覆盖",
+    "kanshi-pick-placeholder": "切换或保存配置方案…",
+    "kanshi-save-as": "＋ 将当前布局保存为 '{name}'",
+    "kanshi-save-as-hint": "＋ 输入名称以保存当前布局…"
   },
   "settings": {
     "title": "显示配置设置",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "预设名称",
     "save-preset-tooltip": "将当前布局保存为预设",
     "apply-preset-tooltip": "应用预设",
-    "delete-preset-tooltip": "删除预设"
+    "delete-preset-tooltip": "删除预设",
+    "kanshi-enabled-label": "Kanshi 集成",
+    "kanshi-enabled-desc": "列出/切换 kanshi 配置方案，并将保存的布局导出到托管的 kanshi 配置文件",
+    "kanshi-config-dir-label": "kanshi 配置目录（留空 = $XDG_CONFIG_HOME/kanshi）"
   }
 }

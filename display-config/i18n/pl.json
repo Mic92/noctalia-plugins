@@ -29,7 +29,14 @@
     "external-below": "Zewnętrzny poniżej",
     "external-only": "Tylko zewnętrzny",
     "laptop-only": "Tylko laptop",
-    "presets": "Ustawienia"
+    "presets": "Ustawienia",
+    "kanshi-profiles": "Profile kanshi",
+    "kanshi-unavailable": "kanshictl niedostępny",
+    "kanshi-reload": "Przeładuj konfigurację kanshi",
+    "kanshi-update": "Nadpisz bieżącym układem",
+    "kanshi-pick-placeholder": "Przełącz lub zapisz profil…",
+    "kanshi-save-as": "＋ Zapisz bieżący układ jako '{name}'",
+    "kanshi-save-as-hint": "＋ Wpisz nazwę, aby zapisać bieżący układ…"
   },
   "settings": {
     "title": "Ustawienia konfiguracji wyświetlacza",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "Nazwa ustawienia",
     "save-preset-tooltip": "Zapisz bieżący układ jako ustawienie",
     "apply-preset-tooltip": "Zastosuj ustawienie",
-    "delete-preset-tooltip": "Usuń ustawienie"
+    "delete-preset-tooltip": "Usuń ustawienie",
+    "kanshi-enabled-label": "Integracja z kanshi",
+    "kanshi-enabled-desc": "Wyświetlaj/przełączaj profile kanshi i eksportuj zapisane układy do zarządzanej konfiguracji kanshi",
+    "kanshi-config-dir-label": "Katalog konfiguracji kanshi (puste = $XDG_CONFIG_HOME/kanshi)"
   }
 }

@@ -29,7 +29,14 @@
     "external-below": "Внешний снизу",
     "external-only": "Только внешний",
     "laptop-only": "Только ноутбук",
-    "presets": "Пресеты"
+    "presets": "Пресеты",
+    "kanshi-profiles": "Профили kanshi",
+    "kanshi-unavailable": "kanshictl недоступен",
+    "kanshi-reload": "Перечитать конфигурацию kanshi",
+    "kanshi-update": "Перезаписать текущей раскладкой",
+    "kanshi-pick-placeholder": "Переключить или сохранить профиль…",
+    "kanshi-save-as": "＋ Сохранить текущую раскладку как '{name}'",
+    "kanshi-save-as-hint": "＋ Введите имя, чтобы сохранить текущую раскладку…"
   },
   "settings": {
     "title": "Настройки конфигурации дисплея",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "Имя пресета",
     "save-preset-tooltip": "Сохранить текущую раскладку как пресет",
     "apply-preset-tooltip": "Применить пресет",
-    "delete-preset-tooltip": "Удалить пресет"
+    "delete-preset-tooltip": "Удалить пресет",
+    "kanshi-enabled-label": "Интеграция с kanshi",
+    "kanshi-enabled-desc": "Просмотр/переключение профилей kanshi и экспорт сохранённых раскладок в управляемую конфигурацию kanshi",
+    "kanshi-config-dir-label": "Каталог конфигурации kanshi (пусто = $XDG_CONFIG_HOME/kanshi)"
   }
 }

@@ -29,7 +29,14 @@
     "external-below": "Esterno sotto",
     "external-only": "Solo esterno",
     "laptop-only": "Solo portatile",
-    "presets": "Preimpostazioni"
+    "presets": "Preimpostazioni",
+    "kanshi-profiles": "Profili kanshi",
+    "kanshi-unavailable": "kanshictl non raggiungibile",
+    "kanshi-reload": "Ricarica configurazione kanshi",
+    "kanshi-update": "Sovrascrivi con la disposizione attuale",
+    "kanshi-pick-placeholder": "Cambia o salva profilo…",
+    "kanshi-save-as": "＋ Salva disposizione attuale come '{name}'",
+    "kanshi-save-as-hint": "＋ Digita un nome per salvare la disposizione attuale…"
   },
   "settings": {
     "title": "Impostazioni configurazione schermo",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "Nome preimpostazione",
     "save-preset-tooltip": "Salva il layout attuale come preimpostazione",
     "apply-preset-tooltip": "Applica preimpostazione",
-    "delete-preset-tooltip": "Elimina preimpostazione"
+    "delete-preset-tooltip": "Elimina preimpostazione",
+    "kanshi-enabled-label": "Integrazione kanshi",
+    "kanshi-enabled-desc": "Elenca/cambia i profili kanshi ed esporta le disposizioni salvate in una configurazione kanshi gestita",
+    "kanshi-config-dir-label": "Directory di configurazione kanshi (vuoto = $XDG_CONFIG_HOME/kanshi)"
   }
 }
