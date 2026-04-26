@@ -21,7 +21,7 @@
     "unknown-error": "Unknown error",
     "mode": "Mode",
     "scale": "Scale",
-    "many-monitors-hint": "{count} monitors — use wdisplays to arrange, then save as a preset",
+    "many-monitors-hint": "{count} monitors — use wdisplays to arrange, then save as a kanshi profile below",
     "arrange": "Arrange",
     "extend-right": "Extend right",
     "extend-left": "Extend left",

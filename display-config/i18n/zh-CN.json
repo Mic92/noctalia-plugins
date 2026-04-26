@@ -21,7 +21,7 @@
     "unknown-error": "未知错误",
     "mode": "模式",
     "scale": "缩放",
-    "many-monitors-hint": "{count} 个显示器 — 使用 wdisplays 排列后保存为预设",
+    "many-monitors-hint": "{count} 个显示器 — 使用 wdisplays 排列后在下方保存为 kanshi 配置方案",
     "arrange": "排列",
     "extend-right": "向右扩展",
     "extend-left": "向左扩展",

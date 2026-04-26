@@ -21,7 +21,7 @@
     "unknown-error": "Erreur inconnue",
     "mode": "Mode",
     "scale": "Échelle",
-    "many-monitors-hint": "{count} écrans — utilisez wdisplays pour les disposer, puis enregistrez comme préréglage",
+    "many-monitors-hint": "{count} écrans — utilisez wdisplays pour les disposer, puis enregistrez comme profil kanshi ci-dessous",
     "arrange": "Disposer",
     "extend-right": "Étendre à droite",
     "extend-left": "Étendre à gauche",

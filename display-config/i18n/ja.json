@@ -21,7 +21,7 @@
     "unknown-error": "不明なエラー",
     "mode": "モード",
     "scale": "スケール",
-    "many-monitors-hint": "{count} 台のモニター — wdisplays で配置してからプリセットとして保存してください",
+    "many-monitors-hint": "{count} 台のモニター — wdisplays で配置してから下の kanshi プロファイルとして保存してください",
     "arrange": "配置",
     "extend-right": "右に拡張",
     "extend-left": "左に拡張",

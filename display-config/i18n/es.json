@@ -21,7 +21,7 @@
     "unknown-error": "Error desconocido",
     "mode": "Modo",
     "scale": "Escala",
-    "many-monitors-hint": "{count} monitores — usa wdisplays para organizarlos y luego guárdalo como preajuste",
+    "many-monitors-hint": "{count} monitores — usa wdisplays para organizarlos y luego guárdalo como perfil de kanshi abajo",
     "arrange": "Organizar",
     "extend-right": "Extender a la derecha",
     "extend-left": "Extender a la izquierda",

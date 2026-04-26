@@ -21,7 +21,7 @@
     "unknown-error": "Unbekannter Fehler",
     "mode": "Modus",
     "scale": "Skalierung",
-    "many-monitors-hint": "{count} Monitore — verwende wdisplays zum Anordnen, dann als Voreinstellung speichern",
+    "many-monitors-hint": "{count} Monitore — verwende wdisplays zum Anordnen, dann unten als Kanshi-Profil speichern",
     "arrange": "Anordnen",
     "extend-right": "Nach rechts erweitern",
     "extend-left": "Nach links erweitern",
