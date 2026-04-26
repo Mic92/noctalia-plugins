@@ -29,7 +29,14 @@
     "external-below": "External below",
     "external-only": "External only",
     "laptop-only": "Laptop only",
-    "presets": "Presets"
+    "presets": "Presets",
+    "kanshi-profiles": "Kanshi profiles",
+    "kanshi-unavailable": "kanshictl not reachable",
+    "kanshi-reload": "Reload kanshi config",
+    "kanshi-update": "Overwrite with current layout",
+    "kanshi-pick-placeholder": "Switch or save profile…",
+    "kanshi-save-as": "＋ Save current layout as '{name}'",
+    "kanshi-save-as-hint": "＋ Type a name to save current layout…"
   },
   "settings": {
     "title": "Display Config Settings",
@@ -41,6 +48,9 @@
     "preset-name-placeholder": "Preset name",
     "save-preset-tooltip": "Save current layout as preset",
     "apply-preset-tooltip": "Apply preset",
-    "delete-preset-tooltip": "Delete preset"
+    "delete-preset-tooltip": "Delete preset",
+    "kanshi-enabled-label": "Kanshi integration",
+    "kanshi-enabled-desc": "List/switch kanshi profiles and export saved layouts to a managed kanshi config",
+    "kanshi-config-dir-label": "Kanshi config directory (blank = $XDG_CONFIG_HOME/kanshi)"
   }
 }

@@ -1,77 +1,91 @@
 # display-config
 
-Configure monitor resolution, scale, position and power from the noctalia bar.
-A GUI for `niri msg output` — think of it as a compositor-native `arandr`.
+Change monitor resolution, scale, layout and power from the noctalia bar — and
+save the result as a [kanshi] profile so it comes back automatically next time
+you dock.
+
+[kanshi]: https://sr.ht/~emersion/kanshi/
 
 ![display-config panel](https://github.com/Mic92/noctalia-plugins/releases/download/assets/display-config-screenshot.png)
 
-## What it does
+## Quick start
 
-**Bar widget** — monitor icon with a count badge. Turns highlighted for a few
-seconds after a hotplug so you notice the dock connected. Right-click for a
-quick menu:
+1. Left-click the monitor icon in the bar to open the panel.
+2. Tweak each output: turn it on/off, pick a resolution, adjust scale.
+3. For two monitors, hit one of the **Arrange** buttons (extend right, external
+   above, laptop only, …) instead of fiddling with coordinates.
+4. Happy with it? Open the **Kanshi profiles** dropdown, type a name, pick
+   **＋ Save current layout as '…'**. Done — that layout now applies itself
+   whenever those exact monitors are connected.
 
-- Your saved presets
-- Quick two-monitor arrangements: extend left/right, external-only, internal-only
-- "Open wdisplays" for the drag-and-drop layout editor
-- Refresh
+Every change gets a 12-second "Keep / Revert" bar. If a bad mode blacks out
+your only screen, just wait — it rolls back on its own.
 
-**Panel** (left-click) — per-output controls:
+## Kanshi profiles
 
-- Power on/off
-- Mode (resolution + refresh rate)
-- Scale
-- Position
-- Transform (rotation)
+This is where layouts live long-term. One searchable dropdown does it all:
 
-Changes are applied with a 15-second revert countdown, so a bad mode that kills
-your only display undoes itself.
+- **Pick a profile** → switches to it. The active one shows a ✓.
+- **Type a new name** → a **＋ Save current layout as '…'** row appears at the
+  bottom; pick it to snapshot what's on screen right now.
+- **⟳** next to the dropdown re-snapshots the selected profile in place; **🗑**
+  deletes it. Both stay greyed for profiles from your main config so the
+  plugin never edits a file it doesn't own.
 
-## Presets
+Profiles you save here go into `~/.config/kanshi/noctalia.conf`. Add this line
+to your main `~/.config/kanshi/config` once so kanshi loads them:
 
-Set up your layout once, save it with a name, switch with one click from the bar
-menu. Handy for the classic "laptop only" ↔ "docked at desk" dance.
+```
+include ~/.config/kanshi/noctalia.conf
+```
 
-Presets are saved in the plugin's `settings.json` and applied via the
-compositor's IPC, so they survive shell restarts and don't need a separate
-daemon like kanshi.
+> **Tip:** saved profiles match external monitors by make/model/serial (not
+> `DP-3`), so they survive reboots and dock port-shuffles. The laptop panel
+> stays `eDP-1` because that name never changes.
 
-## Backends
+Don't run kanshi? Turn the integration off in settings and use **Presets**
+instead — same one-click switching, just without the auto-apply on hotplug.
 
-| Backend     | Status                                       |
-| ----------- | -------------------------------------------- |
-| `niri`      | Fully supported                              |
-| `hyprland`  | Query only — apply is stubbed, patches welcome |
-| `sway`      | Query only — apply is stubbed                |
-| `wlr-randr` | Query only — apply is stubbed                |
+## Bar widget
 
-Pick yours in Settings → Plugins → Display Config. If you're on one of the
-stubbed backends, the panel still shows what's connected and the wdisplays
-button works; you just can't apply changes from the plugin directly yet.
+- **Left-click** — open the panel
+- **Right-click** — quick menu: your kanshi profiles, two-monitor arrangements,
+  open wdisplays, refresh
+- The icon pulses briefly after a hotplug so you notice the dock connected.
+
+## Three or more monitors?
+
+The quick-arrange buttons only handle a pair. With 3+ outputs the panel shows
+an **Open wdisplays** button instead — drag your monitors into place there,
+close it, then save the result as a kanshi profile from the panel.
 
 ## Settings
 
-| Setting        | Default   | Purpose                           |
-| -------------- | --------- | --------------------------------- |
-| `backend`      | `niri`    | Which compositor IPC to speak     |
-| `pollInterval` | `5`       | Seconds between output re-queries |
-| `iconColor`    | `primary` | Bar icon tint                     |
-| `presets`      | `[]`      | Saved layouts (edited via the UI) |
+Settings → Plugins → Display Config.
 
-## IPC
+| Setting | Default | What it does |
+| --- | --- | --- |
+| Backend | `niri` | Compositor to talk to (others are read-only for now) |
+| Kanshi integration | on | Show the profile section and talk to `kanshictl` |
+| Kanshi config directory | *(auto)* | Override if your config lives somewhere unusual |
+| Poll interval | 5 s | How often to re-check connected outputs |
+| Icon colour | primary | Bar icon tint |
+
+## Scripting
 
 ```bash
-noctalia-shell ipc call plugin:display-config toggle           # open/close panel
-noctalia-shell ipc call plugin:display-config refresh          # re-query outputs
-noctalia-shell ipc call plugin:display-config preset "docked"  # apply named preset
+noctalia-shell ipc call plugin:display-config toggle              # open/close panel
+noctalia-shell ipc call plugin:display-config kanshiSwitch docked # switch profile
+noctalia-shell ipc call plugin:display-config kanshiSave desk     # save current layout
 noctalia-shell ipc call plugin:display-config arrange extend-right
+noctalia-shell ipc call plugin:display-config keep                # confirm pending change
 ```
 
-The `preset` call makes it easy to bind layouts to keys or trigger them from a
-udev rule / autorandr-style hook.
+Bind `kanshiSwitch` to a key for instant layout flips without opening the
+panel.
 
 ## Requirements
 
-- `niri` (or your chosen backend's CLI) on `PATH`
-- `wdisplays` (optional) — launched from the panel for 3+ monitor drag-and-drop
-  arrangement, since pairwise quick-arrange stops making sense past two outputs
+- `niri` on `PATH`
+- `kanshi` + `kanshictl` — optional, but you want them for the good stuff
+- `wdisplays` — optional, for drag-and-drop arranging with 3+ monitors

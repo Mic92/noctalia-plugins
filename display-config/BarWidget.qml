@@ -11,6 +11,7 @@ Item {
 
   property var pluginApi: null
   property var displayService: pluginApi?.mainInstance?.displayService || null
+  property var kanshiService: pluginApi?.mainInstance?.kanshiService || null
 
   property ShellScreen screen
   property string widgetId: ""
@@ -103,6 +104,14 @@ Item {
                  "icon": "device-laptop"
                });
       }
+      var kp = (kanshiService && kanshiService.enabled) ? (kanshiService.profiles || []) : [];
+      for (var k = 0; k < kp.length; k++) {
+        m.push({
+                 "label": kp[k].name + (kanshiService.activeProfile === kp[k].name ? " \u2713" : ""),
+                 "action": "kanshi:" + kp[k].name,
+                 "icon": "layout"
+               });
+      }
       var presets = cfg.presets || [];
       for (var i = 0; i < presets.length; i++) {
         m.push({
@@ -136,6 +145,8 @@ Item {
         displayService?.fetchOutputs();
       } else if (action === "wdisplays") {
         wdisplaysLauncher.startDetached();
+      } else if (action.indexOf("kanshi:") === 0) {
+        kanshiService?.switchProfile(action.substring(7));
       } else if (action.indexOf("arrange:") === 0) {
         displayService?.applyArrangement(action.substring(8));
       } else if (action.indexOf("preset:") === 0) {

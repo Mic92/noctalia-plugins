@@ -8,7 +8,7 @@ packaged here so others can steal the useful bits.
 | Plugin                             | What it does                                                        | Surface         |
 | ---------------------------------- | ------------------------------------------------------------------- | --------------- |
 | [`alertmanager`](./alertmanager)   | Prometheus Alertmanager: alert count in the bar, details in a panel | bar + panel     |
-| [`display-config`](./display-config) | Change monitor resolution/scale/position/power from the bar       | bar + panel     |
+| [`display-config`](./display-config) | Change monitor mode/scale/position from the bar; save & switch kanshi profiles | bar + panel |
 | [`fprint-notify`](./fprint-notify) | Toast when fprintd wants a fingerprint (so sudo doesn't block silently) | headless |
 | [`khal-next`](./khal-next)         | Next khal event + countdown in the bar, agenda panel, one-key join  | bar + panel     |
 | [`mail-count`](./mail-count)       | Unread mail count in the bar via any shell command (notmuch/mu/maildir) | bar       |

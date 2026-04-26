@@ -10,6 +10,7 @@ Item {
 
   // Expose service to bar widget / panel via mainInstance
   property alias displayService: displayService
+  property alias kanshiService: kanshiService
 
   QtObject {
     id: displayService
@@ -348,6 +349,12 @@ Item {
     }
   }
 
+  KanshiService {
+    id: kanshiService
+    pluginApi: root.pluginApi
+    displayService: displayService
+  }
+
   // --- JSON normalizers per backend ------------------------------------
 
   function normalizeNiri(json) {
@@ -409,6 +416,7 @@ Item {
                   "name": name,
                   "make": o.make || "",
                   "model": o.model || "",
+                  "serial": o.serial || "",
                   "enabled": cur !== null,
                   "currentMode": cur,
                   "modes": modes,
@@ -523,7 +531,10 @@ Item {
       var secs = cfg.pollInterval ?? defaults.pollInterval;
       return secs * 1000;
     }
-    onTriggered: displayService.fetchOutputs()
+    onTriggered: {
+      displayService.fetchOutputs();
+      kanshiService.refresh();
+    }
   }
 
   IpcHandler {
@@ -551,6 +562,12 @@ Item {
     }
     function arrange(kind: string) {
       displayService.applyArrangement(kind);
+    }
+    function kanshiSwitch(name: string) {
+      kanshiService.switchProfile(name);
+    }
+    function kanshiSave(name: string) {
+      kanshiService.saveProfile(name);
     }
     function keep() {
       displayService.confirmRevert();

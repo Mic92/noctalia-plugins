@@ -45,6 +45,28 @@ ColumnLayout {
     }
   }
 
+  NToggle {
+    label: tr("settings.kanshi-enabled-label")
+    description: tr("settings.kanshi-enabled-desc")
+    checked: cfg.kanshiEnabled ?? defaults.kanshiEnabled
+    onToggled: function (checked) {
+      cfg.kanshiEnabled = checked;
+      pluginApi?.saveSettings();
+    }
+  }
+
+  NTextInput {
+    Layout.fillWidth: true
+    visible: cfg.kanshiEnabled ?? defaults.kanshiEnabled
+    label: tr("settings.kanshi-config-dir-label")
+    placeholderText: "~/.config/kanshi"
+    text: cfg.kanshiConfigDir ?? ""
+    onEditingFinished: {
+      cfg.kanshiConfigDir = text;
+      pluginApi?.saveSettings();
+    }
+  }
+
   NLabel {
     label: tr("settings.poll-interval-label")
   }

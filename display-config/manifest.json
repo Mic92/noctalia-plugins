@@ -21,7 +21,9 @@
       "backend": "niri",
       "pollInterval": 5,
       "iconColor": "primary",
-      "presets": []
+      "presets": [],
+      "kanshiEnabled": true,
+      "kanshiConfigDir": ""
     }
   }
 }
