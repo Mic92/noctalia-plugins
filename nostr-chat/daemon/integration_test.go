@@ -291,6 +291,33 @@ func TestStrangerIgnored(t *testing.T) {
 	}
 }
 
+// TestSelfCopyToOtherPeerIgnored: NIP-17 sends a self-copy for every
+// outgoing DM. A daemon configured for Noa must ignore our self-copy
+// when the inner rumor is addressed to another peer.
+func TestSelfCopyToOtherPeerIgnored(t *testing.T) {
+	t.Parallel()
+	relay := startTestRelay(t)
+
+	ourSK := nostr.Generate()
+	noaPK := nostr.GetPublicKey(nostr.Generate())
+	otherPK := nostr.GetPublicKey(nostr.Generate())
+
+	h := newHarnessWithKey(t, relay, noaPK.Hex(), ourSK)
+	sender := newHarnessWithKey(t, relay, otherPK.Hex(), ourSK)
+
+	sender.send(t, Command{Cmd: CmdSend, Text: "not for noa"})
+	sender.expect(t, EvSent, 5*time.Second)
+
+	select {
+	case ev := <-h.events:
+		if ev.Kind == EvMsg {
+			t.Fatalf("self-copy to another peer leaked through: %+v", ev)
+		}
+	case <-time.After(500 * time.Millisecond):
+		// good — h ignored the unrelated self-copy
+	}
+}
+
 func wsAccept(key string) string {
 	h := sha1.Sum([]byte(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"))
 	return base64.StdEncoding.EncodeToString(h[:])

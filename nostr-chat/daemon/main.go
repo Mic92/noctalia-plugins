@@ -240,6 +240,26 @@ func (d *Daemon) Run(ctx context.Context, br *Bridge) error {
 	}
 }
 
+func chatDirection(r Rumor, ourPubKey, peerPubKey string) (Dir, bool) {
+	switch {
+	case r.PubKey == ourPubKey && hasTagValue(r.Tags, "p", peerPubKey):
+		return DirOut, true
+	case r.PubKey == peerPubKey && hasTagValue(r.Tags, "p", ourPubKey):
+		return DirIn, true
+	default:
+		return "", false
+	}
+}
+
+func hasTagValue(tags nostr.Tags, key, value string) bool {
+	for _, tag := range tags {
+		if len(tag) >= 2 && tag[0] == key && tag[1] == value {
+			return true
+		}
+	}
+	return false
+}
+
 func (d *Daemon) handleRumor(ctx context.Context, r Rumor, startedAt int64) {
 	store, cfg, keys := d.store, d.cfg, d.keys
 	switch r.Kind {
@@ -260,19 +280,17 @@ func (d *Daemon) handleRumor(ctx context.Context, r Rumor, startedAt int64) {
 		d.push(Event{Kind: EvAck, Target: r.ETag, Mark: mark})
 
 	default:
-		// kind 14 chat, kind 15 file, or anything else the peer wraps —
-		// store them all, the UI only cares about in/out.
-		mine := r.PubKey == keys.PK.Hex()
-		if !mine && r.PubKey != cfg.PeerPubKey {
-			return // e.g. github-notifier spamming our p-tag
+		// Self-copy gift-wraps for every outgoing DM match our listener.
+		// Keep only the configured 1:1 by checking the inner rumor's p-tag.
+		ourPubKey := keys.PK.Hex()
+		dir, ok := chatDirection(r, ourPubKey, cfg.PeerPubKey)
+		if !ok {
+			return
 		}
+		mine := dir == DirOut
 		content := r.Content
 		if r.Kind == KindFileMessage {
 			content = "📎 " + cmp.Or(tagValue(r.Tags, "file-type"), "file")
-		}
-		dir := DirIn
-		if mine {
-			dir = DirOut
 		}
 		m := Message{
 			ID: r.ID, PubKey: r.PubKey, Content: content, TS: r.TS,
