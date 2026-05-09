@@ -22,6 +22,11 @@ import (
 // gives a comfortable buffer (same margin nitrous uses).
 const nip59Margin = 3 * 24 * time.Hour
 
+const (
+	defaultLivenessTick        = 30 * time.Second
+	defaultPeriodicResubscribe = 15 * time.Minute
+)
+
 type Keys struct {
 	SK nostr.SecretKey
 	PK nostr.PubKey
@@ -73,6 +78,16 @@ type Listener struct {
 	// ping reaper.
 	resub chan struct{}
 
+	// Subscription progress is separate from websocket health: a relay
+	// socket can stay open after its REQ stream stopped delivering EVENTs.
+	lastSubscribeUnix    atomic.Int64
+	lastEventUnix        atomic.Int64
+	lastResubscribeUnix  atomic.Int64
+	lastResubscribeCause atomic.Value // string
+
+	livenessTick             time.Duration
+	periodicResubscribeAfter time.Duration
+
 	// OnHealth is invoked from the liveness watchdog with the set of
 	// currently-connected relay URLs. The daemon hooks this to push
 	// EvStatus transitions so the panel's "connected" reflects relay
@@ -89,7 +104,17 @@ func NewListener(keys Keys, relays []string) *Listener {
 	pool.RelayOptions.AuthHandler = func(ctx context.Context, _ *nostr.Relay, ev *nostr.Event) error {
 		return kr.SignEvent(ctx, ev)
 	}
-	return &Listener{pool: pool, kr: kr, keys: keys, relays: relays, resub: make(chan struct{}, 1)}
+	l := &Listener{
+		pool:                     pool,
+		kr:                       kr,
+		keys:                     keys,
+		relays:                   relays,
+		resub:                    make(chan struct{}, 1),
+		livenessTick:             defaultLivenessTick,
+		periodicResubscribeAfter: defaultPeriodicResubscribe,
+	}
+	l.lastResubscribeCause.Store("subscription ended")
+	return l
 }
 
 // Run blocks until ctx is done, emitting unwrapped rumors on ch.
@@ -106,7 +131,13 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 		go l.watchLiveness(subCtx, func() { l.dropConnections(); subCancel() })
 		l.subscribeOnce(subCtx, since(), ch)
 		subCancel()
-		slog.Warn("subscription closed, reconnecting")
+		if ctx.Err() != nil {
+			return
+		}
+		slog.Warn("subscription closed, reconnecting",
+			"reason", l.resubscribeCause(),
+			"last_event_age", l.lastEventAge().Round(time.Second),
+			"last_subscribe_age", l.lastSubscribeAge().Round(time.Second))
 		select {
 		case <-ctx.Done():
 			return
@@ -148,7 +179,11 @@ func (l *Listener) dropConnections() {
 // surface real streaming status and the journal records which relay is
 // the culprit during an outage.
 func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
-	const tick = 30 * time.Second
+	tick := l.livenessTick
+	if tick <= 0 {
+		tick = defaultLivenessTick
+	}
+	periodic := l.periodicResubscribeAfter
 	var deadTicks int
 	for {
 		before := time.Now().Unix()
@@ -157,33 +192,77 @@ func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
 			return
 		case <-time.After(tick):
 		case <-l.resub:
-			slog.Info("publish timeout, forcing resubscribe")
-			cancel()
+			l.forceResubscribe("publish timeout", cancel,
+				"last_event_age", l.lastEventAge().Round(time.Second),
+				"last_subscribe_age", l.lastSubscribeAge().Round(time.Second))
 			return
 		}
 		gap := time.Duration(time.Now().Unix()-before)*time.Second - tick
 		if gap > time.Minute {
-			slog.Info("time jump, resubscribing", "gap", gap.Round(time.Second))
-			cancel()
+			l.forceResubscribe("time jump", cancel, "gap", gap.Round(time.Second))
 			return
 		}
 
 		up := l.Connected()
 		slog.Debug("relay health", "connected", up, "of", len(l.relays))
+		slog.Debug("subscription health",
+			"last_event_age", l.lastEventAge().Round(time.Second),
+			"last_subscribe_age", l.lastSubscribeAge().Round(time.Second),
+			"last_resubscribe_age", l.lastResubscribeAge().Round(time.Second),
+			"last_resubscribe_reason", l.resubscribeCause())
 		if l.OnHealth != nil {
 			l.OnHealth(up)
+		}
+		if periodic > 0 && l.lastSubscribeAge() >= periodic {
+			l.forceResubscribe("periodic subscription refresh", cancel,
+				"age", l.lastSubscribeAge().Round(time.Second),
+				"last_event_age", l.lastEventAge().Round(time.Second),
+				"connected", up)
+			return
 		}
 		if len(up) == 0 {
 			deadTicks++
 			if deadTicks >= 3 {
-				slog.Warn("no relay connected for 90s, resubscribing")
-				cancel()
+				l.forceResubscribe("no relay connected", cancel, "duration", time.Duration(deadTicks)*tick)
 				return
 			}
 		} else {
 			deadTicks = 0
 		}
 	}
+}
+
+func (l *Listener) forceResubscribe(reason string, cancel func(), attrs ...any) {
+	l.lastResubscribeUnix.Store(time.Now().Unix())
+	l.lastResubscribeCause.Store(reason)
+	slog.Info("forcing resubscribe", append([]any{"reason", reason}, attrs...)...)
+	cancel()
+}
+
+func (l *Listener) resubscribeCause() string {
+	if v := l.lastResubscribeCause.Load(); v != nil {
+		return v.(string)
+	}
+	return "unknown"
+}
+
+func (l *Listener) lastSubscribeAge() time.Duration {
+	return ageSinceUnix(l.lastSubscribeUnix.Load())
+}
+
+func (l *Listener) lastEventAge() time.Duration {
+	return ageSinceUnix(l.lastEventUnix.Load())
+}
+
+func (l *Listener) lastResubscribeAge() time.Duration {
+	return ageSinceUnix(l.lastResubscribeUnix.Load())
+}
+
+func ageSinceUnix(ts int64) time.Duration {
+	if ts == 0 {
+		return -1
+	}
+	return time.Since(time.Unix(ts, 0))
 }
 
 // Connected returns the URLs of relays the pool currently has an open
@@ -204,6 +283,7 @@ func (l *Listener) subscribeOnce(ctx context.Context, since int64, ch chan<- Rum
 	if adj < 0 {
 		adj = 0
 	}
+	l.lastSubscribeUnix.Store(time.Now().Unix())
 	slog.Info("subscribing", "relays", l.relays, "since", since, "adjusted", int64(adj))
 	filter := nostr.Filter{
 		Kinds: []nostr.Kind{nostr.KindGiftWrap},
@@ -211,6 +291,7 @@ func (l *Listener) subscribeOnce(ctx context.Context, since int64, ch chan<- Rum
 		Since: adj,
 	}
 	for ev := range l.pool.SubscribeMany(ctx, l.relays, filter, nostr.SubscriptionOptions{}) {
+		l.lastEventUnix.Store(time.Now().Unix())
 		rumor, err := nip59.GiftUnwrap(ev.Event,
 			func(pk nostr.PubKey, ct string) (string, error) {
 				return l.kr.Decrypt(ctx, ct, pk)
@@ -225,6 +306,13 @@ func (l *Listener) subscribeOnce(ctx context.Context, since int64, ch chan<- Rum
 		case <-ctx.Done():
 			return
 		}
+	}
+	if ctx.Err() == nil {
+		l.lastResubscribeUnix.Store(time.Now().Unix())
+		l.lastResubscribeCause.Store("subscription event stream ended")
+		slog.Warn("subscription event stream ended",
+			"last_event_age", l.lastEventAge().Round(time.Second),
+			"last_subscribe_age", l.lastSubscribeAge().Round(time.Second))
 	}
 }
 
