@@ -289,6 +289,96 @@ func TestStrangerIgnored(t *testing.T) {
 	}
 }
 
+// startStaleRelay is a khatru relay that accepts REQs and EVENTs (OK
+// true) and answers stored-event queries, but never pushes live events
+// to open subscriptions — the "socket healthy, REQ dead" failure mode
+// from issue #12. reqs counts REQ frames so tests can observe a
+// resubscribe.
+func startStaleRelay(t *testing.T) (url string, reqs *atomic.Int32) {
+	t.Helper()
+	reqs = &atomic.Int32{}
+	relay := khatru.NewRelay()
+	store := &slicestore.SliceStore{}
+	if err := store.Init(); err != nil {
+		t.Fatalf("init slice store: %v", err)
+	}
+	relay.UseEventstore(store, 500)
+	relay.OnRequest = func(ctx context.Context, filter nostr.Filter) (bool, string) {
+		reqs.Add(1)
+		return false, ""
+	}
+	relay.PreventBroadcast = func(ws *khatru.WebSocket, filter nostr.Filter, event nostr.Event) bool {
+		return true // swallow live delivery, backfill still works
+	}
+	srv := httptest.NewServer(relay)
+	t.Cleanup(srv.Close)
+	return "ws" + strings.TrimPrefix(srv.URL, "http"), reqs
+}
+
+// TestStaleSubscriptionResubscribes: a relay that OKs our publish but
+// never streams the self-copy back has a dead REQ. The listener must
+// notice the missing echo, resubscribe, and recover the event via
+// backfill instead of waiting for a manual restart (issue #12).
+func TestStaleSubscriptionResubscribes(t *testing.T) {
+	t.Parallel()
+	relay, reqs := startStaleRelay(t)
+
+	sk := nostr.Generate()
+	keys := Keys{SK: sk, PK: nostr.GetPublicKey(sk)}
+	l := NewListener(keys, []string{relay})
+	l.livenessTick = 100 * time.Millisecond
+	l.echoTimeout = 300 * time.Millisecond
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	ch := make(chan Rumor, 8)
+	go l.Run(ctx, func() int64 { return 0 }, ch)
+
+	deadline := time.After(5 * time.Second)
+	for len(l.Connected()) == 0 {
+		select {
+		case <-deadline:
+			t.Fatal("relay never connected")
+		case <-time.After(20 * time.Millisecond):
+		}
+	}
+	if reqs.Load() < 1 {
+		t.Fatal("no initial REQ")
+	}
+
+	// DM to ourselves: relay OKs both wraps but never echoes them live.
+	o, err := l.Prepare(ctx, keys.PK.Hex(), "probe", "")
+	if err != nil {
+		t.Fatalf("prepare: %v", err)
+	}
+	them, us := o.Wraps()
+	if err := l.PublishRaw(ctx, o.Rumor.ID, them, us); err != nil {
+		t.Fatalf("publish: %v", err)
+	}
+
+	// Missing echo must force a resubscribe (a second REQ)…
+	deadline = time.After(10 * time.Second)
+	for reqs.Load() < 2 {
+		select {
+		case <-deadline:
+			t.Fatalf("no resubscribe after stale echo, reqs=%d", reqs.Load())
+		case <-time.After(20 * time.Millisecond):
+		}
+	}
+
+	// …and the backfill on the fresh subscription recovers the message.
+	for {
+		select {
+		case r := <-ch:
+			if r.ID == o.Rumor.ID {
+				return
+			}
+		case <-time.After(10 * time.Second):
+			t.Fatal("missed message not recovered by backfill")
+		}
+	}
+}
+
 func wsAccept(key string) string {
 	h := sha1.Sum([]byte(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"))
 	return base64.StdEncoding.EncodeToString(h[:])

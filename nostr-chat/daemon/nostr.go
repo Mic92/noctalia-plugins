@@ -17,9 +17,8 @@ import (
 	"fiatjaf.com/nostr/nip59"
 )
 
-// nip59Margin: gift-wrap created_at is randomised up to 2 days into the
-// past, so subscribing from last-seen alone would miss events. 3 days
-// gives a comfortable buffer (same margin nitrous uses).
+// Gift-wrap created_at is randomised up to 2 days into the past
+// (NIP-59), so subscribe with a 3-day margin below last-seen.
 const nip59Margin = 3 * 24 * time.Hour
 
 type Keys struct {
@@ -45,61 +44,66 @@ func loadKeys(raw string) (Keys, error) {
 	return Keys{SK: sk, PK: nostr.GetPublicKey(sk)}, nil
 }
 
-// Rumor is what we extract from an unwrapped gift — just enough to
-// route kind-14 vs kind-7 without hauling the full event around.
+// Rumor is the unwrapped inner event, reduced to what routing needs.
 type Rumor struct {
 	ID      string
 	Kind    nostr.Kind
 	PubKey  string
 	Content string
 	TS      int64
-	ETag    string     // first "e" tag: reaction target (kind-7) or reply parent (kind-14)
-	Tags    nostr.Tags // kind-15 needs file-type / decryption-* tags
+	ETag    string     // reaction target (kind-7) or reply parent (kind-14)
+	Tags    nostr.Tags // kind-15 carries file-type / decryption-* tags
 }
 
 // Listener subscribes to kind-1059 gift wraps addressed to us and
-// unwraps them. We don't use nip17.ListenForMessages because it
-// silently drops anything that isn't kind-14, but peers may also wrap
-// kind-7 reactions (read receipts) and kind-15 files the same way.
+// unwraps them. nip17.ListenForMessages is not used because it drops
+// anything that isn't kind-14, but peers also wrap kind-7 reactions
+// and kind-15 files.
 type Listener struct {
 	pool   *nostr.Pool
 	kr     nostr.Keyer
 	keys   Keys
 	relays []string
-	// resub is kicked by publishConnected when a relay socket looks
-	// alive but swallowed the EVENT (no OK within 3s). watchLiveness
-	// drains it and drops every connection so the redial can pick a
-	// working address family instead of waiting ~90s for the library's
-	// ping reaper.
+
+	// resub is kicked when a publish times out on a socket that still
+	// claims to be connected; the watchdog then drops all connections.
 	resub chan struct{}
 
-	// OnHealth is invoked from the liveness watchdog with the set of
-	// currently-connected relay URLs. The daemon hooks this to push
-	// EvStatus transitions so the panel's "connected" reflects relay
-	// reality, not just "the unix socket is up".
+	// A websocket can stay connected while the relay's side of the REQ
+	// silently dies (issue #12). Every publish includes a self-addressed
+	// wrap, so each relay that OK'd it must echo it back on the live
+	// subscription. pendingEcho maps "wrapID|relay" to publish time;
+	// the watchdog resubscribes when an entry outlives echoTimeout.
+	echoMu       sync.Mutex
+	pendingEcho  map[string]time.Time
+	echoTimeout  time.Duration
+	livenessTick time.Duration
+
+	// OnHealth receives the connected relay set on every watchdog tick,
+	// so the panel shows relay reality rather than "socket is up".
 	OnHealth func(connected []string)
 }
 
 func NewListener(keys Keys, relays []string) *Listener {
 	kr := keyer.NewPlainKeySigner(keys.SK)
 	pool := nostr.NewPool()
-	// Relays that require NIP-42 auth would drop 1059 subs otherwise.
-	// AuthHandler fires on the AUTH challenge so the REQ that follows is
-	// already authenticated — no CLOSED-then-retry round trip.
+	// Answer AUTH challenges inline so NIP-42 relays don't CLOSE the sub.
 	pool.RelayOptions.AuthHandler = func(ctx context.Context, _ *nostr.Relay, ev *nostr.Event) error {
 		return kr.SignEvent(ctx, ev)
 	}
-	return &Listener{pool: pool, kr: kr, keys: keys, relays: relays, resub: make(chan struct{}, 1)}
+	return &Listener{
+		pool: pool, kr: kr, keys: keys, relays: relays,
+		resub:        make(chan struct{}, 1),
+		pendingEcho:  make(map[string]time.Time),
+		echoTimeout:  45 * time.Second,
+		livenessTick: 30 * time.Second,
+	}
 }
 
 // Run blocks until ctx is done, emitting unwrapped rumors on ch.
-// Per-relay reconnect/backoff lives inside Pool.SubscribeMany; this
-// outer loop only restarts when the watchdog deliberately tears the
-// pool down (suspend, dead-socket publish, 90s outage) or every relay
-// sent CLOSED. Either way we want to redial promptly — a fixed 1s
-// breather is enough, the pool's own backoff handles persistent
-// failures. `since` is re-read each round so a drop after an hour
-// doesn't re-fetch the whole hour.
+// Per-relay reconnect/backoff lives in the pool; this loop restarts
+// only when the watchdog tears the pool down or every relay CLOSED.
+// `since` is re-read each round so a late drop doesn't re-fetch hours.
 func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor) {
 	for ctx.Err() == nil {
 		subCtx, subCancel := context.WithCancel(ctx)
@@ -115,11 +119,8 @@ func (l *Listener) Run(ctx context.Context, since func() int64, ch chan<- Rumor)
 	}
 }
 
-// dropConnections force-closes every pooled relay and evicts it so the
-// next subscribeOnce redials from scratch — Go's happy-eyeballs gets
-// another shot at the address family that still routes. With the fork
-// (see go.mod replace) Relay.Close actually tears the websocket down
-// and flips IsConnected, so no fd leaks across suspend cycles.
+// dropConnections evicts every pooled relay so the next subscribe
+// redials from scratch instead of reusing a black-holed socket.
 func (l *Listener) dropConnections() {
 	for url, r := range l.pool.Relays.Range {
 		if r != nil {
@@ -129,26 +130,52 @@ func (l *Listener) dropConnections() {
 	}
 }
 
-// watchLiveness ticks every 30s and forces a resubscribe (via cancel)
-// when either condition hits:
+func echoKey(id nostr.ID, relay string) string {
+	return id.Hex() + "|" + nostr.NormalizeURL(relay)
+}
+
+// expectEcho records that relay accepted our self-addressed wrap and
+// now owes it back on the live subscription.
+func (l *Listener) expectEcho(id nostr.ID, relay string) {
+	l.echoMu.Lock()
+	l.pendingEcho[echoKey(id, relay)] = time.Now()
+	l.echoMu.Unlock()
+}
+
+func (l *Listener) markEchoed(id nostr.ID, relay string) {
+	l.echoMu.Lock()
+	delete(l.pendingEcho, echoKey(id, relay))
+	l.echoMu.Unlock()
+}
+
+// staleEcho returns a relay whose accepted wrap never came back within
+// echoTimeout — its REQ is dead even though the socket is connected.
+func (l *Listener) staleEcho() (string, bool) {
+	l.echoMu.Lock()
+	defer l.echoMu.Unlock()
+	for key, at := range l.pendingEcho {
+		if time.Since(at) > l.echoTimeout {
+			return key, true
+		}
+	}
+	return "", false
+}
+
+func (l *Listener) resetEchoes() {
+	l.echoMu.Lock()
+	l.pendingEcho = make(map[string]time.Time)
+	l.echoMu.Unlock()
+}
+
+// watchLiveness forces a resubscribe (via cancel) when:
+//   - wall clock jumped ahead of the monotonic ticker (suspend/resume),
+//   - a publish timed out on a "connected" socket (resub channel),
+//   - an accepted self-wrap was never echoed back (stale REQ, issue #12),
+//   - no relay has been connected for three consecutive ticks.
 //
-//   - Wall-clock jumped ahead of the monotonic ticker — suspend/resume.
-//     time.After uses CLOCK_MONOTONIC, which pauses during suspend;
-//     time.Now().Unix() reads CLOCK_REALTIME, which does not. A 30s
-//     tick that "took" 15 minutes of wall time means we slept.
-//
-//   - No relay has been connected for three consecutive ticks. The
-//     pool's per-relay goroutine exits permanently on a CLOSED frame
-//     (pool.go subMany), so a healthy relay that sends CLOSED while a
-//     dead one is still retrying leaves SubscribeMany's channel open
-//     with zero live subs. Our outer Run loop never learns. Nuking the
-//     sub and starting fresh gives every relay a new goroutine.
-//
-// It also reports the connected set on every tick so the daemon can
-// surface real streaming status and the journal records which relay is
-// the culprit during an outage.
+// It also reports the connected set to OnHealth on every tick.
 func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
-	const tick = 30 * time.Second
+	tick := l.livenessTick
 	var deadTicks int
 	for {
 		before := time.Now().Unix()
@@ -164,6 +191,12 @@ func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
 		gap := time.Duration(time.Now().Unix()-before)*time.Second - tick
 		if gap > time.Minute {
 			slog.Info("time jump, resubscribing", "gap", gap.Round(time.Second))
+			cancel()
+			return
+		}
+
+		if key, stale := l.staleEcho(); stale {
+			slog.Warn("published wrap never echoed by subscription, resubscribing", "echo", key)
 			cancel()
 			return
 		}
@@ -186,9 +219,7 @@ func (l *Listener) watchLiveness(ctx context.Context, cancel func()) {
 	}
 }
 
-// Connected returns the URLs of relays the pool currently has an open
-// websocket to. Cheap enough to call from the replay handler so the
-// status it reports matches what the watchdog sees.
+// Connected returns the relays with an open websocket right now.
 func (l *Listener) Connected() []string {
 	var up []string
 	for _, url := range l.relays {
@@ -205,19 +236,41 @@ func (l *Listener) subscribeOnce(ctx context.Context, since int64, ch chan<- Rum
 		adj = 0
 	}
 	slog.Info("subscribing", "relays", l.relays, "since", since, "adjusted", int64(adj))
+	l.resetEchoes()
 	filter := nostr.Filter{
 		Kinds: []nostr.Kind{nostr.KindGiftWrap},
 		Tags:  nostr.TagMap{"p": {l.keys.PK.Hex()}},
 		Since: adj,
 	}
-	for ev := range l.pool.SubscribeMany(ctx, l.relays, filter, nostr.SubscriptionOptions{}) {
+	// CheckDuplicate runs per relay per event before dedup collapses the
+	// copies — the only place we can see which relay echoed our wrap.
+	var seenMu sync.Mutex
+	seen := make(map[nostr.ID]struct{})
+	opts := nostr.SubscriptionOptions{
+		CheckDuplicate: func(id nostr.ID, relay string) bool {
+			l.markEchoed(id, relay)
+			seenMu.Lock()
+			defer seenMu.Unlock()
+			if _, dup := seen[id]; dup {
+				return true
+			}
+			seen[id] = struct{}{}
+			return false
+		},
+	}
+	events, closed := l.pool.SubscribeManyNotifyClosed(ctx, l.relays, filter, opts)
+	go func() {
+		for c := range closed {
+			slog.Warn("relay closed subscription", "relay", c.Relay.URL, "reason", c.Reason, "auth_handled", c.HandledAuth)
+		}
+	}()
+	for ev := range events {
 		rumor, err := nip59.GiftUnwrap(ev.Event,
 			func(pk nostr.PubKey, ct string) (string, error) {
 				return l.kr.Decrypt(ctx, ct, pk)
 			})
 		if err != nil {
-			// Not ours, or malformed — a relay serving someone else's
-			// p-tag match would hit this. Quietly skip.
+			// Not ours or malformed — skip quietly.
 			continue
 		}
 		select {
@@ -239,29 +292,25 @@ func toRumor(ev nostr.Event) Rumor {
 	return r
 }
 
-// Outgoing holds a built-but-unpublished DM. Split from the publish
-// step so callers can echo locally (instant UI feedback) before the
-// slow network round-trip.
+// Outgoing is a built-but-unpublished DM, so callers can echo locally
+// before the network round-trip.
 type Outgoing struct {
 	Rumor  Rumor
 	toThem nostr.Event
 	toUs   nostr.Event
 }
 
-// Wraps serialises both gift-wrap events so they can sit in the outbox
-// and survive a daemon restart. They're just signed JSON — no secret
-// material beyond what the relay will see anyway.
+// Wraps serialises both gift-wrap events for the outbox so they survive
+// a daemon restart.
 func (o Outgoing) Wraps() (them, us string) {
 	t, _ := json.Marshal(o.toThem)
 	u, _ := json.Marshal(o.toUs)
 	return string(t), string(u)
 }
 
-// prepare builds an unsigned rumor of the given kind and gift-wraps it
-// for the recipient and for ourselves. Pure crypto, no network —
-// microseconds. The returned Rumor has the final id, so the self-copy
-// arriving later via the listen loop dedups cleanly. extraTags are
-// appended after the mandatory p-tag.
+// prepare builds an unsigned rumor and gift-wraps it for the recipient
+// and for ourselves. The returned Rumor carries the final id so the
+// self-copy arriving via the listen loop dedups cleanly.
 func (l *Listener) prepare(ctx context.Context, to string, kind nostr.Kind, content string, extraTags nostr.Tags) (Outgoing, error) {
 	recipient, err := nostr.PubKeyFromHex(to)
 	if err != nil {
@@ -316,16 +365,9 @@ func (l *Listener) PrepareFile(ctx context.Context, to, url string, enc *encrypt
 }
 
 // PublishRaw sends serialised gift-wraps from the outbox to relays the
-// subscription loop has already opened — no EnsureRelay, no 7s dial
-// under the per-URL mutex shared with subscribe. A dead relay costs
-// ~nothing, so the sequential outbox drain doesn't head-of-line block
-// on timeouts. Reconnection is the listen loop's job; we just retry
-// once it's back.
-//
-// This is the only publish path. Text and file sends alike enqueue
-// their wraps and let publishLoop drain them, so both get retry/cancel
-// and the same rumor id survives across attempts — the peer's ack lands
-// on the bubble the user is staring at, not a phantom row.
+// subscription loop already opened — no dialing here, so a dead relay
+// can't head-of-line block the outbox drain. Reconnection is the listen
+// loop's job; the outbox retries once it's back.
 func (l *Listener) PublishRaw(ctx context.Context, rumorID, themJSON, usJSON string) error {
 	var them, us nostr.Event
 	if err := json.Unmarshal([]byte(themJSON), &them); err != nil {
@@ -334,16 +376,14 @@ func (l *Listener) PublishRaw(ctx context.Context, rumorID, themJSON, usJSON str
 	if err := json.Unmarshal([]byte(usJSON), &us); err != nil {
 		return fmt.Errorf("decode wrap-us: %w", err)
 	}
-	return l.publishConnected(ctx, rumorID, them, us)
+	return l.publishConnected(ctx, rumorID, us.ID, them, us)
 }
 
-// publishConnected fans the wraps out to every already-open relay in
-// parallel, each with its own 3s deadline. A zombie connection (TCP up,
-// app dead) just times out on its own while the others ack — and now
-// also triggers a pool reset so the next attempt redials instead of
-// reusing the black-holed socket until the library's ping reaper
-// notices ~90s later.
-func (l *Listener) publishConnected(ctx context.Context, rumorID string, evs ...nostr.Event) error {
+// publishConnected fans the wraps out to every open relay in parallel,
+// each with its own 3s deadline. echoID is the self-addressed wrap:
+// relays that OK it must echo it back, which is how a dead REQ is
+// detected. A timeout on a "connected" socket flags a pool reset.
+func (l *Listener) publishConnected(ctx context.Context, rumorID string, echoID nostr.ID, evs ...nostr.Event) error {
 	var ok, fail, skip atomic.Int32
 	var stuck atomic.Bool
 	var wg sync.WaitGroup
@@ -363,14 +403,15 @@ func (l *Listener) publishConnected(ctx context.Context, rumorID string, evs ...
 				if err == nil {
 					ok.Add(1)
 					slog.Debug("relay accepted", "relay", url)
+					if ev.ID == echoID {
+						l.expectEcho(echoID, url)
+					}
 					continue
 				}
 				fail.Add(1)
 				if errors.Is(err, context.DeadlineExceeded) && ctx.Err() == nil {
-					// Write went into the kernel send-buf but no OK came
-					// back: the path is dead even though IsConnected()
-					// says otherwise. Flag for a redial and don't shove
-					// the second wrap down the same pipe.
+					// No OK despite IsConnected(): the path is dead.
+					// Flag a redial and stop using this pipe.
 					stuck.Store(true)
 					slog.Debug("relay timeout", "relay", url)
 				} else {
@@ -397,7 +438,6 @@ func (l *Listener) publishConnected(ctx context.Context, rumorID string, evs ...
 	return nil
 }
 
-// ErrNoRelayConnected means we never reached a relay — the subscription
-// hasn't (re)connected yet. Distinct from a rejection so publishLoop
-// can defer without inflating the retry counter.
+// ErrNoRelayConnected means we never reached a relay, as opposed to a
+// rejection — publishLoop defers without inflating the retry counter.
 var ErrNoRelayConnected = errors.New("publish: no relay connected")
