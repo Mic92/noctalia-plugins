@@ -1,0 +1,43 @@
+id          = "mic92/fprint-notify"
+name        = "Fingerprint Notify"
+version     = "2.0.0"
+plugin_api  = 30
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "fingerprint"
+description = "Shows an overlay while fprintd waits for a fingerprint (e.g. sudo)."
+tags        = ["System", "Security"]
+dependencies = ["fprintd", "gdbus (glib)"]
+
+[[setting]]
+key             = "showSuccessToast"
+type            = "bool"
+label_key       = "settings.show-success.label"
+description_key = "settings.show-success.description"
+default         = true
+
+[[setting]]
+key             = "staleTimeoutSec"
+type            = "int"
+label_key       = "settings.stale-timeout.label"
+description_key = "settings.stale-timeout.description"
+default         = 30
+min             = 5
+max             = 600
+
+[[service]]
+id    = "service"
+entry = "service.luau"
+
+# Heads-up cue: persistent so other panels don't close it, never takes focus
+# so the terminal running sudo keeps the keyboard.
+[[panel]]
+id                       = "cue"
+entry                    = "cue.luau"
+width                    = 380
+height                   = 76
+position                 = "top_center"
+layer                    = "overlay"
+persistent               = true
+keyboard_focus           = "none"
+dismiss_on_outside_click = false

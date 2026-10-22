@@ -32,9 +32,31 @@
         default = self.packages.${system}.nostr-chatd;
       });
 
-      checks = forAllSystems (system: {
-        nostr-chatd = self.packages.${system}.nostr-chatd;
-        noctalia-ssh-askpass = self.packages.${system}.noctalia-ssh-askpass;
-      });
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          # Plugin API type definitions at plugin_api 34 (noctalia 5.3.0);
+          # official-plugins main tracks noctalia's dev branch.
+          apiDefinitions = pkgs.fetchurl {
+            url = "https://raw.githubusercontent.com/noctalia-dev/official-plugins/734850fd1ee3badc2a18a515df31f36267852e46/noctalia.d.luau";
+            hash = "sha256-3I/njZGMguFnuKiH+UvMO7srOTc7P9A2zqzzqFJJh2o=";
+          };
+        in
+        {
+          nostr-chatd = self.packages.${system}.nostr-chatd;
+          noctalia-ssh-askpass = self.packages.${system}.noctalia-ssh-askpass;
+          luau = pkgs.runCommand "luau-analyze" { nativeBuildInputs = [ pkgs.luau-lsp ]; } ''
+            cd ${self}
+            # Strict mode comes from .luaurc; per-file opt-outs would defeat it.
+            if grep -rn -E '^--!(nonstrict|nocheck)' --include='*.luau' .; then
+              echo "luau files must stay --!strict" >&2
+              exit 1
+            fi
+            luau-lsp analyze --definitions=${apiDefinitions} $(find . -name '*.luau')
+            touch $out
+          '';
+        }
+      );
     };
 }

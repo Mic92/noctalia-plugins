@@ -1,13 +1,13 @@
 # rbw-provider
 
 Bitwarden in the noctalia launcher, via [`rbw`](https://github.com/doy/rbw).
-Type `>rbw github`, hit Enter, password lands in the focused input field.
+Type `/rbw github`, pick the entry, and the password lands in the focused input field.
 
 ![rbw-provider in the launcher](https://github.com/Mic92/noctalia-plugins/releases/download/assets/rbw-provider-screenshot.png)
 
 ## Usage
 
-Open the launcher, type `>rbw ` followed by a query. Results match on entry
+Open the launcher, type `/rbw ` followed by a query. Results match on entry
 name, username, and folder. Select an entry to get a second-level menu:
 
 | Action          | What happens                                         |
@@ -17,7 +17,7 @@ name, username, and folder. Select an entry to get a second-level menu:
 | Type TOTP code  | Current `rbw code` auto-pasted                       |
 | Copy password   | Clipboard only, no auto-type                         |
 
-The default action (Enter on the entry itself) is "Type password".
+`/rbw !` re-reads the vault after `rbw add` or `rbw sync`.
 
 **Auto-type** closes the launcher, puts the secret on the clipboard with
 `wl-copy --sensitive`, then simulates `Ctrl+Shift+V`. This sidesteps niri bug
@@ -26,7 +26,7 @@ text — the modifier combo doesn't trip it.
 
 The clipboard is cleared after `clearAfterSeconds` (default 45s). `--sensitive`
 tells cliphist not to record the entry, and the secret is piped straight from
-`rbw` into `wl-copy` — it never sits in a QML string buffer or shows up in
+`rbw` into `wl-copy` — it never sits in a Luau string or shows up in
 `argv`.
 
 ## Settings
@@ -35,14 +35,11 @@ tells cliphist not to record the entry, and the secret is piped straight from
 | ------------------- | ------- | ----------------------------------- |
 | `clearAfterSeconds` | `45`    | Clipboard auto-clear timeout        |
 
-## IPC
+## Keybinding
 
 ```bash
-noctalia-shell ipc call plugin:rbw-provider toggle
+noctalia msg panel-toggle launcher "/rbw "
 ```
-
-Opens the launcher pre-filled with `>rbw ` — bind this to a key for one-shortcut
-password access.
 
 ## Requirements
 

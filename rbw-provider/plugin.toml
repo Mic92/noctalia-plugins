@@ -1,0 +1,25 @@
+id          = "mic92/rbw-provider"
+name        = "Bitwarden (rbw)"
+version     = "2.0.0"
+plugin_api  = 24
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "lock"
+description = "Search Bitwarden entries via rbw and type or copy passwords, usernames and TOTP codes."
+tags        = ["Launcher", "Security"]
+dependencies = ["rbw", "wl-clipboard", "wtype"]
+
+[[setting]]
+key             = "clearAfterSeconds"
+type            = "int"
+label_key       = "settings.clear-after.label"
+description_key = "settings.clear-after.description"
+default         = 45
+min             = 5
+max             = 600
+
+[[launcher_provider]]
+id     = "search"
+entry  = "provider.luau"
+prefix = "rbw"
+glyph  = "lock"

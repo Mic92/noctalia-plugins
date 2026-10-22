@@ -1,47 +1,46 @@
 # noctalia-plugins
 
-A grab-bag of plugins for [noctalia-shell]. Built for my own desktop but
+A grab-bag of plugins for [noctalia] v5. Built for my own desktop but
 packaged here so others can steal the useful bits.
 
-[noctalia-shell]: https://github.com/noctalia-dev/noctalia
+[noctalia]: https://github.com/noctalia-dev/noctalia
 
-| Plugin                             | What it does                                                        | Surface         |
-| ---------------------------------- | ------------------------------------------------------------------- | --------------- |
-| [`alertmanager`](./alertmanager)   | Prometheus Alertmanager: alert count in the bar, details in a panel | bar + panel     |
-| [`display-config`](./display-config) | Change monitor mode/scale/position from the bar; save & switch kanshi profiles | bar + panel |
-| [`fprint-notify`](./fprint-notify) | Toast when fprintd wants a fingerprint (so sudo doesn't block silently) | headless |
-| [`khal-next`](./khal-next)         | Next khal event + countdown in the bar, agenda panel, one-key join  | bar + panel     |
-| [`mail-count`](./mail-count)       | Unread mail count in the bar via any shell command (notmuch/mu/maildir) | bar       |
-| [`nostr-chat`](./nostr-chat)       | DM a Nostr peer (bot or human) in a slide-out panel. Images, history, the lot | panel |
-| [`rbw-provider`](./rbw-provider)   | Bitwarden search in the launcher via `rbw` — copy password/TOTP     | launcher        |
-| [`ssh-askpass`](./ssh-askpass)     | `SSH_ASKPASS` backend with real Allow/Deny buttons for `ssh-add -c` | headless        |
+| Plugin                               | What it does                                                            | Surface           |
+| ------------------------------------ | ----------------------------------------------------------------------- | ----------------- |
+| [`alertmanager`](./alertmanager)     | Prometheus Alertmanager: alert count in the bar, details in a panel     | bar + panel       |
+| [`fprint-notify`](./fprint-notify)   | Overlay when fprintd wants a fingerprint (so sudo doesn't block silently) | overlay panel   |
+| [`mail-count`](./mail-count)         | Unread mail count in the bar via any shell command (notmuch/mu/maildir) | bar               |
+| [`rbw-provider`](./rbw-provider)     | Bitwarden search in the launcher via `rbw`: type/copy password, TOTP    | launcher          |
+| [`ssh-askpass`](./ssh-askpass)       | `SSH_ASKPASS` backend with real Allow/Deny buttons for `ssh-add -c`     | dialog            |
+
+Plugin ids are `mic92/<directory>`.
+
+`display-config`, `khal-next`, `desktop-calendar` and `nostr-chat` are still
+noctalia v4 (QML) plugins and don't load in v5.
 
 ## Install
 
-noctalia-shell loads anything under `~/.config/noctalia/plugins/<id>/`. Pick
-one:
+Add the checkout as a path source in your noctalia config and enable the
+plugins you want:
 
-**Clone the whole thing:**
+```toml
+[[plugins.source]]
+name = "mic92"
+kind = "path"
+location = "~/src/noctalia-plugins"
 
-```bash
-git clone https://github.com/Mic92/noctalia-plugins ~/.config/noctalia/plugins
+[plugins]
+enabled = ["mic92/alertmanager", "mic92/ssh-askpass"]
 ```
 
-**Or cherry-pick via symlinks** (lets you keep your own plugins alongside):
+`ssh-askpass` needs its Go stub; see its README or
+`nix build github:Mic92/noctalia-plugins#noctalia-ssh-askpass`.
 
-```bash
-git clone https://github.com/Mic92/noctalia-plugins ~/.config/noctalia/shared-plugins
-ln -s ../shared-plugins/alertmanager ~/.config/noctalia/plugins/alertmanager
-ln -s ../shared-plugins/rbw-provider ~/.config/noctalia/plugins/rbw-provider
-# …
-```
+## Development
 
-Then restart noctalia-shell and enable the plugin in Settings → Plugins.
-
-> [!NOTE]
-> `nostr-chat` and `ssh-askpass` ship Go binaries alongside the QML. See their
-> READMEs for build/setup, or pull them from the flake:
-> `nix run github:Mic92/noctalia-plugins#noctalia-ssh-askpass`.
+Scripts are Luau, type-checked in strict mode against the plugin API
+definitions for the noctalia release we target (`nix flake check` runs
+`luau-lsp analyze`). Format with `stylua`.
 
 ## License
 

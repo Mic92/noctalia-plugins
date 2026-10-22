@@ -4,29 +4,32 @@ Native noctalia dialog for `SSH_ASKPASS`.
 
 ![ssh-askpass confirm dialog](https://github.com/Mic92/noctalia-plugins/releases/download/assets/ssh-askpass-screenshot.png)
 
- Unlike lxqt-openssh-askpass this
+Unlike lxqt-openssh-askpass this
 actually honours `SSH_ASKPASS_PROMPT=confirm` and shows an Allow/Deny dialog
 instead of a confusing empty password box.
 
 ## How it works
 
 ```
-ssh-tpm-agent ──exec──▶ noctalia-ssh-askpass ──unix sock──▶ noctalia plugin
-                        (stub binary)                       (QML dialog)
-                             ▲                                   │
-                             └───── {"ok":true,"value":"..."} ◀──┘
+ssh-tpm-agent ──exec──▶ noctalia-ssh-askpass ──noctalia msg plugin──▶ service ──▶ dialog panel
+                        (stub binary)                                                  │
+                             ▲                                                         │
+                             └──── $XDG_RUNTIME_DIR/noctalia-ssh-askpass/<id>/reply ◀───┘
 ```
 
-The plugin runs a `SocketServer` on `$XDG_RUNTIME_DIR/noctalia-ssh-askpass.sock`.
-The stub is a ~50 line Go program that speaks the OpenSSH askpass contract on
-one side and line-delimited JSON on the other.
+Plugin IPC is one-way, so the stub creates a private (0700) directory per
+request and passes the reply path along. The service queues concurrent
+requests and shows them one at a time. The stub fails closed when noctalia
+isn't running, and removing its directory (exit, signal, 10 minute timeout)
+withdraws a queued request.
 
 ## Setup
 
-1. Build the stub: `go build -o ~/.local/bin/noctalia-ssh-askpass ./stub`
-2. Enable the plugin in noctalia
-3. Set `SSH_ASKPASS=~/.local/bin/noctalia-ssh-askpass` in your agent's
-   environment (systemd unit, shell rc, etc.)
+1. Build the stub: `nix build .#noctalia-ssh-askpass`.
+2. Enable `mic92/ssh-askpass` in noctalia.
+3. Set `SSH_ASKPASS` to the stub in your agent's environment. `noctalia` must
+   be on its `PATH`, and `WAYLAND_DISPLAY` set so `noctalia msg` finds the
+   shell.
 
 ## Modes
 

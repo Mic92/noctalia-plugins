@@ -1,0 +1,25 @@
+{
+  "settings": {
+    "count-command": {
+      "label": "Count command",
+      "description": "Shell command that prints the number of unread messages to stdout."
+    },
+    "click-command": {
+      "label": "Click command",
+      "description": "Command executed when the widget is clicked (e.g. your mail client). Leave empty to disable."
+    },
+    "poll-interval": {
+      "label": "Poll interval (seconds)"
+    },
+    "hide-when-zero": {
+      "label": "Hide widget when count is zero"
+    },
+    "icon-color": {
+      "label": "Icon color",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "tertiary": "Tertiary",
+      "on_surface": "Text"
+    }
+  }
+}

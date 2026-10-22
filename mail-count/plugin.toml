@@ -1,0 +1,55 @@
+id          = "mic92/mail-count"
+name        = "Mail Count"
+version     = "2.0.0"
+plugin_api  = 24
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "mail"
+description = "Shows the unread mail count in the bar using a configurable shell command."
+tags        = ["Bar", "System"]
+
+[[setting]]
+key             = "countCommand"
+type            = "string"
+label_key       = "settings.count-command.label"
+description_key = "settings.count-command.description"
+default         = "notmuch count tag:unread and tag:inbox"
+
+[[setting]]
+key             = "clickCommand"
+type            = "string"
+label_key       = "settings.click-command.label"
+description_key = "settings.click-command.description"
+default         = "xdg-open mailto:"
+
+[[setting]]
+key       = "pollInterval"
+type      = "int"
+label_key = "settings.poll-interval.label"
+default   = 60
+min       = 5
+max       = 3600
+
+[[setting]]
+key       = "hideWhenZero"
+type      = "bool"
+label_key = "settings.hide-when-zero.label"
+default   = false
+
+[[setting]]
+key       = "iconColor"
+type      = "select"
+label_key = "settings.icon-color.label"
+default   = "primary"
+options = [
+  { value = "primary", label_key = "settings.icon-color.primary" },
+  { value = "secondary", label_key = "settings.icon-color.secondary" },
+  { value = "tertiary", label_key = "settings.icon-color.tertiary" },
+  { value = "on_surface", label_key = "settings.icon-color.on_surface" },
+]
+
+# Left click runs clickCommand, right click refreshes.
+# IPC: noctalia msg plugin mic92/mail-count:widget all refresh
+[[widget]]
+id    = "widget"
+entry = "widget.luau"

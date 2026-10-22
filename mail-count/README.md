@@ -5,7 +5,7 @@ command that prints a number to stdout — works with notmuch, mu, plain
 maildir, or anything else you can script.
 
 The pill expands when there's unread mail and collapses to just the icon
-when inbox zero. Click to launch your mail client.
+when inbox zero. Click to launch your mail client, right click to refresh.
 
 ![mail-count widget](https://github.com/Mic92/noctalia-plugins/releases/download/assets/mail-count-screenshot.png)
 
@@ -43,5 +43,5 @@ Polling every minute is fine, but for instant updates add this to your
 sync script or notmuch `post-new` hook:
 
 ```sh
-qs -c noctalia-shell ipc call plugin:mail-count refresh 2>/dev/null || true
+noctalia msg plugin mic92/mail-count:widget all refresh 2>/dev/null || true
 ```

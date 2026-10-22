@@ -1,0 +1,16 @@
+{
+  "touch-sensor": "Touch fingerprint sensor",
+  "try-again": "Try again",
+  "authenticated": "Authenticated",
+  "not-recognized": "Fingerprint not recognized",
+  "settings": {
+    "show-success": {
+      "label": "Show success message",
+      "description": "Briefly confirm when a fingerprint matches. Disable for quieter operation."
+    },
+    "stale-timeout": {
+      "label": "Stale timeout (seconds)",
+      "description": "Hide the prompt if fprintd never reports a result (guards against a crashed PAM client)."
+    }
+  }
+}

@@ -1,0 +1,47 @@
+id          = "mic92/ssh-askpass"
+name        = "SSH Askpass"
+version     = "2.0.0"
+plugin_api  = 30
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "key"
+description = "SSH_ASKPASS provider with native noctalia dialogs. Handles both passphrase prompts and SSH_ASKPASS_PROMPT=confirm."
+tags        = ["System", "Security"]
+dependencies = ["noctalia-ssh-askpass (stub/)", "fprintd (fingerprint mode)"]
+
+[[setting]]
+key             = "confirmMethod"
+type            = "select"
+label_key       = "settings.confirm-method.label"
+description_key = "settings.confirm-method.description"
+default         = "click"
+options = [
+  { value = "click", label_key = "settings.confirm-method.click" },
+  { value = "fingerprint", label_key = "settings.confirm-method.fingerprint" },
+]
+
+[[setting]]
+key             = "confirmTimeoutSec"
+type            = "int"
+label_key       = "settings.timeout.label"
+description_key = "settings.timeout.description"
+default         = 30
+min             = 5
+max             = 600
+
+# Queues requests from the stub and opens one dialog at a time.
+[[service]]
+id    = "service"
+entry = "service.luau"
+
+[[panel]]
+id                       = "dialog"
+entry                    = "dialog.luau"
+width                    = 500
+height                   = 230
+placement                = "floating"
+position                 = "center"
+layer                    = "overlay"
+keyboard_focus           = "exclusive"
+dismiss_on_outside_click = false
+capture_keys             = ["return", "kp_enter"]

@@ -20,20 +20,20 @@ Available in Settings → Plugins → Alertmanager:
 | `pollInterval`    | `30`                      | Seconds between `/api/v2/alerts` fetches |
 | `iconColor`       | `primary`                 | Bar icon color when everything is OK     |
 | `hideWhenZero`    | `false`                   | Hide widget entirely when no alerts      |
+| `showCount`       | `true`                    | Show the number next to the icon         |
+| `prometheusUrl`   | empty                     | Rewrites the origin of alert links       |
+| `ignoreAlerts`    | `[]`                      | Alert names that are never shown         |
 
-Silenced, inhibited, and muted alerts are filtered out — the count only reflects
-things that actually want attention.
+`iconColor`, `hideWhenZero` and `showCount` are per-widget settings.
+
+Silenced, inhibited, and muted alerts are left out of the count and shown in a
+folded section of the panel. Right click the widget to refresh.
 
 ## IPC
 
 ```bash
-noctalia-shell ipc call plugin:alertmanager toggle   # open/close the panel
-noctalia-shell ipc call plugin:alertmanager refresh  # force a re-poll
+noctalia msg plugin mic92/alertmanager:service all toggle   # open/close the panel
+noctalia msg plugin mic92/alertmanager:service all refresh  # force a re-poll
 ```
 
 Bind `toggle` to a key if you want the panel without clicking the bar.
-
-## Requirements
-
-Just `wget` on `PATH` (used instead of Qt's network stack so the URL can be a
-mesh/VPN name that only your resolver knows about).

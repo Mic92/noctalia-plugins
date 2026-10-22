@@ -1,0 +1,79 @@
+id          = "mic92/alertmanager"
+name        = "Alertmanager"
+version     = "2.0.0"
+plugin_api  = 32
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "alert-circle"
+description = "Shows active Prometheus Alertmanager alerts in the bar."
+tags        = ["Bar", "System", "Network"]
+
+[[setting]]
+key             = "alertmanagerUrl"
+type            = "string"
+label_key       = "settings.url.label"
+default         = "http://localhost:9093"
+
+[[setting]]
+key             = "prometheusUrl"
+type            = "string"
+label_key       = "settings.prometheus-url.label"
+description_key = "settings.prometheus-url.description"
+default         = ""
+
+[[setting]]
+key             = "pollInterval"
+type            = "int"
+label_key       = "settings.poll-interval.label"
+default         = 30
+min             = 5
+max             = 3600
+
+[[setting]]
+key             = "ignoreAlerts"
+type            = "string_list"
+label_key       = "settings.ignore-alerts.label"
+description_key = "settings.ignore-alerts.description"
+default         = []
+
+# Polls the API and publishes the result in noctalia.state "alerts".
+[[service]]
+id    = "service"
+entry = "service.luau"
+
+[[widget]]
+id    = "widget"
+entry = "widget.luau"
+
+  [[widget.setting]]
+  key       = "iconColor"
+  type      = "select"
+  label_key = "settings.icon-color.label"
+  default   = "primary"
+  options = [
+    { value = "primary", label_key = "settings.icon-color.primary" },
+    { value = "secondary", label_key = "settings.icon-color.secondary" },
+    { value = "tertiary", label_key = "settings.icon-color.tertiary" },
+    { value = "on_surface", label_key = "settings.icon-color.on_surface" },
+  ]
+
+  [[widget.setting]]
+  key       = "hideWhenZero"
+  type      = "bool"
+  label_key = "settings.hide-when-zero.label"
+  default   = false
+
+  [[widget.setting]]
+  key       = "showCount"
+  type      = "bool"
+  label_key = "settings.show-count.label"
+  default   = true
+
+[[panel]]
+id              = "panel"
+entry           = "panel.luau"
+width           = 440
+height          = 520
+placement       = "attached"
+position        = "auto"
+open_near_click = true
