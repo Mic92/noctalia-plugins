@@ -28,8 +28,9 @@ withdraws a queued request.
 1. Build the stub: `nix build .#noctalia-ssh-askpass`.
 2. Enable `mic92/ssh-askpass` in noctalia.
 3. Set `SSH_ASKPASS` to the stub in your agent's environment. `noctalia` must
-   be on its `PATH`, and `WAYLAND_DISPLAY` set so `noctalia msg` finds the
-   shell.
+   be on its `PATH`. If `WAYLAND_DISPLAY` is unset, which happens when the
+   agent starts before the desktop session, the stub looks for the shell's
+   socket in `$XDG_RUNTIME_DIR`.
 
 ## Modes
 
