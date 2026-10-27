@@ -1,5 +1,4 @@
-/nostr-chat/daemon/nostr-chatd
 result
 result-*
-# noctalia writes per-plugin runtime state next to the QML
+# noctalia writes per-plugin runtime state next to the plugin
 */settings.json

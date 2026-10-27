@@ -15,9 +15,6 @@ packaged here so others can steal the useful bits.
 
 Plugin ids are `mic92/<directory>`.
 
-`display-config`, `khal-next`, `desktop-calendar` and `nostr-chat` are still
-noctalia v4 (QML) plugins and don't load in v5.
-
 ## Install
 
 Add the checkout as a path source in your noctalia config and enable the
