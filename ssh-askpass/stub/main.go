@@ -46,6 +46,23 @@ func fail(format string, args ...any) {
 	os.Exit(1)
 }
 
+// An agent started before the desktop session has no WAYLAND_DISPLAY, so
+// pick the display of the only noctalia whose compositor is still alive.
+func findDisplay(rt string) (string, error) {
+	socks, _ := filepath.Glob(filepath.Join(rt, "noctalia-*.sock"))
+	var displays []string
+	for _, sock := range socks {
+		display := strings.TrimSuffix(strings.TrimPrefix(filepath.Base(sock), "noctalia-"), ".sock")
+		if fi, err := os.Stat(filepath.Join(rt, display)); err == nil && fi.Mode()&os.ModeSocket != 0 {
+			displays = append(displays, display)
+		}
+	}
+	if len(displays) != 1 {
+		return "", fmt.Errorf("WAYLAND_DISPLAY not set, found %d running noctalia instances", len(displays))
+	}
+	return displays[0], nil
+}
+
 func ask(req request) (response, error) {
 	payload, err := json.Marshal(req)
 	if err != nil {
@@ -85,6 +102,13 @@ func main() {
 	rt := os.Getenv("XDG_RUNTIME_DIR")
 	if rt == "" {
 		fail("XDG_RUNTIME_DIR not set")
+	}
+	if os.Getenv("WAYLAND_DISPLAY") == "" {
+		display, err := findDisplay(rt)
+		if err != nil {
+			fail("%v", err)
+		}
+		_ = os.Setenv("WAYLAND_DISPLAY", display)
 	}
 	base := filepath.Join(rt, "noctalia-ssh-askpass")
 	if err := os.MkdirAll(base, 0o700); err != nil {
