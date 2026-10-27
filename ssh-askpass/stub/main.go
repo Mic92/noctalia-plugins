@@ -46,12 +46,41 @@ func fail(format string, args ...any) {
 	os.Exit(1)
 }
 
-func ask(req request) (response, error) {
+func findDisplay(rt string) (string, error) {
+	socks, err := filepath.Glob(filepath.Join(rt, "noctalia-*.sock"))
+	if err != nil {
+		return "", err
+	}
+	var displays []string
+	for _, sock := range socks {
+		display := strings.TrimSuffix(strings.TrimPrefix(filepath.Base(sock), "noctalia-"), ".sock")
+		if fi, err := os.Stat(filepath.Join(rt, display)); err == nil && fi.Mode()&os.ModeSocket != 0 {
+			displays = append(displays, display)
+		}
+	}
+	switch len(displays) {
+	case 0:
+		return "", fmt.Errorf("WAYLAND_DISPLAY not set and no running noctalia found in %s", rt)
+	case 1:
+		return displays[0], nil
+	default:
+		return "", fmt.Errorf("WAYLAND_DISPLAY not set and several noctalia instances running: %s", strings.Join(displays, ", "))
+	}
+}
+
+func ask(rt string, req request) (response, error) {
 	payload, err := json.Marshal(req)
 	if err != nil {
 		return response{}, err
 	}
 	cmd := exec.Command("noctalia", "msg", "plugin", "mic92/ssh-askpass:service", "all", "ask", string(payload))
+	if os.Getenv("WAYLAND_DISPLAY") == "" {
+		display, err := findDisplay(rt)
+		if err != nil {
+			return response{}, err
+		}
+		cmd.Env = append(os.Environ(), "WAYLAND_DISPLAY="+display)
+	}
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -111,7 +140,7 @@ func main() {
 		os.Exit(1)
 	}()
 
-	resp, err := ask(request{
+	resp, err := ask(rt, request{
 		ID:     id,
 		Mode:   mode,
 		Prompt: strings.Join(os.Args[1:], " "),
