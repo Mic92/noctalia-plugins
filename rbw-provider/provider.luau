@@ -122,7 +122,7 @@ local function actionResults(e: Entry): { LauncherResult }
       title = noctalia.tr("actions.back"),
       subtitle = noctalia.tr("actions.back-description"),
       glyph = "arrow-left",
-      query = PREFIX,
+      query = "",
       score = 1,
     },
   }
@@ -145,7 +145,7 @@ local function searchResults(query: string): { LauncherResult }
         title = e.name,
         subtitle = table.concat(sub, " · "),
         glyph = "key",
-        query = PREFIX .. ":" .. e.id,
+        query = ":" .. e.id,
         score = score,
       })
     end
