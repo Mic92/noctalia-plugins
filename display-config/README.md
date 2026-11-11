@@ -6,6 +6,8 @@ save layouts as [kanshi] profiles so they come back when you dock.
 [niri]: https://github.com/YaLTeR/niri
 [kanshi]: https://sr.ht/~emersion/kanshi/
 
+![display-config panel](https://github.com/Mic92/noctalia-plugins/releases/download/assets/display-config-screenshot.png)
+
 ## Panel
 
 - **Per output:** on/off toggle, mode (★ = preferred), scale, rotation.
