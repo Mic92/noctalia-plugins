@@ -1,0 +1,81 @@
+{
+  "panel": {
+    "title": "Displays",
+    "loading": "Loading outputs…",
+    "refresh": "Refresh",
+    "settings": "Settings",
+    "open-wdisplays": "Open wdisplays",
+    "off": "off",
+    "mode": "Mode",
+    "scale": "Scale",
+    "rotation": "Rotation",
+    "position": "Position {x}, {y}",
+    "arrange": "Arrange",
+    "many-monitors": "Quick arrangements only handle two monitors. Arrange them in wdisplays, then save the result as a kanshi profile below.",
+    "kanshi": "Kanshi profiles",
+    "kanshi-down": "kanshi is not running; switching profiles will fail.",
+    "kanshi-include": "Your kanshi config does not include noctalia.conf, so saved profiles won't auto-apply. Add: include ~/.config/kanshi/noctalia.conf",
+    "from-config": "main config",
+    "profile-tooltip": "Click to switch, right-click for more",
+    "profile-name": "New profile name",
+    "save": "Save current",
+    "revert-in": "Keep these display settings? Reverting in {n}s",
+    "revert": "Revert",
+    "keep": "Keep"
+  },
+  "arrange": {
+    "extend-right": "External right",
+    "extend-left": "External left",
+    "stack-above": "External above",
+    "stack-below": "External below",
+    "external-only": "External only",
+    "internal-only": "Laptop only"
+  },
+  "transform": {
+    "normal": "Normal",
+    "90": "90°",
+    "180": "180°",
+    "270": "270°",
+    "flipped": "Flipped",
+    "flipped-90": "Flipped 90°",
+    "flipped-180": "Flipped 180°",
+    "flipped-270": "Flipped 270°"
+  },
+  "menu": {
+    "switch": "Switch to profile",
+    "update": "Overwrite with current layout",
+    "delete": "Delete"
+  },
+  "toast": {
+    "kanshi": "Kanshi",
+    "saved": "Saved profile '{name}'",
+    "invalid-name": "Invalid profile name (use letters, digits, . _ + -)",
+    "apply-failed": "Display change failed",
+    "reverted": "Display reverted",
+    "reverted-body": "The change was not confirmed in time."
+  },
+  "settings": {
+    "poll-interval": {
+      "label": "Poll interval (seconds)"
+    },
+    "revert-seconds": {
+      "label": "Revert timeout (seconds)",
+      "description": "Changes roll back unless confirmed within this time."
+    },
+    "kanshi-enabled": {
+      "label": "Kanshi integration",
+      "description": "Show kanshi profiles and save layouts to ~/.config/kanshi/noctalia.conf."
+    },
+    "kanshi-dir": {
+      "label": "Kanshi config directory",
+      "description": "Defaults to $XDG_CONFIG_HOME/kanshi."
+    },
+    "icon-color": {
+      "label": "Icon color",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "tertiary": "Tertiary",
+      "on_surface": "Text"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+id          = "mic92/display-config"
+name        = "Display Config"
+version     = "2.0.0"
+plugin_api  = 32
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "device-desktop"
+description = "Change monitor mode, scale, rotation and layout on niri, with keep/revert safety and kanshi profiles."
+tags        = ["Bar", "System", "Display"]
+dependencies = ["niri", "kanshi (optional)", "wdisplays (optional)"]
+
+[[setting]]
+key       = "pollInterval"
+type      = "int"
+label_key = "settings.poll-interval.label"
+default   = 30
+min       = 5
+max       = 600
+
+[[setting]]
+key             = "revertSeconds"
+type            = "int"
+label_key       = "settings.revert-seconds.label"
+description_key = "settings.revert-seconds.description"
+default         = 12
+min             = 5
+max             = 60
+
+[[setting]]
+key             = "kanshiEnabled"
+type            = "bool"
+label_key       = "settings.kanshi-enabled.label"
+description_key = "settings.kanshi-enabled.description"
+default         = true
+
+[[setting]]
+key             = "kanshiConfigDir"
+type            = "folder"
+label_key       = "settings.kanshi-dir.label"
+description_key = "settings.kanshi-dir.description"
+default         = ""
+advanced        = true
+visible_when    = { key = "kanshiEnabled", values = ["true"] }
+
+# Polls niri, applies changes, runs the revert countdown, edits kanshi
+# profiles. Publishes everything in noctalia.state "snap".
+[[service]]
+id    = "service"
+entry = "service.luau"
+
+# Left click: panel. Right click: keep a pending change, else refresh.
+[[widget]]
+id    = "widget"
+entry = "widget.luau"
+
+  [[widget.setting]]
+  key       = "iconColor"
+  type      = "select"
+  label_key = "settings.icon-color.label"
+  default   = "primary"
+  options = [
+    { value = "primary", label_key = "settings.icon-color.primary" },
+    { value = "secondary", label_key = "settings.icon-color.secondary" },
+    { value = "tertiary", label_key = "settings.icon-color.tertiary" },
+    { value = "on_surface", label_key = "settings.icon-color.on_surface" },
+  ]
+
+[[panel]]
+id              = "panel"
+entry           = "panel.luau"
+width           = 460
+height          = 640
+placement       = "attached"
+position        = "auto"
+open_near_click = true
