@@ -8,6 +8,7 @@ packaged here so others can steal the useful bits.
 | Plugin                               | What it does                                                            | Surface           |
 | ------------------------------------ | ----------------------------------------------------------------------- | ----------------- |
 | [`alertmanager`](./alertmanager)     | Prometheus Alertmanager: alert count in the bar, details in a panel     | bar + panel       |
+| [`display-config`](./display-config) | niri output mode/scale/layout with keep/revert, saved as kanshi profiles | bar + panel     |
 | [`fprint-notify`](./fprint-notify)   | Overlay when fprintd wants a fingerprint (so sudo doesn't block silently) | overlay panel   |
 | [`mail-count`](./mail-count)         | Unread mail count in the bar via any shell command (notmuch/mu/maildir) | bar               |
 | [`rbw-provider`](./rbw-provider)     | Bitwarden search in the launcher via `rbw`: type/copy password, TOTP    | launcher          |
