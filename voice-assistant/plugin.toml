@@ -1,0 +1,38 @@
+id          = "mic92/voice-assistant"
+name        = "Voice Assistant"
+version     = "1.0.0"
+plugin_api  = 32
+author      = "Jörg Thalheim"
+license     = "MIT"
+icon        = "microphone"
+description = "Shows what the voice assistant found: routes, places and other lists."
+tags        = ["System", "Utility"]
+
+[[setting]]
+key             = "timeoutSec"
+type            = "int"
+label_key       = "settings.timeout.label"
+description_key = "settings.timeout.description"
+default         = 45
+min             = 5
+max             = 600
+
+# Reads the view the assistant wrote and publishes it in noctalia.state "view".
+# IPC: noctalia msg plugin mic92/voice-assistant:service all show <file.json>
+#      noctalia msg plugin mic92/voice-assistant:service all hide
+[[service]]
+id    = "service"
+entry = "service.luau"
+
+# Persistent so other panels don't close it, and never focused: the answer
+# must not take the keyboard from whatever you were typing into.
+[[panel]]
+id                       = "view"
+entry                    = "view.luau"
+width                    = 440
+height                   = 420
+position                 = "top_right"
+layer                    = "overlay"
+persistent               = true
+keyboard_focus           = "none"
+dismiss_on_outside_click = false
