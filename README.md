@@ -12,6 +12,7 @@ packaged here so others can steal the useful bits.
 | [`mail-count`](./mail-count)         | Unread mail count in the bar via any shell command (notmuch/mu/maildir) | bar               |
 | [`rbw-provider`](./rbw-provider)     | Bitwarden search in the launcher via `rbw`: type/copy password, TOTP    | launcher          |
 | [`ssh-askpass`](./ssh-askpass)       | `SSH_ASKPASS` backend with real Allow/Deny buttons for `ssh-add -c`     | dialog            |
+| [`voice-assistant`](./voice-assistant) | Shows a voice assistant's results (routes, places) from a JSON file   | overlay panel     |
 
 Plugin ids are `mic92/<directory>`.
 

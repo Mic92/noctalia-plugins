@@ -1,0 +1,10 @@
+{
+  "open-in-maps": "Open in Google Maps",
+  "close": "Close",
+  "settings": {
+    "timeout": {
+      "label": "Timeout (seconds)",
+      "description": "How long a result stays on screen. Hovering it keeps it."
+    }
+  }
+}
